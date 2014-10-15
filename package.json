@@ -1,0 +1,24 @@
+{
+  "name": "open-rest",
+  "version": "1.0.0",
+  "description": "Standard rest server, Base on restify and sequelize",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/open-node/open-rest.git"
+  },
+  "keywords": [
+    "rest",
+    "api",
+    "open-rest"
+  ],
+  "author": "Redstone Zhao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/open-node/open-rest/issues"
+  },
+  "homepage": "https://github.com/open-node/open-rest"
+}
