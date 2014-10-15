@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/open-node/open-rest/issues"
   },
-  "homepage": "https://github.com/open-node/open-rest"
+  "homepage": "https://github.com/open-node/open-rest",
+  "dependencies": {
+    "underscore": "^1.7.0"
+  }
 }
