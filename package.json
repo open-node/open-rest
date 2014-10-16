@@ -1,6 +1,6 @@
 {
   "name": "open-rest",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/open-node/open-rest",
   "dependencies": {
+    "sequelize": "^2.0.0-rc1",
     "underscore": "^1.7.0"
   }
 }

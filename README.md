@@ -10,6 +10,21 @@ $ npm install open-rest
 ### Example
 ```js
 var openRest = require('open-rest');
+openRest.initialize({
+  config: {
+    db: {
+      name: 'xxx',
+      user: 'xxx',
+      pass: 'xxx'
+    },
+    service: {
+      name: 'Open rest,'
+      version: '1.0.0'
+    }
+  }
+  appPath: __dirname,
+  routerInit: require('./routes')
+});
 ```
 
 ### API
