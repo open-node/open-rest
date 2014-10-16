@@ -25,9 +25,6 @@ model.init = (opt, path) ->
   sequelize = new Sequelize(opt.name, opt.user, opt.pass, opt)
   sequelize.query "SET time_zone='+0:00'"
 
-  # model 的初始化
-  Models = {}
-
   for file in utils.readdir(path, 'coffee', ['index', 'base'])
     moduleName = utils.file2Module file
     Models[moduleName] = require("#{path}/#{file}")(sequelize)
@@ -46,8 +43,5 @@ model.init = (opt, path) ->
       _.each Model.includes, (include) -> includes[include] = include
       Model.includes = includes
     Models[name] = Model
-
-  # 返回所有的Models
-  Models
 
 module.exports = model

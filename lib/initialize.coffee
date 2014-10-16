@@ -1,8 +1,9 @@
 # 初始化 restapi 服务
 
-restify     = require 'restify'
-_           = require 'underscore'
-Router      = require './router'
+fs          = require "fs"
+restify     = require "restify"
+_           = require "underscore"
+Router      = require "./router"
 helper      = require "./helper"
 defaultCtl  = require "./controller"
 model       = require "./model"
@@ -25,19 +26,38 @@ requiredCheck = (opts) ->
   unless opts.appPath
     throw Error 'Lack appPath: absolute path of your app'
 
+  # 默认路径的处理，这里有一些路径上的约定
+  _.each(['route', 'controller', 'model'], (_path) ->
+    if pwd = opts["#{_path}Path"]
+      unless _.isString pwd
+        throw Error "#{_path}Path must be a string and be a existed path"
+      unless fs.existsSync pwd
+        throw Error "#{_path}Path must be a string and be a existed path"
+    else
+      opts["#{_path}Path"] = "#{opts.appPath}/#{_path}s"
+  )
+
+  # 中间件路径的处理
+  unless opts.middleWarePath
+    opts.middleWarePath = "#{opts.appPath}/middle-wares"
+
+  # 路由设置路径的处理
+  unless opts.routePath
+    opts.routePath = "#{opts.appPath}/routes"
+
   # todo list 以后补上
 
 # 根据传递进来的 opts 构建 restapi 服务
 # opts = {
 #   config: Object, // 配置项目
-#   routerInit: function(r) {}, // required 路由器初始化的函数，用户自定义
 #   appPath: directory, // required 应用路径，绝对路径，这个非常重要，之后
+#   routePath: directory, // optional 路由器配置路径，绝对路径
 #                       // 的控制器路径，模型路径都可以根绝这个路径生成
 #   controllerPath: directory // optional controllers 目录, 绝对路径,
 #                             // 默认为 appPath + '/controllers/'
 #   modelPath: directory // optional models 目录, 绝对路径,
 #                        // 默认为 appPath + '/models/'
-#   middleWares: array(), // optional 用户自定义的中间件
+#   middleWarePath: directory // optional 用户自定义的中间件的路径，绝对路径
 # }
 #
 module.exports = (opts) ->
@@ -68,11 +88,13 @@ module.exports = (opts) ->
 
   # 自定义中间件
   # 需要自定义一些中间件，请写在这里
-  if _.isArray opts.middleWare
-    server.use(middleWare) for middleWare in opts.middleWares
+  if fs.existsSync(opts.middleWarePath)
+    middleWares = require opts.middleWarePath
+    if _.isArray middleWares
+      server.use(middleWare) for middleWare in middleWares
 
   # 路由初始化、控制器载入
-  opts.routerInit new Router(
+  require(opts.routePath) new Router(
     server
     getModules(opts.controllerPath or "#{opts.appPath}/controllers")
     defaultCtl
