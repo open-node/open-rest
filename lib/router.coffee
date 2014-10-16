@@ -1,4 +1,5 @@
 _         = require 'underscore'
+model     = require './model'
 utils     = require './utils'
 
 # 路由器初始化
@@ -16,7 +17,7 @@ module.exports = (server, ctls, defaults) ->
     actions = ctls[ctl][action] if ctls[ctl] and ctls[ctl][action]
 
     # 反之则使用默认的方法来处理
-    actions = defaults[action](utils.model ctl) unless actions
+    actions = defaults[action](model ctl) unless actions
 
     # 如果都没有则抛出异常
     throw Error "控制器缺少route指定的方法" unless actions

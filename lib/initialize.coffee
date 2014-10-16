@@ -45,12 +45,9 @@ module.exports = (opts) ->
   # required check
   requiredCheck(opts)
 
-  # 初始化数据库查询
-  sequelize   = utils.initDB config.db
-
   # 初始化model，并且将models 传给initModels
   # 传进去的目的是为了后续通过 utils.model('modelName')来获取model
-  model.init(sequelize, opts.modelPath or "#{opts.appPath}/models")
+  model.init(opts.config.db, opts.modelPath or "#{opts.appPath}/models")
 
   # 创建web服务
   service = opts.config.service or openrest
@@ -89,5 +86,5 @@ module.exports = (opts) ->
     res.send(500, 'Internal error')
 
   # 设置监听
-  server.listen config.service.port or 8080, ->
+  server.listen opts.config.service.port or 8080, ->
     console.log '%s listening at %s', server.name, server.url

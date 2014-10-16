@@ -1,5 +1,6 @@
 # model of open-rest
 _         = require 'underscore'
+utils     = require './utils'
 Sequelize = require 'sequelize'
 
 # 存放 models 的定义
@@ -29,7 +30,7 @@ model.init = (opt, path) ->
 
   for file in utils.readdir(path, 'coffee', ['index', 'base'])
     moduleName = utils.file2Module file
-    Models[moduleName] = require("./#{file}")(sequelize)
+    Models[moduleName] = require("#{path}/#{file}")(sequelize)
 
   # model 之间关系的定义
   # 未来代码模块化更好，每个文件尽可能独立
@@ -49,4 +50,4 @@ model.init = (opt, path) ->
   # 返回所有的Models
   Models
 
-module.export = model
+module.exports = model

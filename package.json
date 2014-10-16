@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/open-node/open-rest",
   "dependencies": {
+    "mysql": "^2.5.2",
     "sequelize": "^2.0.0-rc1",
     "underscore": "^1.7.0"
   }

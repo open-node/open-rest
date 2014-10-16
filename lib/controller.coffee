@@ -19,7 +19,7 @@ module.exports =
   detail: (Model) ->
     [
       helper.getter(Model, Model.name)
-      helper.checker.exists(Model.name)
+      helper.assert.exists(Model.name)
       helper.rest.detail(Model.name)
     ]
 
@@ -27,7 +27,7 @@ module.exports =
   modify: (Model) ->
     [
       helper.getter(Model, Model.name)
-      helper.checker.exists(Model.name)
+      helper.assert.exists(Model.name)
       helper.rest.modify(Model, Model.name)
     ]
 
@@ -38,6 +38,6 @@ module.exports =
   remove: (Model) ->
     [
       helper.getter(Model, Model.name)
-      helper.checker.exists(Model.name)
+      helper.assert.exists(Model.name)
       helper.rest.remove(Model.name)
     ]
