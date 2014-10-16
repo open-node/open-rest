@@ -7,8 +7,8 @@
 # 此功能仅仅为了快速开发，没有任何的权限判断，生产环境慎用
 
 _       = require 'underscore'
-utils   = require '../utils'
-helper  = require './'
+utils   = require './utils'
+helper  = require './helper'
 
 module.exports =
 

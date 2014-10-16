@@ -1,5 +1,6 @@
 # model of open-rest
-_ = require 'underscore'
+_         = require 'underscore'
+Sequelize = require 'sequelize'
 
 # 存放 models 的定义
 Models = {}
@@ -17,7 +18,12 @@ model = (name = null) ->
 #   sequelize Sequelize 的实例
 #   path models的存放路径
 ###
-model.init = (sequelize, path) ->
+model.init = (opt, path) ->
+
+  # 初始化db
+  sequelize = new Sequelize(opt.name, opt.user, opt.pass, opt)
+  sequelize.query "SET time_zone='+0:00'"
+
   # model 的初始化
   Models = {}
 
@@ -43,3 +49,4 @@ model.init = (sequelize, path) ->
   # 返回所有的Models
   Models
 
+module.export = model

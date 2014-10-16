@@ -2,10 +2,11 @@
 
 restify     = require 'restify'
 _           = require 'underscore'
-Router      = require './lib/router'
-helper      = require "./lib/helper"
-model       = require "./lib/model"
-utils       = require "./lib/utils"
+Router      = require './router'
+helper      = require "./helper"
+defaultCtl  = require "./controller"
+model       = require "./model"
+utils       = require "./utils"
 openrest    = require "../package"
 
 # 根据设置的路径，获取对象
@@ -77,7 +78,7 @@ module.exports = (opts) ->
   opts.routerInit new Router(
     server
     getModules(opts.controllerPath or "#{opts.appPath}/controllers")
-    helper.defaults
+    defaultCtl
   )
 
   # 监听错误，打印出来，方便调试

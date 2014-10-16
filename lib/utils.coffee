@@ -14,21 +14,6 @@ utils =
     parseInt(value, mode) or 0
 
   ###
-  # 初始化db
-  ###
-  initDB: (opt) ->
-    sequelize = new Sequelize(opt.name, opt.user, opt.pass, opt)
-    sequelize.query "SET time_zone='+0:00'"
-    sequelize
-
-  ###
-  # 根据model名称获取model
-  ###
-  model: (name = null) ->
-    return models unless name
-    models[name]
-
-  ###
   # 返回列表查询的条件
   ###
   findAllOpts: (params, Model, isAll = no) ->

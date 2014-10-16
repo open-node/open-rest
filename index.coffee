@@ -1,7 +1,7 @@
 module.exports =
   router: require "./lib/router"
   helper: require "./lib/helper"
+  defaultCtl: require "./lib/controller"
   model: require "./lib/model"
   utils: require "./lib/utils"
-  middleWares: require "./lib/middle-wares"
   initialize: require "./lib/initialize"
