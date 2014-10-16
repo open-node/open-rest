@@ -1,13 +1,7 @@
 fs        = require 'fs'
 path      = require 'path'
-qs        = require 'querystring'
 _         = require 'underscore'
 Sequelize = require 'sequelize'
-request   = require 'request'
-md5       = require 'MD5'
-moment    = require 'moment'
-config    = require '../config'
-CommonRes = require './common-res'
 
 # 用来记录所有的系统model，用来给model提供使用
 models = {}

@@ -4,3 +4,4 @@ module.exports =
   model: require "./lib/model"
   utils: require "./lib/utils"
   middleWares: require "./lib/middle-wares"
+  initialize: require "./lib/initialize"
