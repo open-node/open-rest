@@ -34,6 +34,8 @@ module.exports = (server, ctls, defaults) ->
         try
           action(req, res, next)
         catch e
+          console.error e
+          console.error e.stack
           next(e)
     )
     server[verb].apply server, [routePath].concat actions

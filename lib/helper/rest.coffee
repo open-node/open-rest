@@ -23,7 +23,7 @@ rest =
   # allowAttrs 那些字段是被允许的
   list: (Model, opt = null, allowAttrs) ->
     (req, res, next) ->
-      options = opt and req.hooks[opt] or utils.findAllOpts(req.params, Model)
+      options = opt and req.hooks[opt] or Model.findAllOpts(req.params)
       Model.findAndCountAll(options).success (result) ->
         res.header("X-Content-Record-Total", result.count)
         rows = listAttrFilter(result.rows, allowAttrs)
@@ -38,7 +38,7 @@ rest =
   all: (Model, opt = null, allowAttrs) ->
     (req, res, next) ->
       options = (opt and req.hooks[opt]) or
-        utils.findAllOpts(req.params, Model, yes)
+        Model.findAllOpts(req.params, yes)
       Model.findAll(options).success (ls) ->
         ls = listAttrFilter(ls, allowAttrs)
         if req.params.attrs
