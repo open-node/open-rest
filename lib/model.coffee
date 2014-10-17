@@ -58,7 +58,7 @@ findAllOpts = (params, isAll = no) ->
     include: modelInclude(params, Model.includes)
     order: sort(params, Model.sort)
 
-  _.extend ret, pageParams(params, Model.pagination) unless isAll
+  _.extend ret, Model.pageParams(params) unless isAll
 
   ret
 
@@ -83,7 +83,8 @@ modelInclude = (params, includes) ->
 #   offset: xxx
 # }
 ###
-pageParams = (params, pagination) ->
+pageParams = (params) ->
+  pagination = @pagination
   startIndex = (+params.startIndex or 0)
   maxResults = (+params.maxResults or +pagination.maxResults)
   limit: Math.min(maxResults, pagination.maxResultsLimit)
@@ -120,7 +121,7 @@ model.init = (opt, path) ->
 
   # 初始化db
   opt.define = {} unless opt.define
-  opt.define.classMethods = {findAllOpts}
+  opt.define.classMethods = {findAllOpts, pageParams}
   sequelize = new Sequelize(opt.name, opt.user, opt.pass, opt)
   sequelize.query "SET time_zone='+0:00'"
 
