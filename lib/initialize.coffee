@@ -22,12 +22,15 @@ getModules = (_path) ->
 # 检查参数的正确性
 requiredCheck = (opts) ->
 
+  # 如果 opts 是个字符串, 则当作 appPath 来使用
+  opts = appPath: opts if _.isString opts
+
   # app路径检查
   unless opts.appPath
     throw Error 'Lack appPath: absolute path of your app'
 
   # 默认路径的处理，这里有一些路径上的约定
-  _.each(['route', 'controller', 'model'], (_path) ->
+  _.each(['config', 'route', 'controller', 'model'], (_path) ->
     if pwd = opts["#{_path}Path"]
       unless _.isString pwd
         throw Error "#{_path}Path must be a string and be a existed path"
@@ -36,21 +39,18 @@ requiredCheck = (opts) ->
     else
       opts["#{_path}Path"] = "#{opts.appPath}/#{_path}s"
   )
+  opts.config = require opts.configPath
 
   # 中间件路径的处理
   unless opts.middleWarePath
     opts.middleWarePath = "#{opts.appPath}/middle-wares"
 
-  # 路由设置路径的处理
-  unless opts.routePath
-    opts.routePath = "#{opts.appPath}/routes"
-
-  # todo list 以后补上
+  opts
 
 # 根据传递进来的 opts 构建 restapi 服务
 # opts = {
-#   config: Object, // 配置项目
 #   appPath: directory, // required 应用路径，绝对路径，这个非常重要，之后
+#   configPath: directory, // optional 配置项目路径，绝对路径，默认为 appPath + '/configs'
 #   routePath: directory, // optional 路由器配置路径，绝对路径
 #                       // 的控制器路径，模型路径都可以根绝这个路径生成
 #   controllerPath: directory // optional controllers 目录, 绝对路径,
@@ -63,11 +63,11 @@ requiredCheck = (opts) ->
 module.exports = (opts) ->
 
   # required check
-  requiredCheck(opts)
+  opts = requiredCheck(opts)
 
   # 初始化model，并且将models 传给initModels
   # 传进去的目的是为了后续通过 utils.model('modelName')来获取model
-  model.init(opts.config.db, opts.modelPath or "#{opts.appPath}/models")
+  model.init(opts.config.db, opts.modelPath)
 
   # 创建web服务
   service = opts.config.service or openrest
@@ -96,7 +96,7 @@ module.exports = (opts) ->
   # 路由初始化、控制器载入
   require(opts.routePath) new Router(
     server
-    getModules(opts.controllerPath or "#{opts.appPath}/controllers")
+    getModules(opts.controllerPath)
     defaultCtl
   )
 
