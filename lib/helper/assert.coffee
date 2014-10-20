@@ -8,7 +8,7 @@ module.exports =
   # 检测某字段是否与指定的值是否相同，如果不同则报错
   equal: (field, value, _obj, msg) ->
     (req, res, next) ->
-      return next(Error req.i18n.t msg) if req.hooks[_obj][field] isnt value
+      return next(Error msg) if req.hooks[_obj][field] isnt value
       next()
 
   # 检测某个字段是否在某个数组里包含
@@ -18,14 +18,13 @@ module.exports =
       value2 = req.hooks[obj2][key2]
       value2 = value2.split(',') if _.isString value2
       value2 = _.map(value2, (x) -> +x) if _.isNumber value1
-      return next(Error req.i18n.t msg) unless value1 in value2
+      return next(Error msg) unless value1 in value2
       next()
 
   # 检测是否存在
   exists: (hook, msg = null, allowNull = no, deleteKey) ->
     (req, res, next) ->
       model = req.hooks[hook]
-      msg = msg or req.i18n.t msg
       unless model
         if allowNull
           delete req.params[deleteKey]
