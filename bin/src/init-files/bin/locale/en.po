@@ -1,10 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: SocialMaster\n"
+"Project-Id-Version: Open-rest\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
-"Language-Team: AdMaster <socialmaster@admaster.com.cn>\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12,32 +11,3 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-
-#: ../controllers/helper/checker.coffee:48
-msgid "该网络的限额已满无法执行该操作"
-msgstr ""
-
-#: ../controllers/helper/checker.coffee:70
-msgid "品牌数超出了广告主的限制: {0}"
-msgstr ""
-
-#: ../controllers/helper/checker.coffee:104
-msgid "该网络没有开放此功能"
-msgstr ""
-
-#: ../controllers/spot.coffee:34
-msgid "广告位和项目不匹配"
-msgstr ""
-
-#: ../controllers/spot.coffee:36
-msgid "创意和项目不匹配"
-msgstr ""
-
-#~ msgid "Track Api无法连通"
-#~ msgstr "Track api dont connect."
-
-#~ msgid "认证失败，您无权访问"
-#~ msgstr "Auth failed."
-
-#~ msgid "TrackApi返回user信息有误"
-#~ msgstr "Track api return user info error."
