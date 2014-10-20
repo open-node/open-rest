@@ -1,10 +1,13 @@
 {
   "name": "open-rest",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
     "test": "npm test"
+  },
+  "bin": {
+    "openrest": "./bin/openrest"
   },
   "repository": {
     "type": "git",
