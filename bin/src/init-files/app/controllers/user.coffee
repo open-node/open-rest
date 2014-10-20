@@ -20,7 +20,7 @@ module.exports =
   ]
   detail: [
     helper.getter(User, 'user')
-    helper.checker.exists('user')
+    helper.assert.exists('user')
     helper.rest.detail('user')
   ]
   add: [
