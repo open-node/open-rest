@@ -1,0 +1,20 @@
+{
+  "name": "YOURAPPNAME",
+  "version": "0.0.1",
+  "description": "Your rest api description.",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "export webmode=apitest && mocha && ./bin/apitest-init && jasmine-node spec --coffee"
+  },
+  "author": "Redstone Zhao",
+  "license": "private",
+  "dependencies": {
+    "sequelize": "~2.0",
+    "open-rest": "*"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.7.1",
+    "restspec": "*",
+    "node-inspector": "*"
+  }
+}

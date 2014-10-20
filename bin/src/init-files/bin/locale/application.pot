@@ -1,0 +1,20 @@
+#: ../controllers/helper/checker.coffee: 48
+msgid "该网络的限额已满无法执行该操作"
+msgstr ""
+
+#: ../controllers/helper/checker.coffee: 70
+msgid "品牌数超出了广告主的限制: {0}"
+msgstr ""
+
+#: ../controllers/helper/checker.coffee: 104
+msgid "该网络没有开放此功能"
+msgstr ""
+
+#: ../controllers/spot.coffee: 34
+msgid "广告位和项目不匹配"
+msgstr ""
+
+#: ../controllers/spot.coffee: 36
+msgid "创意和项目不匹配"
+msgstr ""
+

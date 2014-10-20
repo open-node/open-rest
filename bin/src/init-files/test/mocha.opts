@@ -1,0 +1,4 @@
+--compilers coffee:coffee-script/register
+-R spec
+--ui bdd
+--timeout 10000
