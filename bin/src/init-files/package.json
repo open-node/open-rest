@@ -10,11 +10,11 @@
   "license": "private",
   "dependencies": {
     "sequelize": "~2.0",
+    "mysql": "~2.0",
+    "underscore": "*",
     "open-rest": "*"
   },
   "devDependencies": {
-    "coffee-script": "~1.7.1",
-    "restspec": "*",
-    "node-inspector": "*"
+    "restspec": "*"
   }
 }
