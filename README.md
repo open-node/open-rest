@@ -10,25 +10,25 @@ $ npm install open-rest
 ### Example
 ```js
 var openRest = require('open-rest');
-openRest.initialize({
-  config: {
-    db: {
-      name: 'xxx',
-      user: 'xxx',
-      pass: 'xxx'
-    },
-    service: {
-      name: 'Open rest,'
-      version: '1.0.0'
-    }
-  }
-  appPath: __dirname,
-  routerInit: require('./routes')
-});
+openRest.initialize(__dirname + '/app');
 ```
 
-### API
-check this file: `index.js`
+### App directory agreement
+├── app // 所有跟 webservice 直接相关的用户的程序文件，均在这里
+│   ├── configs // 存放 配置文件
+│   ├── controllers // 存放控制器文件
+│   ├── data // 存放应用需要用到的某些固定数据
+│   ├── lib // 存放一些公用的程序文件, 例如 ./utils.coffee
+│   ├── locale // 存放 i18n, L10n 的一些文件
+│   ├── middle-wares // 存放中间件程序文件
+│   ├── models // 存放 model 的定义文件
+│   └── routes.coffee // 存放路由初始化函数
+├── cluster.coffee // 多核启动脚本
+├── cron.coffee // 计划任务启动脚本
+├── index.coffee // 单核启动脚本
+├── LICENSE // LICENSE 文件
+├── package.json // 项目管理信息
+└── README.md // 说明文档
 
 ### Contributing
 - Fork this repo
