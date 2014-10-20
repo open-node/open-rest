@@ -7,3 +7,4 @@ thumb
 app/configs/config.development.*
 app/configs/config.production.*
 app/configs/config.apitest.*
+bin/locale/*.po~
