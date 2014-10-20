@@ -14,6 +14,7 @@ openRest.initialize(__dirname + '/app');
 ```
 
 ### App directory agreement
+<pre>
 ├── app // 所有跟 webservice 直接相关的用户的程序文件，均在这里
 │   ├── configs // 存放 配置文件
 │   ├── controllers // 存放控制器文件
@@ -29,6 +30,7 @@ openRest.initialize(__dirname + '/app');
 ├── LICENSE // LICENSE 文件
 ├── package.json // 项目管理信息
 └── README.md // 说明文档
+</pre>
 
 ### Contributing
 - Fork this repo
