@@ -4,5 +4,6 @@ node_modules
 psd
 thumb
 *.log
-*.coffee
+./*.coffee
+./lib/*.coffee
 samples
