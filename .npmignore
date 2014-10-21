@@ -4,7 +4,9 @@ node_modules
 psd
 thumb
 *.log
-index.coffee
-./lib/*.coffee
+/index.coffee
+/lib/*.coffee
+/lib/helper/*.coffee
 samples
 *~
+npm-debug.log
