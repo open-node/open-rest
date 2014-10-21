@@ -32,6 +32,23 @@ openRest.initialize(__dirname + '/app');
 └── README.md // 说明文档
 </pre>
 
+### Quick start
+
+<pre>npm install -g open-rest</pre>
+<pre>mkdir ~/testapp && openrest init ~/testapp && cd ~/testapp<pre>
+
+### Run
+<pre>./index.coffee</pre>
+OR
+<pre>./cluster.coffee</pre>
+
+### Test
+First
+<pre>export webmode=apitest; ./index.coffee<pre>
+
+Second in other terminal
+<pre>npm test</pre>
+
 ### Contributing
 - Fork this repo
 - Clone your repo
