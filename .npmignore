@@ -7,3 +7,4 @@ thumb
 ./index.coffee
 ./lib/*.coffee
 samples
+*~
