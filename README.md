@@ -46,6 +46,12 @@ OR
 First
 <pre>export webmode=apitest; ./index.coffee</pre>
 
+### Model defined
+<pre>viim ./app/models/user.coffee</pre>
+
+### Table sync(create)
+<pre>openrest table-sync</pre>
+
 Second in other terminal
 <pre>npm test</pre>
 
