@@ -22,14 +22,14 @@ module.exports =
       next()
 
   # 检测是否存在
-  exists: (hook, msg = null, allowNull = no, deleteKey) ->
+  exists: (hook, msg = null, allowNull = no, deleteKey, field) ->
     (req, res, next) ->
       model = req.hooks[hook]
       unless model
         if allowNull
           delete req.params[deleteKey]
           return next()
-        return next(errors.notFound msg)
-      return next(errors.notFound msg) if model.isDelete is 'yes'
+        return next(errors.notFound msg, field)
+      return next(errors.notFound msg, field) if model.isDelete is 'yes'
       next()
 

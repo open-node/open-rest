@@ -8,5 +8,6 @@ thumb
 /lib/*.coffee
 /lib/helper/*.coffee
 samples
+build
 *~
 npm-debug.log
