@@ -1,8 +1,8 @@
 _       = require 'underscore'
 errors  = require '../errors'
 
-# checker 所有的方法都可能随时会调用next error
-# checker 的思路就是判断，如果发现不一致的数据，就返回异常
+# assert 所有的方法都可能随时会调用next error
+# assert 的思路就是判断，如果发现不一致的数据，就返回异常
 
 module.exports =
   # 检测某字段是否与指定的值是否相同，如果不同则报错

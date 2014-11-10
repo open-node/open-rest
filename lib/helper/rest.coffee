@@ -89,6 +89,7 @@ rest =
     (req, res, next) ->
       attr = utils.pickParams(req, cols or Model.writableCols)
       attr.creatorId = req.user.id if Model.rawAttributes.creatorId
+      attr.clientIp = utils.clientIp(req) if Model.rawAttributes.clientIp
 
       # 存储数据
       _save = (model) ->
