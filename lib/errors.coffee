@@ -20,6 +20,7 @@ NormalError = (error) ->
   this.name = 'NormalError'
 
 util.inherits ArgumentError, restify.RestError
+util.inherits NormalError, restify.RestError
 
 module.exports = errors =
   # 资源不存在错误，有以下几种情况需要返回此错误
