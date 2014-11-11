@@ -98,6 +98,7 @@ module.exports = (opts) ->
     server
     getModules(opts.controllerPath)
     defaultCtl
+    opts.config.route
   )
 
   # 监听错误，打印出来，方便调试

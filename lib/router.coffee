@@ -7,9 +7,21 @@ utils     = require './utils'
 #   server object restify.createServer()
 #   controller ./controller
 #   defaults 默认控制器方法
-module.exports = (server, ctls, defaults) ->
+module.exports = (server, ctls, defaults, opts = {}) ->
+
+  apis = []
+
+  # 判断是否需要提供apis的查询接口
+  if opts.apis
+    server.get opts.apis, (req, res, next) ->
+      res.send apis
+      next()
 
   register = (verb, routePath, ctlAct) ->
+
+    # 暂存起来，提供给apis接口来用
+    # apis接口用来返回当前 services 提供的可用的 api
+    apis.push "[#{verb.toUpperCase()}] #{routePath}"
 
     [ctl, action] = ctlAct.split('#')
 
