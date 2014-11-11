@@ -73,7 +73,7 @@ rest =
       model = req.hooks[hook]
       model.save().done((error, mod) ->
         err = errors.sequelizeIfError error
-        next(err) if err
+        return next(err) if err
         res.send(200, mod)
         next()
       )
@@ -95,7 +95,7 @@ rest =
       _save = (model) ->
         model.save().done((error, mod) ->
           err = errors.sequelizeIfError error
-          next(err) if err
+          return next(err) if err
           req.hooks[hook] = mod
           next()
         )

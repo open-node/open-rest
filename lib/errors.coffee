@@ -59,3 +59,6 @@ module.exports = errors =
     return errors.sequelizeIfError error field if field
     return error
 
+  # 普通错误
+  normalError: (msg, values...) ->
+    new Error msg
