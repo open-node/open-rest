@@ -10,6 +10,15 @@ ArgumentError = (error) ->
   }
   this.name = 'ArgumentError'
 
+NormalError = (error) ->
+  restify.RestError.call this, {
+    restCode: 'NormalError'
+    statusCode: 500
+    message: error.errors
+    constructorOpt: NormalError
+  }
+  this.name = 'NormalError'
+
 util.inherits ArgumentError, restify.RestError
 
 module.exports = errors =
@@ -61,4 +70,8 @@ module.exports = errors =
 
   # 普通错误
   normalError: (msg, values...) ->
-    new Error msg
+    new NormalError
+      errors: [
+        message: msg
+        values: values
+      ]
