@@ -34,9 +34,12 @@ utils =
   clientIp: (req) ->
     (
       req.headers['x-forwarded-for'] or
-      req.connection.remoteAddress or
-      req.socket.remoteAddress or
-      req.connection.socket.remoteAddress
+      req.connection && req.connection.remoteAddress or
+      req.socket && req.socket.remoteAddress or
+      (
+        req.connection && req.connection.socket &&
+        req.connection.socket.remoteAddress
+      )
     ).split(',')[0]
 
   # writelog
