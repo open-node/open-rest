@@ -106,6 +106,7 @@ module.exports = (opts) ->
     console.error new Date
     console.error route
     console.error error
+    console.error error.stack
     res.send(500, 'Internal error')
 
   # 设置监听
