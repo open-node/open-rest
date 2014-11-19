@@ -9,4 +9,10 @@ rest.errors     = require "./lib/errors"
 rest.restify    = require "restify"
 rest.Sequelize  = require "sequelize"
 
+# 异常处理，尽量保证服务不要宕掉
+process.on 'uncaughtException', (error) ->
+  console.error new Date
+  console.error error
+  console.error error.stack
+
 module.exports = rest
