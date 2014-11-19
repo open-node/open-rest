@@ -89,9 +89,19 @@ module.exports = (opts) ->
   # 自定义中间件
   # 需要自定义一些中间件，请写在这里
   if fs.existsSync(opts.middleWarePath)
-    middleWares = require opts.middleWarePath
-    if _.isArray middleWares
-      server.use(middleWare) for middleWare in middleWares
+    do ->
+      middleWares = require opts.middleWarePath
+      return unless _.isArray middleWares
+      _.each middleWares, (middleWare) ->
+        server.use (req, res, next) ->
+          try
+            middleWare(req, res, next)
+          catch error
+            console.error new Date
+            console.error req.url
+            console.error error
+            console.error error.stack
+            next error
 
   # 路由初始化、控制器载入
   require(opts.routePath) new Router(
