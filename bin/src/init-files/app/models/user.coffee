@@ -1,4 +1,4 @@
-Sequelize   = require 'sequelize'
+Sequelize   = require('sequelize').Sequelize
 _           = require 'underscore'
 ModelBase   = require './base'
 
