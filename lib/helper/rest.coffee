@@ -21,29 +21,29 @@ rest =
   # 获取资源列表的通用方法
   # _options 是否要去req.hooks上去options
   # allowAttrs 那些字段是被允许的
-  list: (Model, opt = null, allowAttrs) ->
+  # hook 默认为空，如果指定了hook，则数据不直接输出而是先挂在 hook上
+  list: (Model, opt = null, allowAttrs, hook = null) ->
     (req, res, next) ->
       options = opt and req.hooks[opt] or Model.findAllOpts(req.params)
       Model.findAndCountAll(options).success (result) ->
         res.header("X-Content-Record-Total", result.count)
-        rows = listAttrFilter(result.rows, allowAttrs)
-        if req.params.attrs
-          rows = listAttrFilter(rows, req.params.attrs.split(','))
-        res.send(200, rows)
+        ls = listAttrFilter(result.rows, allowAttrs)
+        ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
+        hook and (req.hooks[hook] = ls) or res.send(200, ls)
         next()
 
   # 获取所有资源的通用方法
   # _options 是否要去req.hooks上去options
   # allowAttrs 那些字段是被允许的
-  all: (Model, opt = null, allowAttrs) ->
+  # hook 默认为空，如果指定了hook，则数据不直接输出而是先挂在 hook上
+  all: (Model, opt = null, allowAttrs, hook = null) ->
     (req, res, next) ->
       options = (opt and req.hooks[opt]) or
         Model.findAllOpts(req.params, yes)
       Model.findAll(options).success (ls) ->
         ls = listAttrFilter(ls, allowAttrs)
-        if req.params.attrs
-          ls = listAttrFilter(ls, req.params.attrs.split(','))
-        res.send(200, ls)
+        ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
+        hook and (req.hooks[hook] = ls) or res.send(200, ls)
         next()
 
   # 获取单个资源详情的方法
