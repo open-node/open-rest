@@ -29,6 +29,9 @@ findAllOpts = (params, isAll = no) ->
       value = null if value is '.null.'
       where[name] = {} unless where[name]
       where[name].eq = value
+    if _.isNumber params[name]
+      where[name] = {} unless where[name]
+      where[name].eq = params[name]
     # 处理where in
     if params["#{name}s"]
       _in = {}
