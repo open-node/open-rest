@@ -1,4 +1,4 @@
-Sequelize   = require('sequelize').Sequelize
+Sequelize   = require('open-rest').Sequelize
 _           = require 'underscore'
 ModelBase   = require './base'
 
