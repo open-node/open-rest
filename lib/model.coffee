@@ -37,6 +37,10 @@ findAllOpts = (params, isAll = no) ->
       _in = {}
       _in[name] = in: params["#{name}s"].split(',')
       ins.push _in
+    # 处理where not in
+    if params["#{name}s!"]
+      where[name] = {} unless where[name]
+      where[name].not = params["#{name}s!"].split(',')
     # 处理不等于的判断
     if _.isString params["#{name}!"]
       value = params["#{name}!"].trim()
