@@ -10,15 +10,6 @@ model       = require "./model"
 utils       = require "./utils"
 openrest    = require "../package"
 
-# 根据设置的路径，获取对象
-getModules = (_path) ->
-  modules = {}
-  for file in utils.readdir(_path, ['coffee', 'js'])
-    moduleName = utils.file2Module file
-    modules[moduleName] = require "#{_path}/#{file}"
-
-  modules
-
 # 检查参数的正确性
 requiredCheck = (opts) ->
 
@@ -106,7 +97,7 @@ module.exports = (opts) ->
   # 路由初始化、控制器载入
   require(opts.routePath) new Router(
     server
-    getModules(opts.controllerPath)
+    utils.getModules(opts.controllerPath)
     defaultCtl
     opts.config.route
   )

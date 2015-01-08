@@ -11,6 +11,15 @@ utils =
   intval: (value, mode = 10) ->
     parseInt(value, mode) or 0
 
+  # 根据设置的路径，获取对象
+  getModules: (_path) ->
+    modules = {}
+    for file in utils.readdir(_path, ['coffee', 'js'])
+      moduleName = utils.file2Module file
+      modules[moduleName] = require "#{_path}/#{file}"
+
+    modules
+
   ###
   # 从 req 中提取所需的参数
   ###
