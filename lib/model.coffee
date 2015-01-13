@@ -16,7 +16,7 @@ model = (name = null) ->
 ###
 # 返回列表查询的条件
 ###
-findAllOpts = (params, isAll = no) ->
+model.findAllOpts = findAllOpts = (params, isAll = no) ->
   where = {}
   ins = []
   ands = [where]
@@ -73,7 +73,7 @@ findAllOpts = (params, isAll = no) ->
 # 返回
 # [Model1, Model2]
 # 或者 undefined
-modelInclude = (params, includes) ->
+model.modelInclude = modelInclude = (params, includes) ->
   return unless includes
   return unless params.includes
   ret = _.filter(params.includes.split(','), (x) -> includes[x])
@@ -90,7 +90,7 @@ modelInclude = (params, includes) ->
 #   offset: xxx
 # }
 ###
-pageParams = (params) ->
+model.pageParams = pageParams = (params) ->
   pagination = @pagination
   startIndex = (+params.startIndex or 0)
   maxResults = (+params.maxResults or +pagination.maxResults)
@@ -100,7 +100,7 @@ pageParams = (params) ->
 ###
 # 处理排序参数
 ###
-sort = (params, conf) ->
+model.sort = sort = (params, conf) ->
   order = conf.default
   direction = 'ASC'
 

@@ -1,4 +1,5 @@
 utils = require '../../lib/utils'
+model = require '../model'
 
 # 获取某个资源的 helper 方法
 # params 有四个
@@ -11,6 +12,7 @@ module.exports = (Model, hook, _id = 'id', _obj = null) ->
   (req, res, next) ->
     obj = if _obj then req.hooks[_obj] else req.params
     id = utils.intval obj[_id]
-    Model.find(id).success (model) ->
+    include = model.modelInclude(req.params, Model.includes)
+    Model.find({where: {id}, include}).success (model) ->
       req.hooks[hook] = model
       next()
