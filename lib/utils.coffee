@@ -37,19 +37,31 @@ utils =
   isPrivateIp: (ip, whiteList) ->
     ip in whiteList
 
+  # 真实的连接请求端ip
+  remoteIp: (req) ->
+    req.connection && req.connection.remoteAddress or
+    req.socket && req.socket.remoteAddress or
+    (
+      req.connection && req.connection.socket &&
+      req.connection.socket.remoteAddress
+    )
+
   ###
   # 获取客户端真实ip地址
   ###
   clientIp: (req) ->
     (
       req.headers['x-forwarded-for'] or
-      req.connection && req.connection.remoteAddress or
-      req.socket && req.socket.remoteAddress or
-      (
-        req.connection && req.connection.socket &&
-        req.connection.socket.remoteAddress
-      )
+      utils.remoteIp(req)
     ).split(',')[0]
+
+  ###
+  # 获取可信任的真实ip
+  ###
+  realIp: (req, proxyIps = []) ->
+    remoteIp = utils.remoteIp(req)
+    return remoteIp unless remoteIp in proxyIps
+    return req.headers['x-real-ip'] or remoteIp
 
   # writelog
   writeLog: (file, msg) ->
