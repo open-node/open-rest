@@ -1,4 +1,5 @@
 _         = require 'underscore'
+mysql     = require 'mysql'
 dc        = decodeURIComponent
 
 defaultPagination =
@@ -55,9 +56,9 @@ module.exports =
       for _or in _and.split(',')
         [k, v] = _or.split('==')
         col = Model.rawAttributes[k]
-        key = col and "`#{col}`" or Model.dimensions[k]
+        key = col and "`#{k}`" or Model.stats.dimensions[k]
         throw Error('Filters set error') unless key
-        ors.push "#{key}='#{dc v}'"
+        ors.push "#{key} = #{mysql.escape dc v}"
       ands.push "(#{ors.join(' OR ')})"
     return unless ands.length
     return ands.join(' AND ')
