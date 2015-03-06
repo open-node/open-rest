@@ -14,6 +14,43 @@ model = (name = null) ->
   Models[name]
 
 ###
+# model的统计功能
+# params的结构如下
+# {
+#   dimensions: 'dim1,dim2',
+#   metrics: 'met1,met2',
+#   filters: 'dim1==a;dim2!=b',
+#   sort: '-met1',
+#   startIndex: 0,
+#   maxResults: 20
+# }
+###
+model.statistics = statistics = (params, callback) ->
+  Model = @
+  {dimensions, metrics, filters, sort, startIndex, maxResults} = params
+  return callback(Error('Forbidden statistics')) unless Model.statistics
+  try
+    dims = utils.stats.dimensions(Model, params)
+    mets = utils.stats.metrics(Model, params)
+    option =
+      select: [].concat(dims or [], mets).join(',')
+      where: utils.stats.filters(Model, params)
+      table: Model.tableName
+      group: utils.stats.group(dims)
+      sort: utils.stats.sort(Model, params)
+      limit: utils.stats.pageParams(Model, params)
+  catch e
+    return callback(e)
+  sql = utils.getSql(option, 'SQL_CALC_FOUND_ROWS')
+  Model.sequelize.query(sql).done((error, results) ->
+    return callback(error) if error
+    Model.sequelize.query("SELECT FOUND_ROWS() AS total").done((error, res) ->
+      return callback(error) if error
+      callback(null, [results, res[0].total])
+    )
+  )
+
+###
 # 返回列表查询的条件
 ###
 model.findAllOpts = findAllOpts = (params, isAll = no) ->
@@ -128,7 +165,7 @@ model.init = (opt, path) ->
 
   # 初始化db
   opt.define = {} unless opt.define
-  opt.define.classMethods = {findAllOpts, pageParams}
+  opt.define.classMethods = {findAllOpts, pageParams, statistics}
   sequelize = new Sequelize(opt.name, opt.user, opt.pass, opt)
   sequelize.query "SET time_zone='+0:00'"
 

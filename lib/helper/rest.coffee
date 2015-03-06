@@ -18,6 +18,17 @@ listAttrFilter = (ls, allowAttrs) ->
 
 rest =
 
+  # 单一资源的统计功能
+  statistics: (Model) ->
+    (req, res, next) ->
+      Model.statistics(req.params, (error, ret) ->
+        return next(error) if error
+        [data, total] = ret
+        res.header("X-Content-Record-Total", total)
+        res.send 200, data
+        next()
+      )
+
   # 获取资源列表的通用方法
   # _options 是否要去req.hooks上去options
   # allowAttrs 那些字段是被允许的

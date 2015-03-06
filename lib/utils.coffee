@@ -3,6 +3,7 @@ path      = require 'path'
 _         = require 'underscore'
 Sequelize = require 'sequelize'
 model     = require './model'
+stats     = require './stats'
 
 utils =
   ###
@@ -99,5 +100,18 @@ utils =
   ucwords: (value) ->
     return value unless _.isString(value)
     "#{value[0].toUpperCase()}#{value.substring(1)}"
+
+  # 统计相关的功能
+  stats: stats
+
+  # 根据条件拼接sql语句
+  getSql: (option, keyword = '') ->
+    [
+      "SELECT #{keyword} #{option.select} FROM #{option.table}"
+      "WHERE #{option.where}" if option.where
+      "GROUP BY #{option.group}" if option.group
+      "ORDER BY #{option.sort}" if option.sort
+      "LIMIT #{option.limit}" if option.limit
+    ].join(' ')
 
 module.exports = utils
