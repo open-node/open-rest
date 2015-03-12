@@ -40,6 +40,9 @@ module.exports = (server, ctls, defaults, opts = {}) ->
     # 强制把actions处理成一个数组
     actions = [actions] unless _.isArray actions
 
+    # 过滤掉空
+    actions = _.filter(actions, (x) -> x)
+
     # 将每一个action都用try catch处理
     actions = _.map(actions, (action) ->
       (req, res, next) ->
