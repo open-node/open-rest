@@ -49,7 +49,10 @@ rest =
     handler = (model, callback) ->
       model.save().done((error, mod) ->
         return callback(error) if error
-        callback(null, mod)
+        mod.reload().done((error) ->
+          return callback(error) if error
+          callback(null, mod)
+        )
       )
     (req, res, next) ->
       async.mapSeries(req.hooks[hook], handler, (error, results) ->
