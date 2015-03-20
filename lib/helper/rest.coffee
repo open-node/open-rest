@@ -36,13 +36,22 @@ rest =
   list: (Model, opt = null, allowAttrs, hook = null) ->
     (req, res, next) ->
       options = opt and req.hooks[opt] or Model.findAllOpts(req.params)
-      Model.findAndCountAll(options).done (error, result) ->
+      Model.count(options).done((error, count) ->
         return next(error) if error
-        res.header("X-Content-Record-Total", result.count)
-        ls = listAttrFilter(result.rows, allowAttrs)
-        ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
-        hook and (req.hooks[hook] = ls) or res.send(200, ls)
-        next()
+        if count
+          Model.findAll(options).done((error, result) ->
+            return next(error) if error
+            res.header("X-Content-Record-Total", count)
+            ls = listAttrFilter(result, allowAttrs)
+            ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
+            hook and (req.hooks[hook] = ls) or res.send(200, ls)
+            next()
+          )
+        else
+          ls = []
+          hook and (req.hooks[hook] = ls) or res.send(200, ls)
+          next()
+      )
 
   # 获取所有资源的通用方法
   # _options 是否要去req.hooks上去options

@@ -58,48 +58,25 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
   ins = []
   ands = [where]
   Model = @
+  includes = modelInclude(params, Model.includes)
   _.each(Model.filterAttrs or Model.rawAttributes, (attr, name) ->
-    # 处理 where 的等于
-    if _.isString params[name]
-      value = params[name].trim()
-      # 特殊处理null值
-      value = null if value is '.null.'
-      where[name] = {} unless where[name]
-      where[name].eq = value
-    if _.isNumber params[name]
-      where[name] = {} unless where[name]
-      where[name].eq = params[name]
-    # 处理where in
-    if params["#{name}s"]
-      _in = {}
-      _in[name] = in: params["#{name}s"].split(',')
-      ins.push _in
-    # 处理where not in
-    if params["#{name}s!"]
-      where[name] = {} unless where[name]
-      where[name].not = params["#{name}s!"].split(',')
-    # 处理不等于的判断
-    if _.isString params["#{name}!"]
-      value = params["#{name}!"].trim()
-      # 特殊处理null值
-      value = null if value is '.null.'
-      where[name] = {} unless where[name]
-      where[name].ne = value
-    # 处理大于，小于, 大于等于，小于等于的判断
-    _.each(['gt', 'gte', 'lt', 'lte'], (x) ->
-      if _.isString params["#{name}_#{x}"]
-        value = params["#{name}_#{x}"].trim()
-        where[name] = {} unless where[name]
-        where[name][x] = value
-    )
+    utils.findOptFilter(params, name, where, ins)
   )
+  # 处理关联资源的过滤条件
+  if includes
+    _.each(includes, (x) ->
+      _.each(x.model.filterAttrs or x.model.rawAttributes, (attr, name) ->
+        utils.findOptFilter(params, "#{x.as}.#{name}", where, ins)
+      )
+    )
+
   ands.push(Sequelize.or.apply Sequelize, ins) if ins.length
   if Model.rawAttributes.isDelete and not params.showDelete
     where.isDelete = 'no'
 
   ret =
     where: Sequelize.and.apply Sequelize, ands
-    include: modelInclude(params, Model.includes)
+    include: includes
     order: sort(params, Model.sort)
 
   _.extend ret, Model.pageParams(params) unless isAll
