@@ -36,9 +36,12 @@ rest =
   list: (Model, opt = null, allowAttrs, hook = null) ->
     (req, res, next) ->
       options = opt and req.hooks[opt] or Model.findAllOpts(req.params)
+      offset = options.offset
+      options.offset = 0
       Model.count(options).done((error, count) ->
         return next(error) if error
         if count
+          options.offset = offset
           Model.findAll(options).done((error, result) ->
             return next(error) if error
             res.header("X-Content-Record-Total", count)
