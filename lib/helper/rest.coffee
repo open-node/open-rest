@@ -52,6 +52,7 @@ rest =
           )
         else
           ls = []
+          res.header("X-Content-Record-Total", 0)
           hook and (req.hooks[hook] = ls) or res.send(200, ls)
           next()
       )
