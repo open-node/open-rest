@@ -6,17 +6,6 @@ async   = require 'async'
 utils   = require '../../lib/utils'
 errors  = require '../../lib/errors'
 
-PARALLELLIMIt = (require('os')).cpus().length or 8
-
-save = (model, callback) ->
-  model.save().done((error, mod) ->
-    return callback(error) if error
-    mod.reload().done((error) ->
-      return callback(error) if error
-      callback(null, mod)
-    )
-  )
-
 rest =
 
   # 输出
@@ -56,9 +45,9 @@ rest =
       )
 
   # 报错
-  save: (hook) ->
+  save: (hook, Model) ->
     (req, res, next) ->
-      async.mapLimit(req.hooks[hook], PARALLELLIMIt, save, (error, results) ->
+      Model.bulkCreate(req.hooks[hook]).done((error, results) ->
         err = errors.sequelizeIfError error
         return next(err) if err
         req.hooks[hook] = results
@@ -70,7 +59,7 @@ rest =
   add: (Model, cols, hook = "#{Model.name}s", attachs = null) ->
     [
       rest.validate(Model, cols, hook)
-      rest.save(hook)
+      rest.save(hook, Model)
       rest.detail(hook, attachs, 201)
     ]
 
