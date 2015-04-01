@@ -6,6 +6,17 @@ async   = require 'async'
 utils   = require '../../lib/utils'
 errors  = require '../../lib/errors'
 
+PARALLELLIMIt = (require('os')).cpus().length or 8
+
+save = (model, callback) ->
+  model.save().done((error, mod) ->
+    return callback(error) if error
+    mod.reload().done((error) ->
+      return callback(error) if error
+      callback(null, mod)
+    )
+  )
+
 rest =
 
   # 输出
@@ -46,16 +57,8 @@ rest =
 
   # 报错
   save: (hook) ->
-    handler = (model, callback) ->
-      model.save().done((error, mod) ->
-        return callback(error) if error
-        mod.reload().done((error) ->
-          return callback(error) if error
-          callback(null, mod)
-        )
-      )
     (req, res, next) ->
-      async.mapSeries(req.hooks[hook], handler, (error, results) ->
+      async.mapLimit(req.hooks[hook], PARALLELLIMIt, save, (error, results) ->
         err = errors.sequelizeIfError error
         return next(err) if err
         req.hooks[hook] = results
