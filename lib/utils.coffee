@@ -115,39 +115,38 @@ utils =
     ].join(' ')
 
   # findOptFilter 的处理
-  findOptFilter: (params, name, where, ins) ->
+  findOptFilter: (params, name, where, col = name) ->
     # 处理 where 的等于
     if _.isString params[name]
       value = params[name].trim()
       # 特殊处理null值
       value = null if value is '.null.'
-      where[name] = {} unless where[name]
-      where[name].eq = value
+      where[col] = {} unless where[col]
+      where[col].$eq = value
     if _.isNumber params[name]
-      where[name] = {} unless where[name]
-      where[name].eq = params[name]
+      where[col] = {} unless where[col]
+      where[col].$eq = params[name]
     # 处理where in
-    if params["#{name}s"]
-      _in = {}
-      _in[name] = in: params["#{name}s"].split(',')
-      ins.push _in
+    if _.isString params["#{name}s"]
+      where[col] = {} unless where[col]
+      where[col].$in = params["#{name}s"].trim().split(',')
     # 处理where not in
-    if params["#{name}s!"]
-      where[name] = {} unless where[name]
-      where[name].not = params["#{name}s!"].split(',')
+    if _.isString params["#{name}s!"]
+      where[col] = {} unless where[col]
+      where[col].$not = params["#{name}s!"].trim().split(',')
     # 处理不等于的判断
     if _.isString params["#{name}!"]
       value = params["#{name}!"].trim()
       # 特殊处理null值
       value = null if value is '.null.'
-      where[name] = {} unless where[name]
-      where[name].ne = value
+      where[col] = {} unless where[col]
+      where[col].$ne = value
     # 处理大于，小于, 大于等于，小于等于的判断
     _.each(['gt', 'gte', 'lt', 'lte'], (x) ->
       if _.isString params["#{name}_#{x}"]
         value = params["#{name}_#{x}"].trim()
-        where[name] = {} unless where[name]
-        where[name][x] = value
+        where[col] = {} unless where[col]
+        where[col]["$#{x}"] = value
     )
 
 module.exports = utils

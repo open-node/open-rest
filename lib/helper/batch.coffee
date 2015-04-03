@@ -33,9 +33,8 @@ rest =
 
         # 构建实例
         model = Model.build(attr)
-        model.validate().done((error) ->
-          return callback(null, model) unless error
-          callback(error)
+        model.validate().done((error, results) ->
+          callback(error or results, model)
         )
       async.map(body, handler, (error, results) ->
         err = errors.sequelizeIfError error
@@ -47,7 +46,8 @@ rest =
   # 报错
   save: (hook, Model) ->
     (req, res, next) ->
-      Model.bulkCreate(req.hooks[hook]).done((error, results) ->
+      ls = _.map(req.hooks[hook], (x) -> x.toJSON())
+      Model.bulkCreate(ls).done((error, results) ->
         err = errors.sequelizeIfError error
         return next(err) if err
         req.hooks[hook] = results

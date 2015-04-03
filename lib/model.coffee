@@ -42,9 +42,11 @@ model.statistics = statistics = (params, callback) ->
   catch e
     return callback(e)
   sql = utils.getSql(option, 'SQL_CALC_FOUND_ROWS')
-  Model.sequelize.query(sql).done((error, results) ->
+  type = Model.sequelize.QueryTypes.SELECT
+  Model.sequelize.query(sql, {type}).done((error, results) ->
     return callback(error) if error
-    Model.sequelize.query("SELECT FOUND_ROWS() AS total").done((error, res) ->
+    sql = "SELECT FOUND_ROWS() AS total"
+    Model.sequelize.query(sql, {type}).done((error, res) ->
       return callback(error) if error
       callback(null, [results, res[0].total])
     )
@@ -55,29 +57,31 @@ model.statistics = statistics = (params, callback) ->
 ###
 model.findAllOpts = findAllOpts = (params, isAll = no) ->
   where = {}
-  ins = []
-  ands = [where]
   Model = @
   includes = modelInclude(params, Model.includes)
   _.each(Model.filterAttrs or Model.rawAttributes, (attr, name) ->
-    utils.findOptFilter(params, name, where, ins)
+    utils.findOptFilter(params, name, where)
   )
-  # 处理关联资源的过滤条件
-  if includes
-    _.each(includes, (x) ->
-      _.each(x.model.filterAttrs or x.model.rawAttributes, (attr, name) ->
-        utils.findOptFilter(params, "#{x.as}.#{name}", where, ins)
-      )
-    )
-
-  ands.push(Sequelize.or.apply Sequelize, ins) if ins.length
   if Model.rawAttributes.isDelete and not params.showDelete
     where.isDelete = 'no'
 
+  # 处理关联资源的过滤条件
+  if includes
+    _.each(includes, (x) ->
+      includeWhere = {}
+      _.each(x.model.filterAttrs or x.model.rawAttributes, (attr, name) ->
+        utils.findOptFilter(params, "#{x.as}.#{name}", includeWhere, name)
+      )
+      if x.model.rawAttributes.isDelete and not params.showDelete
+        includeWhere.isDelete = 'no'
+      x.where = includeWhere if _.size(includeWhere)
+    )
+
+
   ret =
-    where: Sequelize.and.apply Sequelize, ands
     include: includes
     order: sort(params, Model.sort)
+  ret.where = where if _.size(where)
 
   _.extend ret, Model.pageParams(params) unless isAll
 
