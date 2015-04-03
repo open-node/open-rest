@@ -1,5 +1,6 @@
 .DS_*
 node_modules
+node_modules/*
 *.sublime*
 psd
 thumb
