@@ -119,10 +119,11 @@ model.pageParams = pageParams = (params) ->
 # 处理排序参数
 ###
 model.sort = sort = (params, conf) ->
+  return null unless (params.sort or conf.default)
   order = conf.default
-  direction = 'ASC'
+  direction = conf.defaultDirection or 'ASC'
 
-  return null if not params.sort
+  return [[order, direction]] unless params.sort
 
   if params.sort[0] is '-'
     direction = 'DESC'
@@ -134,7 +135,6 @@ model.sort = sort = (params, conf) ->
   return null if not conf.allow or order not in conf.allow
 
   [[order, direction]]
-
 
 ###
 # 初始化 models
