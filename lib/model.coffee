@@ -73,10 +73,10 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
         utils.findOptFilter(params, "#{x.as}.#{name}", includeWhere, name)
       )
       if x.model.rawAttributes.isDelete and not params.showDelete
-        includeWhere.isDelete = 'no'
+        includeWhere.$or = [isDelete: 'no']
+        includeWhere.$or.push id: null if x.required is no
       x.where = includeWhere if _.size(includeWhere)
     )
-
 
   ret =
     include: includes
@@ -96,10 +96,7 @@ model.modelInclude = modelInclude = (params, includes) ->
   return unless params.includes
   ret = _.filter(params.includes.split(','), (x) -> includes[x])
   return if ret.length is 0
-  _.map(ret, (x) ->
-    model: model(includes[x])
-    as: x
-  )
+  _.map(ret, (x) -> includes[x])
 
 ###
 # 处理分页参数
@@ -163,10 +160,17 @@ model.init = (opt, path) ->
 
   # 处理 model 定义的 includes
   _.each Models, (Model, name) ->
+    return unless Model.includes
     if _.isArray Model.includes
       includes = {}
       _.each Model.includes, (include) -> includes[include] = include
       Model.includes = includes
-    Models[name] = Model
+    _.each(Model.includes, (v, k) ->
+      [modelName, required] = _.isArray(v) and v or [v, yes]
+      Model.includes[k] =
+        model: Models[modelName]
+        as: k
+        required: required
+    )
 
 module.exports = model
