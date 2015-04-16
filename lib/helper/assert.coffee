@@ -8,7 +8,15 @@ module.exports =
   # 检测某字段是否与指定的值是否相同，如果不同则报错
   equal: (field, value, _obj, msg) ->
     (req, res, next) ->
-      return next(Error msg) if req.hooks[_obj][field] isnt value
+      excepted = (_obj and req.hooks[_obj] or req.params)[field]
+      return next(Error msg) unless excepted is value
+      next()
+
+  # 检测某字段是否与指定的值是否不相同，如果相同则报错
+  notEqual: (field, value, _obj, msg) ->
+    (req, res, next) ->
+      excepted = (_obj and req.hooks[_obj] or req.params)[field]
+      return next(Error msg) if excepted is value
       next()
 
   # 检测某个字段是否在某个数组里包含
