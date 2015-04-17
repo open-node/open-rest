@@ -66,7 +66,7 @@ module.exports = errors =
   # 通用错误处理
   ifError: (error, field) ->
     return null unless error
-    return errors.sequelizeIfError error field if field
+    return errors.sequelizeIfError(error, field) if field
     return error
 
   # 普通错误
