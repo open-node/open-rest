@@ -13,6 +13,17 @@ model = (name = null) ->
   return Models unless name
   Models[name]
 
+# 获取统计的条目数
+statsCount = (Model, where, dims, callback) ->
+  return callback(null, 1) unless dims
+  return callback(null, 1) unless dims.length
+  option = {where}
+  distincts = _.map(dims, (x) -> x.split(' AS ')[0])
+  option.attributes = ["COUNT(DISTINCT(#{distincts.join(',')})) AS `count`"]
+  Model.find(option, {raw: yes}).done((error, res) ->
+    callback(error, res and res.count)
+  )
+
 ###
 # model的统计功能
 # params的结构如下
@@ -25,30 +36,28 @@ model = (name = null) ->
 #   maxResults: 20
 # }
 ###
-model.statistics = statistics = (params, callback) ->
+model.statistics = statistics = (params, where, callback) ->
   Model = @
   {dimensions, metrics, filters, sort, startIndex, maxResults} = params
   return callback(Error('Forbidden statistics')) unless Model.statistics
   try
     dims = utils.stats.dimensions(Model, params)
     mets = utils.stats.metrics(Model, params)
+    limit = utils.stats.pageParams(Model, params)
     option =
-      select: [].concat(dims or [], mets).join(',')
-      where: utils.stats.filters(Model, params)
-      table: Model.tableName
+      attributes: [].concat(dims or [], mets)
+      where: utils.stats.filters(Model, params, where)
       group: utils.stats.group(dims)
-      sort: utils.stats.sort(Model, params)
-      limit: utils.stats.pageParams(Model, params)
+      order: utils.stats.sort(Model, params)
+      offset: limit[0]
+      limit: limit[1]
   catch e
     return callback(e)
-  sql = utils.getSql(option, 'SQL_CALC_FOUND_ROWS')
-  type = Model.sequelize.QueryTypes.SELECT
-  Model.sequelize.query(sql, {type}).done((error, results) ->
-    return callback(error) if error
-    sql = "SELECT FOUND_ROWS() AS total"
-    Model.sequelize.query(sql, {type}).done((error, res) ->
+  statsCount(Model, option.where, dims, (error, count) ->
+    console.log count
+    Model.findAll(option, {raw: yes}).done((error, results) ->
       return callback(error) if error
-      callback(null, [results, res[0].total])
+      callback(null, [results, count])
     )
   )
 

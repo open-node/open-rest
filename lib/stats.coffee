@@ -1,5 +1,5 @@
 _         = require 'underscore'
-mysql     = require 'mysql'
+Sequelize = require 'sequelize'
 dc        = decodeURIComponent
 
 defaultPagination =
@@ -7,7 +7,14 @@ defaultPagination =
   maxStartIndex: 10000
   maxResultsLimit: 5000
 
+where2str = (where) ->
+  ands = []
+  _.each(where, (v, k) ->
+  )
+  return ands.split(' AND ')
+
 module.exports =
+
   dimensions: (Model, params) ->
     dimensions = params.dimensions
     # 如果 dimensions 定义了
@@ -20,6 +27,8 @@ module.exports =
       # 如果不在允许的范围内，则直接报错
       key = Model.stats.dimensions[dim]
       throw Error('Dimensions dont allowed') unless key
+      attr = {}
+      attr[key] = dim
       dims.push "#{key} AS `#{dim}`"
     return dims
 
@@ -27,7 +36,7 @@ module.exports =
     return unless mets
     return unless _.isArray mets
     return unless mets.length
-    _.map(mets, (x) -> x.split(' AS ')[1]).join(', ')
+    _.map(mets, (x) -> x.split(' AS ')[1])
 
   metrics: (Model, params) ->
     metrics = params.metrics
@@ -44,24 +53,25 @@ module.exports =
       mets.push "#{key} AS `#{met}`"
     return mets
 
-  filters: (Model, params) ->
+  filters: (Model, params, where) ->
+    where = {} unless where
     filters = params.filters
     # 如果没有设置了过滤条件
-    return unless filters
+    return where unless filters
     # 如果设置但是不为字符串，直接返回错误
     throw Error('Filters must be a string') unless _.isString filters
-    ands = []
     for _and in filters.split(';')
-      ors = []
       for _or in _and.split(',')
         [k, v] = _or.split('==')
         col = Model.rawAttributes[k]
-        key = col and "`#{k}`" or Model.stats.dimensions[k]
+        key = col and k or Model.stats.dimensions[k]
         throw Error('Filters set error') unless key
-        ors.push "#{key} = #{mysql.escape dc v}"
-      ands.push "(#{ors.join(' OR ')})"
-    return unless ands.length
-    return ands.join(' AND ')
+        console.log JSON.stringify(where)
+        console.log where, key
+        where[key] = {} unless where[key]
+        where[key].$or = [] unless where[key].$or
+        where[key].$or.push {$eq: dc v}
+    where
 
   sort: (Model, params) ->
     {dimensions, metrics, sort}  = params
@@ -87,4 +97,4 @@ module.exports =
     maxResults = (+params.maxResults or +pagination.maxResults)
     limit = Math.min(maxResults, pagination.maxResultsLimit)
     offset = Math.min(startIndex, pagination.maxStartIndex)
-    return "#{offset}, #{limit}"
+    [offset, limit]
