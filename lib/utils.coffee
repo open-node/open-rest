@@ -141,6 +141,18 @@ utils =
       value = null if value is '.null.'
       where[col] = {} unless where[col]
       where[col].$ne = value
+    # 处理like
+    if _.isString params["#{name}_like"]
+      value = params["#{name}_like"].trim().replace(/\*/g, '%')
+      # 特殊处理null值
+      where[col] = {} unless where[col]
+      where[col].$like = value
+    # 处理notLike
+    if _.isString params["#{name}_notLike"]
+      value = params["#{name}_notLike"].trim().replace(/\*/g, '%')
+      # 特殊处理null值
+      where[col] = {} unless where[col]
+      where[col].$notLike = value
     # 处理大于，小于, 大于等于，小于等于的判断
     _.each(['gt', 'gte', 'lt', 'lte'], (x) ->
       if _.isString params["#{name}_#{x}"]
