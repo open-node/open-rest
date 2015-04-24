@@ -54,7 +54,6 @@ model.statistics = statistics = (params, where, callback) ->
   catch e
     return callback(e)
   statsCount(Model, option.where, dims, (error, count) ->
-    console.log count
     Model.findAll(option, {raw: yes}).done((error, results) ->
       return callback(error) if error
       callback(null, [results, count])

@@ -55,6 +55,8 @@ module.exports =
 
   filters: (Model, params, where) ->
     where = {} unless where
+    if Model.rawAttributes.isDelete and not params.showDelete
+      where.isDelete = 'no'
     filters = params.filters
     # 如果没有设置了过滤条件
     return where unless filters
@@ -66,8 +68,6 @@ module.exports =
         col = Model.rawAttributes[k]
         key = col and k or Model.stats.dimensions[k]
         throw Error('Filters set error') unless key
-        console.log JSON.stringify(where)
-        console.log where, key
         where[key] = {} unless where[key]
         where[key].$or = [] unless where[key].$or
         where[key].$or.push {$eq: dc v}
