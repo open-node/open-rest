@@ -53,10 +53,10 @@ module.exports =
       mets.push "#{key} AS `#{met}`"
     return mets
 
-  filters: (Model, params, where) ->
-    where = {} unless where
+  filters: (Model, params) ->
+    where = {}
     if Model.rawAttributes.isDelete and not params.showDelete
-      where.isDelete = 'no'
+      where.isDelete = $or: [$eq: 'no']
     filters = params.filters
     # 如果没有设置了过滤条件
     return where unless filters

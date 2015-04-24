@@ -46,7 +46,7 @@ model.statistics = statistics = (params, where, callback) ->
     limit = utils.stats.pageParams(Model, params)
     option =
       attributes: [].concat(dims or [], mets)
-      where: utils.stats.filters(Model, params, where)
+      where: Sequelize.and utils.stats.filters(Model, params), where
       group: utils.stats.group(dims)
       order: utils.stats.sort(Model, params)
       offset: limit[0]

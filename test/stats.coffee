@@ -104,12 +104,25 @@ describe 'stats', ->
   describe 'filters', ->
     it "no", (done) ->
       Model =
+        rawAttributes: {}
         stats:
           dimensions:
             date: '`date2`'
       params = {}
-      expected = undefined
-      assert.equal stats.filters(Model, params), expected
+      expected = {}
+      assert.deepEqual stats.filters(Model, params), expected
+      done()
+
+    it "include isDelete column", (done) ->
+      Model =
+        rawAttributes:
+          isDelete: {}
+        stats:
+          dimensions:
+            date: '`date2`'
+      params = {}
+      expected = isDelete: $or: [$eq: 'no']
+      assert.deepEqual stats.filters(Model, params), expected
       done()
 
     it "single", (done) ->
@@ -120,8 +133,8 @@ describe 'stats', ->
             date: '`date2`'
       params =
         filters: 'date==2014'
-      expected = "(`date2` = '2014')"
-      assert.equal stats.filters(Model, params), expected
+      expected = {"`date2`": $or: [$eq: '2014']}
+      assert.deepEqual stats.filters(Model, params), expected
       done()
 
     it "multi", (done) ->
@@ -134,8 +147,10 @@ describe 'stats', ->
             network: '3 + 2'
       params =
         filters: 'date==2014;networkId==11'
-      expected = "(`date2` = '2014') AND (`networkId` = '11')"
-      assert.equal stats.filters(Model, params), expected
+      expected =
+        "`date2`": $or: [$eq: '2014']
+        "networkId": $or: [$eq: '11']
+      assert.deepEqual stats.filters(Model, params), expected
       done()
 
     it "non-allowd", (done) ->
@@ -163,8 +178,10 @@ describe 'stats', ->
             network: '3 + 2'
       params =
         filters: "date==2014';networkId==11"
-      expected = "(`date2` = '2014\\'') AND (`networkId` = '11')"
-      assert.equal stats.filters(Model, params), expected
+      expected =
+        "`date2`": $or: [$eq: "2014'"]
+        "networkId": $or: [$eq: '11']
+      assert.deepEqual stats.filters(Model, params), expected
       done()
 
     it "no simple", (done) ->
@@ -177,8 +194,10 @@ describe 'stats', ->
             network: '3 + 2'
       params =
         filters: "date==2014,date==2015;networkId==11,networkId==23"
-      expected = "(`date2` = '2014' OR `date2` = '2015') AND (`networkId` = '11' OR `networkId` = '23')"
-      assert.equal stats.filters(Model, params), expected
+      expected =
+        "`date2`": $or: [{$eq: '2014'}, {$eq: '2015'}]
+        "networkId": $or: [{$eq: '11'}, {$eq: '23'}]
+      assert.deepEqual stats.filters(Model, params), expected
       done()
 
   describe 'sort', ->
@@ -215,8 +234,8 @@ describe 'stats', ->
       Model =
         stats: {}
       params = {}
-      expected = "0, 10"
-      assert.equal stats.pageParams(Model, params), expected
+      expected = [0, 10]
+      assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
     it "noraml page", (done) ->
@@ -225,8 +244,8 @@ describe 'stats', ->
       params =
         startIndex: 20
         maxResults: 15
-      expected = "20, 15"
-      assert.equal stats.pageParams(Model, params), expected
+      expected = [20, 15]
+      assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
     it "set pagination default", (done) ->
@@ -237,8 +256,8 @@ describe 'stats', ->
             maxResultsLimit: 2000
             maxStartIndex: 50000
       params = {}
-      expected = "0, 20"
-      assert.equal stats.pageParams(Model, params), expected
+      expected = [0, 20]
+      assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
     it "set pagination default page", (done) ->
@@ -250,8 +269,8 @@ describe 'stats', ->
             maxStartIndex: 50000
       params =
         startIndex: 50
-      expected = "50, 20"
-      assert.equal stats.pageParams(Model, params), expected
+      expected = [50, 20]
+      assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
     it "set pagination limit startIndex", (done) ->
@@ -263,8 +282,8 @@ describe 'stats', ->
             maxStartIndex: 50000
       params =
         startIndex: 5000000
-      expected = "50000, 20"
-      assert.equal stats.pageParams(Model, params), expected
+      expected = [50000, 20]
+      assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
     it "set pagination limit maxResults", (done) ->
@@ -277,6 +296,6 @@ describe 'stats', ->
       params =
         startIndex: 5000000
         maxResults: 10000
-      expected = "50000, 2000"
-      assert.equal stats.pageParams(Model, params), expected
+      expected = [50000, 2000]
+      assert.deepEqual stats.pageParams(Model, params), expected
       done()
