@@ -44,9 +44,13 @@ model.statistics = statistics = (params, where, callback) ->
     dims = utils.stats.dimensions(Model, params)
     mets = utils.stats.metrics(Model, params)
     limit = utils.stats.pageParams(Model, params)
+    listWhere = {}
+    _.each(Model.filterAttrs or Model.rawAttributes, (attr, name) ->
+      utils.findOptFilter(params, name, listWhere)
+    )
     option =
       attributes: [].concat(dims or [], mets)
-      where: Sequelize.and utils.stats.filters(Model, params), where
+      where: Sequelize.and utils.stats.filters(Model, params), where, listWhere
       group: utils.stats.group(dims)
       order: utils.stats.sort(Model, params)
       offset: limit[0]
