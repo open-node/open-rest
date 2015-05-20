@@ -19,7 +19,7 @@ statsCount = (Model, where, dims, callback) ->
   return callback(null, 1) unless dims.length
   option = {where}
   distincts = _.map(dims, (x) -> x.split(' AS ')[0])
-  option.attributes = ["COUNT(DISTINCT(#{distincts.join(',')})) AS `count`"]
+  option.attributes = ["COUNT(DISTINCT #{distincts.join(', ')}) AS `count`"]
   Model.find(option, {raw: yes}).done((error, res) ->
     callback(error, res and res.count)
   )
@@ -58,6 +58,7 @@ model.statistics = statistics = (params, where, callback) ->
   catch e
     return callback(e)
   statsCount(Model, option.where, dims, (error, count) ->
+    return callback(error) if error
     Model.findAll(option, {raw: yes}).done((error, results) ->
       return callback(error) if error
       callback(null, [results, count])
