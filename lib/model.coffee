@@ -96,6 +96,18 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
     order: sort(params, Model.sort)
   ret.where = where if _.size(where)
 
+  # 处理需要返回的字段
+  do ->
+    return unless params.attrs
+    return unless _.isString params.attrs
+    attrs = []
+    _.each(params.attrs.split(','), (x) ->
+      return unless Model.rawAttributes[x]
+      attrs.push x
+    )
+    return unless attrs.length
+    ret.attributes = attrs
+
   _.extend ret, Model.pageParams(params) unless isAll
 
   ret
