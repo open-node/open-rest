@@ -11,13 +11,14 @@ rest =
   # 输出
   detail: (hook, attachs = null, statusCode = 200) ->
     (req, res, next) ->
-      ret = _.map(req.hooks[hook], (model) ->
-        json = if model.toJSON then model.toJSON() else model
+      results = _.isArray(req.body) and req.hooks[hook] or [req.hooks[hook]]
+      ret = _.map(results, (model) ->
+        json = model.toJSON and model.toJSON() or model
         _.each(attachs, (v, k) -> json[k] = req.hooks[v] or req[v]) if attachs
         json
       )
       ret = ret[0] if not _.isArray(req.body) and ret.length is 1
-      res.send statusCode, ret
+      if _.isArray(ret) then res.send(204) else res.send(statusCode, ret)
       next()
 
   # 批量验证
@@ -47,13 +48,18 @@ rest =
   save: (hook, Model) ->
     (req, res, next) ->
       ls = _.map(req.hooks[hook], (x) -> x.toJSON())
-      Model.bulkCreate(ls).done((error, results) ->
+      p = _.isArray(req.body) and Model.bulkCreate(ls) or Model.create(ls[0])
+      p.done((error, results) ->
         err = errors.sequelizeIfError error
         return next(err) if err
         req.hooks[hook] = results
-        next()
+        return next() if _.isArray(results)
+        results.reload().done((error) ->
+          err = errors.sequelizeIfError error
+          return next(err) if err
+          next()
+        )
       )
-
 
   # 批量添加
   add: (Model, cols, hook = "#{Model.name}s", attachs = null) ->
