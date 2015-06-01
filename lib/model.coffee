@@ -151,6 +151,7 @@ model.sort = sort = (params, conf) ->
     direction = 'DESC'
     order = params.sort.substring(1)
   else
+    direction = 'ASC'
     order = params.sort
 
   # 如果请求的排序方式不允许，则返回null
