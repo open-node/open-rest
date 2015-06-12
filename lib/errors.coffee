@@ -5,7 +5,7 @@ ArgumentError = (error) ->
   restify.RestError.call this, {
     restCode: 'ArgumentError'
     statusCode: 422
-    message: error.errors
+    message: error.errors or error.message
     constructorOpt: ArgumentError
   }
   this.name = 'ArgumentError'
