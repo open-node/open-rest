@@ -7,12 +7,6 @@ defaultPagination =
   maxStartIndex: 10000
   maxResultsLimit: 5000
 
-where2str = (where) ->
-  ands = []
-  _.each(where, (v, k) ->
-  )
-  return ands.split(' AND ')
-
 module.exports =
 
   dimensions: (Model, params) ->
