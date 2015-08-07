@@ -4,7 +4,8 @@
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "devrun": "nodemon ./index.coffee"
   },
   "bin": {
     "openrest": "./bin/openrest"
@@ -28,7 +29,7 @@
     "async": "^0.9.0",
     "commander": "^2.4.0",
     "mysql": "^2.5.2",
-    "restify": "^2.8.3",
+    "restify": "3.0.3",
     "sequelize": "2.0.0",
     "underscore": "^1.7.0"
   }
