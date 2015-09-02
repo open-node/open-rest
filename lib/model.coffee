@@ -78,6 +78,18 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
   if Model.rawAttributes.isDelete and not params.showDelete
     where.isDelete = 'no'
 
+  # 处理模糊搜索参数为q
+  # 目前第一期先实现一个简化版的
+  # q 的玩法需要配合用户model上的定义，否则是关闭的
+  # q 也会作用到 includes下
+  q = do ->
+    return unless params.q
+    return unless _.isString params.q
+    params.q.trim().split(' ')[0..3] or undefined
+
+  # 将搜索条件添加到主条件上
+  utils.searchOpt(Model, params._searchs, params.q, where)
+
   # 处理关联资源的过滤条件
   if includes
     _.each(includes, (x) ->
@@ -88,6 +100,10 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
       if x.model.rawAttributes.isDelete and not params.showDelete
         includeWhere.$or = [isDelete: 'no']
         includeWhere.$or.push id: null if x.required is no
+
+      # 将搜索条件添加到 include 的 where 条件上
+      utils.searchOpt(x.model, params._searchs, params.q, includeWhere, x.as)
+
       x.where = includeWhere if _.size(includeWhere)
     )
 
@@ -185,7 +201,7 @@ model.init = (opt, path) ->
     require("#{path}/associations/#{file}")(Models)
 
   # 处理 model 定义的 includes
-  _.each Models, (Model, name) ->
+  _.each(Models, (Model, name) ->
     return unless Model.includes
     if _.isArray Model.includes
       includes = {}
@@ -198,5 +214,14 @@ model.init = (opt, path) ->
         as: k
         required: required
     )
+  )
+
+  # 处理 model 定义的 searchCols
+  _.each(Models, (Model, name) ->
+    return unless Model.searchCols
+    _.each(Model.searchCols, (v, k) ->
+      v.match = [v.match] if _.isString(v.match)
+    )
+  )
 
 module.exports = model

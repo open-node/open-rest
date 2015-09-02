@@ -114,6 +114,55 @@ utils =
       "LIMIT #{option.limit}" if option.limit
     ].join(' ')
 
+  # 将字符串转换为数组
+  str2arr: _.memoize((qstr, spliter, maxLen) ->
+    return unless qstr
+    return unless _.isString qstr
+    return unless qstr = qstr.trim()
+    arr = qstr.split(spliter)
+    return arr unless maxLen
+    arr[0...maxLen]
+  , (qstr, spliter, maxLen) -> "#{qstr}_#{spliter}_#{maxLen}")
+
+  # searchOpt 的处理，处理参数参数里的q, 实现简易搜索功能
+  # where:
+  #   $or:
+  #     name:
+  #       $and: [{
+  #         $or: [{
+  #           $like: '%,32'
+  #         }, {
+  #           $like: '32,%'
+  #         }, {
+  #           $like: '32'
+  #         }, {
+  #           $like: '%,32,%'
+  #         }]
+  #       }, {
+  #
+  #       }]
+  searchOpt: (Model, searchStr, qstr, where = {}, as = '') ->
+    return unless q = utils.str2arr(qstr, ' ', 5)
+    return unless q.length
+    return unless Model.searchCols
+    searchs = utils.str2arr(searchStr, ',')
+    as += "." if as
+    $or = []
+    _.each(Model.searchCols, (conf, col) ->
+      # 如果设置了搜索的字段，并且当前字读不在设置的搜索字段内，则直接返回
+      # 相当于跳过这个设置
+      return if searchs and searchs.length and ("#{as}#{col}" not in searchs)
+      $or.push $and: _.map(q, (x) ->
+        $or: _.map(conf.match, (match) ->
+          tmp = {}
+          tmp[col] = $like: match.replace('{1}', x)
+          tmp
+        )
+      )
+    )
+    console.log JSON.stringify($or, null, 2)
+    where.$or = $or if _.size($or)
+
   # findOptFilter 的处理
   findOptFilter: (params, name, where, col = name) ->
     # 处理 where 的等于
