@@ -1,7 +1,6 @@
 fs        = require 'fs'
 path      = require 'path'
 _         = require 'underscore'
-Sequelize = require 'sequelize'
 model     = require './model'
 stats     = require './stats'
 
@@ -141,27 +140,38 @@ utils =
   #       }, {
   #
   #       }]
-  searchOpt: (Model, searchStr, qstr, where = {}, as = '') ->
+  searchOpt: (Model, searchStr, qstr, as = '') ->
     return unless q = utils.str2arr(qstr, ' ', 5)
     return unless q.length
     return unless Model.searchCols
     searchs = utils.str2arr(searchStr, ',')
-    as += "." if as
-    $or = []
+    $ors = []
     _.each(Model.searchCols, (conf, col) ->
       # 如果设置了搜索的字段，并且当前字读不在设置的搜索字段内，则直接返回
       # 相当于跳过这个设置
-      return if searchs and searchs.length and ("#{as}#{col}" not in searchs)
-      $or.push $and: _.map(q, (x) ->
-        $or: _.map(conf.match, (match) ->
-          tmp = {}
-          tmp[col] = $like: match.replace('{1}', x)
-          tmp
+      _col = as and "#{as}.#{col}" or col
+      return if searchs and searchs.length and (_col not in searchs)
+      $ors.push _.map(q, (x) ->
+        "(#{_.map(conf.match, (match) ->
+          v = match.replace('{1}', x)
+          "(`#{as or Model.name}`.`#{col}` #{conf.op} '#{v}')"
+        ).join(' OR ')})"
+      )
+    )
+    $ors
+
+  # 合并多个词语的搜索条件
+  mergeSearchOrs: (orss) ->
+    ands = []
+    _.each(orss, (_orss) ->
+      _.each(_orss, (ors) ->
+        _.each(ors, (_or, index) ->
+          ands[index] = [] unless ands[index]
+          ands[index].push _or
         )
       )
     )
-    console.log JSON.stringify($or, null, 2)
-    where.$or = $or if _.size($or)
+    "(#{_.map(ands, (x) -> "(#{x.join(' OR ')})").join(' AND ')})"
 
   # findOptFilter 的处理
   findOptFilter: (params, name, where, col = name) ->

@@ -88,7 +88,8 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
     params.q.trim().split(' ')[0..3] or undefined
 
   # 将搜索条件添加到主条件上
-  utils.searchOpt(Model, params._searchs, params.q, where)
+  searchOrs = []
+  searchOrs.push utils.searchOpt(Model, params._searchs, params.q)
 
   # 处理关联资源的过滤条件
   if includes
@@ -102,10 +103,14 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
         includeWhere.$or.push id: null if x.required is no
 
       # 将搜索条件添加到 include 的 where 条件上
-      utils.searchOpt(x.model, params._searchs, params.q, includeWhere, x.as)
+      searchOrs.push utils.searchOpt(x.model, params._searchs, params.q, x.as)
 
       x.where = includeWhere if _.size(includeWhere)
     )
+
+  # 将 searchOrs 赋到 where 上
+  searchOrs = _.compact searchOrs
+  where.$or = utils.mergeSearchOrs(searchOrs) if searchOrs.length
 
   ret =
     include: includes
