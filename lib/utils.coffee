@@ -1,6 +1,7 @@
 fs        = require 'fs'
 path      = require 'path'
 _         = require 'underscore'
+mysql     = require 'mysql'
 model     = require './model'
 stats     = require './stats'
 
@@ -150,11 +151,14 @@ utils =
       # 如果设置了搜索的字段，并且当前字读不在设置的搜索字段内，则直接返回
       # 相当于跳过这个设置
       _col = as and "#{as}.#{col}" or col
+      # 如果是include里的search，必须指定searchs
+      # 这么做是为了避免用户不知情的一些筛选过滤
+      return if (not searchs) and as
       return if searchs and searchs.length and (_col not in searchs)
       $ors.push _.map(q, (x) ->
         "(#{_.map(conf.match, (match) ->
           v = match.replace('{1}', x)
-          "(`#{as or Model.name}`.`#{col}` #{conf.op} '#{v}')"
+          "(`#{as or Model.name}`.`#{col}` #{conf.op} #{mysql.escape v})"
         ).join(' OR ')})"
       )
     )
