@@ -125,22 +125,24 @@ utils =
   , (qstr, spliter, maxLen) -> "#{qstr}_#{spliter}_#{maxLen}")
 
   # searchOpt 的处理，处理参数参数里的q, 实现简易搜索功能
-  # where:
-  #   $or:
-  #     name:
-  #       $and: [{
-  #         $or: [{
-  #           $like: '%,32'
-  #         }, {
-  #           $like: '32,%'
-  #         }, {
-  #           $like: '32'
-  #         }, {
-  #           $like: '%,32,%'
-  #         }]
-  #       }, {
+  ###
   #
-  #       }]
+  [ # 这下面有三个子数组，代表该model有三个字段参与搜索
+    [ # 这个数组长度为2，代表此次有2个搜索关键词
+      # 这个字符串用 OR 切开有三部分，代表该字段定义的search.match 有三部分
+      '((`user`.`name` LIKE \'a\') OR (`user`.`name` LIKE \'%,a\') OR (`user`.`name` LIKE \'a,%\') OR (`user`.`name` LIKE \'%,a,%\'))'
+      '((`user`.`name` LIKE \'b\') OR (`user`.`name` LIKE \'%,b\') OR (`user`.`name` LIKE \'b,%\') OR (`user`.`name` LIKE \'%,b,%\'))'
+    ]
+    [
+      '((`user`.`email` LIKE \'%a%\'))'
+      '((`user`.`email` LIKE \'%b%\'))'
+    ]
+    [
+      '((`user`.`id` = \'a\'))'
+      '((`user`.`id` = \'b\'))'
+    ]
+  ]
+  ###
   searchOpt: (Model, searchStr, qstr, as = '') ->
     return unless q = utils.str2arr(qstr, ' ', 5)
     return unless q.length
