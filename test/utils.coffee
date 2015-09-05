@@ -3,6 +3,27 @@ utils       = require '../lib/utils'
 
 describe 'Utils', ->
 
+  describe '#intval', ->
+    it "noraml", (done) ->
+      assert.equal 2, utils.intval(2)
+      done()
+
+    it "string 2", (done) ->
+      assert.equal 2, utils.intval('2')
+      done()
+
+    it "string 2aa", (done) ->
+      assert.equal 2, utils.intval('2aa')
+      done()
+
+    it "8 mode 10", (done) ->
+      assert.equal 8, utils.intval('10', 8)
+      done()
+
+    it "string aaa, result is number 0", (done) ->
+      assert.equal 0, utils.intval('aaa')
+      done()
+
   describe '#file2Module', ->
     it "filename return filename", (done) ->
       assert.equal 'filename', utils.file2Module('filename')
