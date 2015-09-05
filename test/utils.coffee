@@ -12,3 +12,19 @@ describe 'Utils', ->
       assert.equal 'fileName', utils.file2Module('file-name')
       done()
 
+  describe "#str2arr", ->
+    it "normal", (done) ->
+      assert.deepEqual ['a', 'b', 'c'], utils.str2arr('a b c', ' ')
+      done()
+
+    it "comma split, dont need cut", (done) ->
+      assert.deepEqual ['a', 'b', 'c'], utils.str2arr('a,b,c', ',')
+      done()
+
+    it "comma split, take 2", (done) ->
+      assert.deepEqual ['a', 'b'], utils.str2arr('a,b,c', ',', 2)
+      done()
+
+    it "empty str split, take 2", (done) ->
+      assert.deepEqual ['a', 'b'], utils.str2arr('abc', '', 2)
+      done()
