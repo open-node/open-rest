@@ -167,6 +167,9 @@ utils =
     $ors
 
   # 合并多个词语的搜索条件
+  # 将单个或多个 searchOpt 返回的数组正确的合并成 where 子句, 字符串类型的
+  # 这个函数的目的是为了正确的使每个关键词之间的关系是 AND 的关系
+  # 单个关键词在不同的搜索字段之间是 OR 的关系
   mergeSearchOrs: (orss) ->
     ands = []
     _.each(orss, (_orss) ->

@@ -121,3 +121,70 @@ describe 'Utils', ->
       real = utils.searchOpt(Model, '', "a'")
       assert.deepEqual except, real
       done()
+
+  describe '#mergeSearchOrs', ->
+    it 'single searchOpt result', (done) ->
+      Model =
+        name: 'user'
+        searchCols:
+          name:
+            op: 'LIKE'
+            match: ['%{1}%']
+      except = "((((`user`.`name` LIKE '%a%'))))"
+      real = utils.mergeSearchOrs [utils.searchOpt(Model, '', "a")]
+      assert.deepEqual except, real
+      done()
+
+    it 'single searchOpt, mutil keyword result', (done) ->
+      Model =
+        name: 'user'
+        searchCols:
+          name:
+            op: 'LIKE'
+            match: ['%{1}%']
+      except = "((((`user`.`name` LIKE '%a%'))) AND (((`user`.`name` LIKE '%b%'))))"
+      real = utils.mergeSearchOrs [utils.searchOpt(Model, '', "a b")]
+      assert.deepEqual except, real
+      done()
+
+    it 'mutil searchOpt, single keyword result', (done) ->
+      Model1 =
+        name: 'user'
+        searchCols:
+          name:
+            op: 'LIKE'
+            match: ['%{1}%']
+      Model2 =
+        name: 'book'
+        searchCols:
+          name:
+            op: 'LIKE'
+            match: ['%{1}%']
+      except = "((((`user`.`name` LIKE '%a%')) OR ((`book`.`name` LIKE '%a%'))))"
+      real = utils.mergeSearchOrs([
+        utils.searchOpt(Model1, '', "a")
+        utils.searchOpt(Model2, '', "a")
+      ])
+      assert.deepEqual except, real
+      done()
+
+    it 'mutil searchOpt, mutil keyword result', (done) ->
+      Model1 =
+        name: 'user'
+        searchCols:
+          name:
+            op: 'LIKE'
+            match: ['%{1}%']
+      Model2 =
+        name: 'book'
+        searchCols:
+          name:
+            op: 'LIKE'
+            match: ['%{1}%']
+      except = "((((`user`.`name` LIKE '%a%')) OR ((`book`.`name` LIKE '%a%'))) AND (((`user`.`name` LIKE '%b%')) OR ((`book`.`name` LIKE '%b%'))))"
+      real = utils.mergeSearchOrs([
+        utils.searchOpt(Model1, '', "a b")
+        utils.searchOpt(Model2, '', "a b")
+      ])
+      assert.deepEqual except, real
+      done()
