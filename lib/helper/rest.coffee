@@ -19,14 +19,14 @@ listAttrFilter = (ls, allowAttrs) ->
 rest =
 
   # 单一资源的统计功能
-  statistics: (Model, options = null) ->
+  statistics: (Model, options = null, hook) ->
     (req, res, next) ->
       where = options and req.hooks[options].where or ''
       Model.statistics(req.params, where, (error, ret) ->
         return next(error) if error
         [data, total] = ret
         res.header("X-Content-Record-Total", total)
-        res.send 200, data
+        hook and (req.hooks[hook] = data) or res.send(200, data)
         next()
       )
 
