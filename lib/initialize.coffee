@@ -68,8 +68,8 @@ module.exports = (opts) ->
 
   # 设置中间件
   server.use restify.acceptParser(server.acceptable)
-  server.use restify.queryParser()
-  server.use restify.bodyParser()
+  server.use restify.queryParser(opts.config.queryParser or null)
+  server.use restify.bodyParser(opts.config.bodyParser or null)
   server.use (req, res, next) ->
     # 初始化 hooks
     req.hooks = {}

@@ -96,7 +96,7 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
     _.each(includes, (x) ->
       includeWhere = {}
       _.each(x.model.filterAttrs or x.model.rawAttributes, (attr, name) ->
-        utils.findOptFilter(params, "#{x.as}.#{name}", includeWhere, name)
+        utils.findOptFilter(params[x.as], name, includeWhere, name)
       )
       if x.model.rawAttributes.isDelete and not params.showDelete
         includeWhere.$or = [isDelete: 'no']

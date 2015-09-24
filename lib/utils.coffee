@@ -184,6 +184,8 @@ utils =
 
   # findOptFilter 的处理
   findOptFilter: (params, name, where, col = name) ->
+    return unless params
+    return unless _.isObject params
     # 处理 where 的等于
     if _.isString params[name]
       value = params[name].trim()
