@@ -1,6 +1,6 @@
 {
   "name": "open-rest",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/open-node/open-rest",
   "dependencies": {
-    "async": "^0.9.0",
+    "async": "^1.4.0",
     "commander": "^2.4.0",
     "mysql": "^2.5.2",
     "restify": "4.0.3",
