@@ -35,17 +35,25 @@ rest =
   # allowAttrs 那些字段是被允许的
   # hook 默认为空，如果指定了hook，则数据不直接输出而是先挂在 hook上
   list: (Model, opt = null, allowAttrs, hook = null) ->
+    # 统计符合条件的条目数
+    getTotal = (opt, ignoreTotal, callback) ->
+      return callback() if ignoreTotal
+      Model.count(opt).done(callback)
+
     (req, res, next) ->
       options = opt and req.hooks[opt] or Model.findAllOpts(req.params)
       countOpt = {}
       countOpt.where = options.where if options.where
       countOpt.include = options.include if options.include
-      Model.count(countOpt).done((error, count) ->
+      # 是否忽略总条目数，这样就可以不需要count了。在某些时候可以
+      # 提高查询速度
+      ignoreTotal = req.params._ignoreTotal is 'yes'
+      getTotal(countOpt, ignoreTotal, (error, count) ->
         return next(error) if error
-        if count
+        if (ignoreTotal or count)
           Model.findAll(options).done((error, result) ->
             return next(error) if error
-            res.header("X-Content-Record-Total", count)
+            res.header("X-Content-Record-Total", count) unless ignoreTotal
             ls = listAttrFilter(result, allowAttrs)
             ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
             hook and (req.hooks[hook] = ls) or res.send(200, ls)
@@ -53,7 +61,7 @@ rest =
           )
         else
           ls = []
-          res.header("X-Content-Record-Total", 0)
+          res.header("X-Content-Record-Total", 0) unless ignoreTotal
           hook and (req.hooks[hook] = ls) or res.send(200, ls)
           next()
       )
