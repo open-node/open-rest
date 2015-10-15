@@ -109,7 +109,7 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
     )
 
   # 将 searchOrs 赋到 where 上
-  searchOrs = _.compact searchOrs
+  searchOrs = _.filter(_.compact(searchOrs), (x) -> x.length)
   where.$or = utils.mergeSearchOrs(searchOrs) if searchOrs.length
 
   ret =
