@@ -44,13 +44,16 @@ module.exports = errors =
   # 1. 请求未携带 access_token
   # 2. 根据 access_token 无法从 open 获取用户
   # 3. 用户不存在于该系统
-  notAuth: new restify.NotAuthorizedError 'NotAuthorizedError'
+  notAuth: (msg = 'NotAuthorizedError') ->
+    new restify.NotAuthorizedError msg
 
   # 请求参数错误
-  invalidArgument: new restify.InvalidArgumentError 'InvalidArgumentError'
+  invalidArgument: (msg = 'InvalidArgumentError') ->
+    new restify.InvalidArgumentError msg
 
   # 丢失参数错误
-  missingParameter: new restify.MissingParameterError 'MissingParameterError'
+  missingParameter: (msg = 'MissingParameterError') ->
+    new restify.MissingParameterError msg
 
   # SequelizeIfError
   sequelizeIfError: (error, field) ->
