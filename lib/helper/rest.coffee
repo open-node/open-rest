@@ -2,8 +2,8 @@
 # 则直接调用即可，不用重复实现
 
 _       = require 'underscore'
-utils   = require '../../lib/utils'
-errors  = require '../../lib/errors'
+utils   = require '../utils'
+errors  = require '../errors'
 
 # 忽略list中的某些属性
 # 因为有些属性对于某些接口需要隐藏

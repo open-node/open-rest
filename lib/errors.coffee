@@ -52,8 +52,8 @@ module.exports = errors =
     new restify.InvalidArgumentError msg
 
   # 丢失参数错误
-  missingParameter: (msg = 'MissingParameterError') ->
-    new restify.MissingParameterError msg
+  missingParameter: (msg = 'MissingParameterError', missings) ->
+    new restify.MissingParameterError msg, missings
 
   # SequelizeIfError
   sequelizeIfError: (error, field) ->
