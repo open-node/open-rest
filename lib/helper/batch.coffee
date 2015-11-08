@@ -34,9 +34,9 @@ rest =
 
         # 构建实例
         model = Model.build(attr)
-        model.validate().done((error, results) ->
-          callback(error or results, model)
-        )
+        model.validate().then((results) ->
+          callback(results, model)
+        ).catch(callback)
       async.map(body, handler, (error, results) ->
         err = errors.sequelizeIfError error
         return next(err) if err
@@ -49,12 +49,12 @@ rest =
     (req, res, next) ->
       ls = _.map(req.hooks[hook], (x) -> x.toJSON())
       p = _.isArray(req.body) and Model.bulkCreate(ls) or Model.create(ls[0])
-      p.done((error, results) ->
+      utils.callback(p, (error, results) ->
         err = errors.sequelizeIfError error
         return next(err) if err
         req.hooks[hook] = results
         return next() if _.isArray(results)
-        results.reload().done((error) ->
+        utils.callback(results.reload(), (error) ->
           err = errors.sequelizeIfError error
           return next(err) if err
           next()

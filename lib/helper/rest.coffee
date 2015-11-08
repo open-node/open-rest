@@ -38,7 +38,7 @@ rest =
     # 统计符合条件的条目数
     getTotal = (opt, ignoreTotal, callback) ->
       return callback() if ignoreTotal
-      Model.count(opt).done(callback)
+      utils.callback(Model.count(opt), callback)
 
     (req, res, next) ->
       options = opt and req.hooks[opt] or Model.findAllOpts(req.params)
@@ -51,14 +51,13 @@ rest =
       getTotal(countOpt, ignoreTotal, (error, count) ->
         return next(error) if error
         if (ignoreTotal or count)
-          Model.findAll(options).done((error, result) ->
-            return next(error) if error
+          Model.findAll(options).then((result) ->
             res.header("X-Content-Record-Total", count) unless ignoreTotal
             ls = listAttrFilter(result, allowAttrs)
             ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
             hook and (req.hooks[hook] = ls) or res.send(200, ls)
             next()
-          )
+          ).catch(next)
         else
           ls = []
           res.header("X-Content-Record-Total", 0) unless ignoreTotal
@@ -74,12 +73,13 @@ rest =
     (req, res, next) ->
       options = (opt and req.hooks[opt]) or
         Model.findAllOpts(req.params, yes)
-      Model.findAll(options).done (error, ls) ->
+      utils.callback(Model.findAll(options), (error, ls) ->
         return next(error) if error
         ls = listAttrFilter(ls, allowAttrs)
         ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
         hook and (req.hooks[hook] = ls) or res.send(200, ls)
         next()
+      )
 
   # 获取单个资源详情的方法
   detail: (hook, attachs = null, statusCode = 200) ->
@@ -106,11 +106,12 @@ rest =
   save: (Model, hook, cols) ->
     (req, res, next) ->
       model = req.hooks[hook]
-      model.save().done((error, mod) ->
-        err = errors.sequelizeIfError error
-        return next(err) if err
+      model.save().then((mod) ->
         res.send(200, mod)
         next()
+      ).catch((error) ->
+        console.log error.track
+        return next(errors.sequelizeIfError error)
       )
 
   # 修改某个资源描述的方法
@@ -128,13 +129,12 @@ rest =
 
       # 存储数据
       _save = (model) ->
-        model.save().done((error, mod) ->
-          err = errors.sequelizeIfError error
-          return next(err) if err
+        model.save().then((mod) ->
           req.hooks[hook] = mod
           next()
+        ).catch((error) ->
+          return next errors.sequelizeIfError error
         )
-
       # 如果没有设置唯一属性，或者没有开启回收站
       if not Model.unique or not Model.rawAttributes.isDelete
         return _save(Model.build(attr))
@@ -143,15 +143,14 @@ rest =
       # 则判断是否需要执行恢复操作
       where = {}
       where[x] = attr[x] for x in Model.unique
-      Model.find({where}).done((error, model) ->
-        next.ifError error
+      Model.findOne({where}).then((model) ->
         if model
           _.extend model, attr
           model.isDelete = 'no'
         else
           model = Model.build(attr)
         _save(model)
-      )
+      ).catch(next)
 
   # 根据资源描述添加资源到集合上的方法
   add: (Model, cols, hook = Model.name, attachs = null) ->
@@ -171,9 +170,9 @@ rest =
           model.save()
         else
           model.destroy()
-      ).done (error, mod) ->
-        return next(error) if error
+      ).then((mod) ->
         res.send(204)
         next()
+      ).catch(next)
 
 module.exports = rest

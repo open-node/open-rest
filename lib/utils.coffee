@@ -6,6 +6,18 @@ model     = require './model'
 stats     = require './stats'
 
 utils =
+
+  ##
+  # 把 callback 的写法，作用到 promise 上
+  # promise.then(->callback(null)).catch(callback)
+  # 目的是为了让callback的写法可以快速对接到 promise 上
+  ##
+  callback: (promise, callback) ->
+    promise.then((args...) ->
+      args.unshift(null)
+      callback.apply(null, args)
+    ).catch(callback)
+
   ###
   # 将字符串转换为数字
   ###

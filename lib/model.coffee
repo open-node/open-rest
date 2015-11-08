@@ -18,11 +18,13 @@ statsCount = (Model, where, dims, callback) ->
   return callback(null, 1) unless dims
   return callback(null, 1) unless dims.length
   option = {where}
+  option.raw = yes
   distincts = _.map(dims, (x) -> x.split(' AS ')[0])
   option.attributes = ["COUNT(DISTINCT #{distincts.join(', ')}) AS `count`"]
-  Model.find(option, {raw: yes}).done((error, res) ->
-    callback(error, res and res.count)
-  )
+  Model.findOne(option).then((res) ->
+    callback(null, res and res.count)
+  ).catch(callback)
+
 
 ###
 # model的统计功能
@@ -48,21 +50,30 @@ model.statistics = statistics = (params, where, callback) ->
     _.each(Model.filterAttrs or Model.rawAttributes, (attr, name) ->
       utils.findOptFilter(params, name, listWhere)
     )
+    ands = [
+      utils.stats.filters(Model, params)
+      listWhere
+    ]
+    if where
+      if _.isString(where)
+        ands.push([where, ['']])
+      else
+        ands.push(where)
     option =
       attributes: [].concat(dims or [], mets)
-      where: Sequelize.and utils.stats.filters(Model, params), where, listWhere
+      where: Sequelize.and.apply(Sequelize, ands)
       group: utils.stats.group(dims)
       order: utils.stats.sort(Model, params)
       offset: limit[0]
       limit: limit[1]
+      raw: yes
   catch e
     return callback(e)
   statsCount(Model, option.where, dims, (error, count) ->
     return callback(error) if error
-    Model.findAll(option, {raw: yes}).done((error, results) ->
-      return callback(error) if error
+    Model.findAll(option).then((results) ->
       callback(null, [results, count])
-    )
+    ).catch(callback)
   )
 
 ###
@@ -110,11 +121,12 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
 
   # 将 searchOrs 赋到 where 上
   searchOrs = _.filter(_.compact(searchOrs), (x) -> x.length)
-  where.$or = utils.mergeSearchOrs(searchOrs) if searchOrs.length
+  where.$or = [[utils.mergeSearchOrs(searchOrs), ['']]] if searchOrs.length
 
   ret =
     include: includes
     order: sort(params, Model.sort)
+
   ret.where = where if _.size(where)
 
   # 处理需要返回的字段
@@ -131,6 +143,7 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
 
   _.extend ret, Model.pageParams(params) unless isAll
 
+  console.log ret.where
   ret
 
 # 处理关联包含

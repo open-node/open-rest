@@ -13,7 +13,8 @@ module.exports = (Model, hook, _id = 'id', _obj = null) ->
     obj = if _obj then req.hooks[_obj] else req.params
     id = utils.intval obj[_id]
     include = model.modelInclude(req.params, Model.includes)
-    Model.find({where: {id}, include}).done (error, model) ->
+    utils.callback(Model.find({where: {id}, include}), (error, model) ->
       return next(error) if error
       req.hooks[hook] = model
       next()
+    )
