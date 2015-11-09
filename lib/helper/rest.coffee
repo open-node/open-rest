@@ -110,7 +110,6 @@ rest =
         res.send(200, mod)
         next()
       ).catch((error) ->
-        console.log error.track
         return next(errors.sequelizeIfError error)
       )
 

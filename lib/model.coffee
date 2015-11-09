@@ -143,7 +143,6 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
 
   _.extend ret, Model.pageParams(params) unless isAll
 
-  console.log ret.where
   ret
 
 # 处理关联包含

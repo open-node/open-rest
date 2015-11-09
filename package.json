@@ -1,6 +1,6 @@
 {
   "name": "open-rest",
-  "version": "5.0.0rc",
+  "version": "5.0.0-rc-1",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
