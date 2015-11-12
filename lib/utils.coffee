@@ -38,10 +38,7 @@ utils =
   ###
   pickParams: (req, cols) ->
     attr = {}
-    _.each cols, (col) ->
-      attr[col] = req.params[col] if req.params[col]?
-      attr[col] = null if req.params[col] is ''
-
+    attr[x] = req.params[x] for x in cols when req.params.hasOwnProperty(x)
     attr
 
   ###
