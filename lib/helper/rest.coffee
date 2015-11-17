@@ -106,6 +106,12 @@ rest =
   save: (Model, hook, cols) ->
     (req, res, next) ->
       model = req.hooks[hook]
+      # 如果没有变化，则不需要保存，也不需要记录日志
+      unless model.changed()
+        req._resourceNotChanged = yes
+        res.header("X-Content-Resource-Status", 'Unchanged')
+        res.send(200, model)
+        return next()
       model.save().then((mod) ->
         res.send(200, mod)
         next()
