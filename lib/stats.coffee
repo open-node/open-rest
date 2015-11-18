@@ -47,11 +47,8 @@ module.exports =
       mets.push "#{key} AS `#{met}`"
     return mets
 
-  filters: (Model, params) ->
+  filters: (Model, filters) ->
     where = {}
-    if Model.rawAttributes.isDelete and not params.showDelete
-      where.isDelete = $or: [$eq: 'no']
-    filters = params.filters
     # 如果没有设置了过滤条件
     return where unless filters
     # 如果设置但是不为字符串，直接返回错误

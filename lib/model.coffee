@@ -14,17 +14,17 @@ model = (name = null) ->
   Models[name]
 
 # 获取统计的条目数
-statsCount = (Model, where, dims, callback) ->
+statsCount = (Model, opts, dims, callback) ->
   return callback(null, 1) unless dims
   return callback(null, 1) unless dims.length
-  option = {where}
+  option = {where: opts.where}
+  option.include = opts.include if opts.include
   option.raw = yes
   distincts = _.map(dims, (x) -> x.split(' AS ')[0])
   option.attributes = ["COUNT(DISTINCT #{distincts.join(', ')}) AS `count`"]
   Model.findOne(option).then((res) ->
     callback(null, res and res.count)
   ).catch(callback)
-
 
 ###
 # model的统计功能
@@ -46,14 +46,11 @@ model.statistics = statistics = (params, where, callback) ->
     dims = utils.stats.dimensions(Model, params)
     mets = utils.stats.metrics(Model, params)
     limit = utils.stats.pageParams(Model, params)
-    listWhere = {}
-    _.each(Model.filterAttrs or Model.rawAttributes, (attr, name) ->
-      utils.findOptFilter(params, name, listWhere)
-    )
+    listOpts = Model.findAllOpts(params)
     ands = [
-      utils.stats.filters(Model, params)
-      listWhere
+      utils.stats.filters(Model, filters)
     ]
+    ands.push(listOpts.where) if listOpts.where
     if where
       if _.isString(where)
         ands.push([where, ['']])
@@ -67,9 +64,14 @@ model.statistics = statistics = (params, where, callback) ->
       offset: limit[0]
       limit: limit[1]
       raw: yes
+    if listOpts.include
+      option.include = _.map(listOpts.include, (x) ->
+        x.attributes = []
+        x
+      )
   catch e
     return callback(e)
-  statsCount(Model, option.where, dims, (error, count) ->
+  statsCount(Model, option, dims, (error, count) ->
     return callback(error) if error
     Model.findAll(option).then((results) ->
       callback(null, [results, count])
