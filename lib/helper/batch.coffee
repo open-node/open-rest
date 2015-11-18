@@ -28,7 +28,7 @@ rest =
       origParams = _.clone(req.params)
       handler = (params, callback) ->
         req.params = _.extend params, origParams
-        attr = utils.pickParams(req, cols or Model.writableCols)
+        attr = utils.pickParams(req, cols or Model.writableCols, Model)
         attr.creatorId = req.user.id if Model.rawAttributes.creatorId
         attr.clientIp = utils.clientIp(req) if Model.rawAttributes.clientIp
 

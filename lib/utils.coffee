@@ -36,9 +36,23 @@ utils =
   ###
   # 从 req 中提取所需的参数
   ###
-  pickParams: (req, cols) ->
+  pickParams: (req, cols, Model) ->
     attr = {}
-    attr[x] = req.params[x] for x in cols when req.params.hasOwnProperty(x)
+    _.each(cols, (x) ->
+      return unless req.params.hasOwnProperty(x)
+      return unless C = Model.rawAttributes[x]
+      value = req.params[x]
+
+      # 如果是数字类型的则数字化
+      if C.type.key in ['INTEGER', 'FLOAT']
+        value = +value
+
+      # 如果字段允许为空，且默认值为 null 则在等于空字符串的时候赋值为 null
+      if (value is '') and (C.allowNull is yes) and (C.defaultValue is null)
+        value = null
+
+      attr[x] = value
+    )
     attr
 
   ###

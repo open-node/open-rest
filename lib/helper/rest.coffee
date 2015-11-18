@@ -98,7 +98,7 @@ rest =
       # 则去掉那些只有管理员才能修改的字段
       if Model.onlyAdminCols and req.user.role isnt 'admin'
         cols = _.filter(cols, (x) -> x not in Model.onlyAdminCols)
-      attr = utils.pickParams(req, cols)
+      attr = utils.pickParams(req, cols, Model)
       delete attr.id
       _.extend model, attr
       next()
@@ -128,7 +128,7 @@ rest =
 
   beforeAdd: (Model, cols, hook = Model.name) ->
     (req, res, next) ->
-      attr = utils.pickParams(req, cols or Model.writableCols)
+      attr = utils.pickParams(req, cols or Model.writableCols, Model)
       attr.creatorId = req.user.id if Model.rawAttributes.creatorId
       attr.clientIp = utils.clientIp(req) if Model.rawAttributes.clientIp
 
