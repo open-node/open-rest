@@ -100,7 +100,10 @@ rest =
         cols = _.filter(cols, (x) -> x not in Model.onlyAdminCols)
       attr = utils.pickParams(req, cols, Model)
       delete attr.id
-      _.extend model, attr
+      _.each(attr, (v, k) ->
+        return if model[k] is v
+        model[k] = v
+      )
       next()
 
   save: (Model, hook, cols) ->
