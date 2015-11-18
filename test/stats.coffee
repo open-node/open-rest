@@ -110,7 +110,7 @@ describe 'stats', ->
             date: '`date2`'
       params = {}
       expected = {}
-      assert.deepEqual stats.filters(Model, params), expected
+      assert.deepEqual stats.filters(Model, params.filters), expected
       done()
 
     it "include isDelete column", (done) ->
@@ -121,8 +121,8 @@ describe 'stats', ->
           dimensions:
             date: '`date2`'
       params = {}
-      expected = isDelete: $or: [$eq: 'no']
-      assert.deepEqual stats.filters(Model, params), expected
+      expected = {}
+      assert.deepEqual stats.filters(Model, params.filters), expected
       done()
 
     it "single", (done) ->
@@ -131,10 +131,9 @@ describe 'stats', ->
         stats:
           dimensions:
             date: '`date2`'
-      params =
-        filters: 'date==2014'
+      filters = 'date==2014'
       expected = {"`date2`": $or: [$eq: '2014']}
-      assert.deepEqual stats.filters(Model, params), expected
+      assert.deepEqual stats.filters(Model, filters), expected
       done()
 
     it "multi", (done) ->
@@ -145,12 +144,11 @@ describe 'stats', ->
           dimensions:
             date: '`date2`'
             network: '3 + 2'
-      params =
-        filters: 'date==2014;networkId==11'
+      filters = 'date==2014;networkId==11'
       expected =
         "`date2`": $or: [$eq: '2014']
         "networkId": $or: [$eq: '11']
-      assert.deepEqual stats.filters(Model, params), expected
+      assert.deepEqual stats.filters(Model, filters), expected
       done()
 
     it "non-allowd", (done) ->
@@ -161,10 +159,9 @@ describe 'stats', ->
           dimensions:
             date: '`date2`'
             network: '3 + 2'
-      params =
-        filters: 'date==2014;networkId==11;name=niubi'
+      filters = 'date==2014;networkId==11;name=niubi'
       assert.throws ->
-        stats.filters(Model, params)
+        stats.filters(Model, filters)
       , Error
       done()
 
@@ -176,12 +173,11 @@ describe 'stats', ->
           dimensions:
             date: '`date2`'
             network: '3 + 2'
-      params =
-        filters: "date==2014';networkId==11"
+      filters = "date==2014';networkId==11"
       expected =
         "`date2`": $or: [$eq: "2014'"]
         "networkId": $or: [$eq: '11']
-      assert.deepEqual stats.filters(Model, params), expected
+      assert.deepEqual stats.filters(Model, filters), expected
       done()
 
     it "no simple", (done) ->
@@ -192,12 +188,11 @@ describe 'stats', ->
           dimensions:
             date: '`date2`'
             network: '3 + 2'
-      params =
-        filters: "date==2014,date==2015;networkId==11,networkId==23"
+      filters = "date==2014,date==2015;networkId==11,networkId==23"
       expected =
         "`date2`": $or: [{$eq: '2014'}, {$eq: '2015'}]
         "networkId": $or: [{$eq: '11'}, {$eq: '23'}]
-      assert.deepEqual stats.filters(Model, params), expected
+      assert.deepEqual stats.filters(Model, filters), expected
       done()
 
   describe 'sort', ->
