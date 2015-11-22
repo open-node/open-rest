@@ -238,3 +238,69 @@ describe 'Utils', ->
 
       done()
 
+  describe '#compare', ->
+    describe '#gt', ->
+      it '相同时比较', (done) ->
+        assert.ok not utils.compare.gt 2, 2
+        done()
+      it '字符串比较', (done) ->
+        assert.ok utils.compare.gt '2string', '1string'
+        done()
+      it '有效数字无效数字比较', (done) ->
+        assert.ok utils.compare.gt 2, 'not a num'
+        done()
+      it '无效数字与有效数字比较', (done) ->
+        assert.ok not utils.compare.gt 'not a num', 2
+        done()
+      it '无效数字与无效数字比较', (done) ->
+        assert.ok not utils.compare.gt 'not a num', 'not a num'
+        done()
+    describe '#gte', ->
+      it '相同时比较', (done) ->
+        assert.ok utils.compare.gte 2, 2
+        done()
+      it '字符串比较', (done) ->
+        assert.ok utils.compare.gte '2string', '1string'
+        done()
+      it '有效数字无效数字比较', (done) ->
+        assert.ok utils.compare.gte 2, 'not a num'
+        done()
+      it '无效数字与有效数字比较', (done) ->
+        assert.ok not utils.compare.gte 'not a num', 2
+        done()
+      it '无效数字与无效数字比较', (done) ->
+        assert.ok utils.compare.gte 'not a num', 'not a num'
+        done()
+    describe '#lt', ->
+      it '相同时比较', (done) ->
+        assert.ok not utils.compare.lt 2, 2
+        done()
+      it '字符串比较', (done) ->
+        assert.ok utils.compare.lt '1string', '2string'
+        done()
+      it '有效数字无效数字比较', (done) ->
+        assert.ok not utils.compare.lt 2, 'not a num'
+        done()
+      it '无效数字与有效数字比较', (done) ->
+        assert.ok utils.compare.lt 'not a num', 2
+        done()
+      it '无效数字与无效数字比较', (done) ->
+        assert.ok not utils.compare.lt 'not a num', 'not a num'
+        done()
+    describe '#lte', ->
+      it '相同时比较', (done) ->
+        assert.ok utils.compare.lte 2, 2
+        done()
+      it '字符串比较', (done) ->
+        assert.ok utils.compare.lte '1string', '2string'
+        done()
+      it '有效数字无效数字比较', (done) ->
+        assert.ok not utils.compare.lte 2, 'not a num'
+        done()
+      it '无效数字与有效数字比较', (done) ->
+        assert.ok utils.compare.lte 'not a num', 2
+        done()
+      it '无效数字与无效数字比较', (done) ->
+        assert.ok utils.compare.lte 'not a num', 'not a num'
+        done()
+
