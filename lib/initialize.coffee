@@ -108,8 +108,8 @@ module.exports = (opts) ->
     console.error route
     console.error error
     console.error error.stack
-    res.send(500, 'Internal error')
+    res.send(500, 'Internal error') unless res.finished
 
   # 设置监听
-  server.listen opts.config.service.port or 8080, ->
+  server.listen service.port or 8080, service.ip, ->
     console.log '%s listening at %s', server.name, server.url
