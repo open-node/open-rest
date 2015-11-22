@@ -209,3 +209,15 @@ describe 'Utils', ->
       ])
       assert.deepEqual except, real
       done()
+
+  describe '#nt2space', ->
+    it '行首和行尾的空格应该被替换掉', (done) ->
+      assert.equal 'first', utils.nt2space ' first '
+      done()
+    it '换行符、空格和制表符应该被替换为一个空格', (done) ->
+      assert.equal 'first second end', utils.nt2space 'first\n\t\r\f\v  second\\n\\t\\f\\v\\r end'
+      done()
+    it 'n,t,r,f,v不应该被替换掉', (done) ->
+      assert.equal 'ntrfv', utils.nt2space 'ntrfv'
+      done()
+

@@ -131,6 +131,18 @@ utils =
   # 统计相关的功能
   stats: stats
 
+  # 将字符串里的换行，制表符替换为普通空格
+  nt2space: (val) ->
+    return val unless _.isString val
+    # 将换行、tab、多个空格等字符换成一个空格
+    val.replace(/(\\[ntrfv]|\s)+/g, ' ').trim()
+
+  # 获取accessToken
+  getToken: (req) ->
+    req.headers['x-auth-token'] or
+      req.params.access_token or
+      req.params.accessToken
+
   # 根据条件拼接sql语句
   getSql: (option, keyword = '') ->
     [
