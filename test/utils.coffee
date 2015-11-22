@@ -239,6 +239,7 @@ describe 'Utils', ->
       done()
 
   describe '#compare', ->
+
     describe '#gt', ->
       it '相同时比较', (done) ->
         assert.ok not utils.compare.gt 2, 2
@@ -255,6 +256,7 @@ describe 'Utils', ->
       it '无效数字与无效数字比较', (done) ->
         assert.ok not utils.compare.gt 'not a num', 'not a num'
         done()
+
     describe '#gte', ->
       it '相同时比较', (done) ->
         assert.ok utils.compare.gte 2, 2
@@ -271,6 +273,7 @@ describe 'Utils', ->
       it '无效数字与无效数字比较', (done) ->
         assert.ok utils.compare.gte 'not a num', 'not a num'
         done()
+
     describe '#lt', ->
       it '相同时比较', (done) ->
         assert.ok not utils.compare.lt 2, 2
@@ -287,6 +290,7 @@ describe 'Utils', ->
       it '无效数字与无效数字比较', (done) ->
         assert.ok not utils.compare.lt 'not a num', 'not a num'
         done()
+
     describe '#lte', ->
       it '相同时比较', (done) ->
         assert.ok utils.compare.lte 2, 2
@@ -304,3 +308,23 @@ describe 'Utils', ->
         assert.ok utils.compare.lte 'not a num', 'not a num'
         done()
 
+  describe '#randStr', ->
+    it 'Length is 5', (done) ->
+      assert.equal(5, utils.randStr(5).length)
+      assert.equal(5, utils.randStr(5).length)
+      assert.equal(5, utils.randStr(5).length)
+      done()
+
+    it 'Type must be string', (done) ->
+      assert.equal('string', typeof utils.randStr(5))
+      assert.equal('string', typeof utils.randStr(5))
+      assert.equal('string', typeof utils.randStr(5))
+      done()
+
+    it 'Custom RAND_STR_DICT', (done) ->
+      dict = '!@#$%^&*()_+'
+      assert.equal(5, utils.randStr(5, dict).length)
+      assert.equal('string', typeof utils.randStr(5, dict))
+      str = utils.randStr(5, dict)
+      assert.ok s in dict for s in str
+      done()

@@ -5,6 +5,9 @@ mysql     = require 'mysql'
 model     = require './model'
 stats     = require './stats'
 
+# 随机字符串字典
+RAND_STR_DICT = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
 utils =
 
   ##
@@ -276,5 +279,11 @@ utils =
     gte: (val1, val2) -> utils.intval(val1) >= utils.intval(val2)
     lt: (val1, val2) -> utils.intval(val1) < utils.intval(val2)
     lte: (val1, val2) -> utils.intval(val1) <= utils.intval(val2)
+
+  # 生成随机字符串
+  randStr: (len, dict = RAND_STR_DICT) ->
+    len = 3 if utils.intval(len) < 1
+    length = dict.length
+    (dict[Math.floor((Math.random() * length))] for i in [1..len]).join('')
 
 module.exports = utils
