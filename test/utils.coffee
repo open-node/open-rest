@@ -221,3 +221,20 @@ describe 'Utils', ->
       assert.equal 'ntrfv', utils.nt2space 'ntrfv'
       done()
 
+  describe '#getToken', ->
+    it "优先获取头信息里的 x-auth-token", (done) ->
+      req =
+        headers:
+          "x-auth-token": "Hi, I'm token"
+        params:
+          access_token: "access_token"
+          accessToken: "accessToken"
+
+      assert.equal "Hi, I'm token", utils.getToken(req)
+      req.headers = {}
+      assert.equal "access_token", utils.getToken(req)
+      req.params.access_token = null
+      assert.equal "accessToken", utils.getToken(req)
+
+      done()
+
