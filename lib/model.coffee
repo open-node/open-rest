@@ -156,7 +156,7 @@ model.modelInclude = modelInclude = (params, includes) ->
   return unless params.includes
   ret = _.filter(params.includes.split(','), (x) -> includes[x])
   return if ret.length is 0
-  _.map(ret, (x) -> includes[x])
+  _.map(ret, (x) -> _.clone(includes[x]))
 
 ###
 # 处理分页参数
