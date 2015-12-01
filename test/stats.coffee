@@ -109,7 +109,7 @@ describe 'stats', ->
           dimensions:
             date: '`date2`'
       params = {}
-      expected = {}
+      expected = []
       assert.deepEqual stats.filters(Model, params.filters), expected
       done()
 
@@ -132,7 +132,7 @@ describe 'stats', ->
           dimensions:
             date: '`date2`'
       filters = 'date==2014'
-      expected = {"`date2`": $or: [$eq: '2014']}
+      expected = [{$or: [["`date2`=?", ['2014']]]}]
       assert.deepEqual stats.filters(Model, filters), expected
       done()
 
@@ -145,9 +145,15 @@ describe 'stats', ->
             date: '`date2`'
             network: '3 + 2'
       filters = 'date==2014;networkId==11'
-      expected =
-        "`date2`": $or: [$eq: '2014']
-        "networkId": $or: [$eq: '11']
+      expected = [{
+        $or: [
+          ["`date2`=?", ['2014']]
+        ]
+      }, {
+        $or: [
+          ["`networkId`=?", ['11']]
+        ]
+      }]
       assert.deepEqual stats.filters(Model, filters), expected
       done()
 
@@ -174,9 +180,15 @@ describe 'stats', ->
             date: '`date2`'
             network: '3 + 2'
       filters = "date==2014';networkId==11"
-      expected =
-        "`date2`": $or: [$eq: "2014'"]
-        "networkId": $or: [$eq: '11']
+      expected = [{
+        $or: [
+          ["`date2`=?", ["2014'"]]
+        ]
+      }, {
+        $or: [
+          ["`networkId`=?", ['11']]
+        ]
+      }]
       assert.deepEqual stats.filters(Model, filters), expected
       done()
 
@@ -189,9 +201,17 @@ describe 'stats', ->
             date: '`date2`'
             network: '3 + 2'
       filters = "date==2014,date==2015;networkId==11,networkId==23"
-      expected =
-        "`date2`": $or: [{$eq: '2014'}, {$eq: '2015'}]
-        "networkId": $or: [{$eq: '11'}, {$eq: '23'}]
+      expected = [{
+        $or: [
+          ["`date2`=?", ["2014"]]
+          ["`date2`=?", ["2015"]]
+        ]
+      }, {
+        $or: [
+          ["`networkId`=?", ['11']]
+          ["`networkId`=?", ['23']]
+        ]
+      }]
       assert.deepEqual stats.filters(Model, filters), expected
       done()
 

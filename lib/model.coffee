@@ -50,6 +50,7 @@ model.statistics = statistics = (params, where, callback) ->
     ands = [
       utils.stats.filters(Model, filters)
     ]
+
     ands.push(listOpts.where) if listOpts.where
     if where
       if _.isString(where)
