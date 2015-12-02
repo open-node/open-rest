@@ -48,8 +48,8 @@ utils =
       value = req.params[x]
 
       # 如果是数字类型的则数字化
-      if C.type.key in ['INTEGER', 'FLOAT']
-        value = +value
+      if (C.type.key in ['INTEGER', 'FLOAT'])
+        value = +value if value?
 
       # 如果字段允许为空，且默认值为 null 则在等于空字符串的时候赋值为 null
       if (value in ['', null]) and C.hasOwnProperty('defaultValue')

@@ -48,21 +48,21 @@ module.exports =
     return mets
 
   filters: (Model, filters) ->
-    where = {}
+    $and = []
     # 如果没有设置了过滤条件
-    return where unless filters
+    return $and unless filters
     # 如果设置但是不为字符串，直接返回错误
     throw Error('Filters must be a string') unless _.isString filters
     for _and in filters.split(';')
+      $or = []
       for _or in _and.split(',')
         [k, v] = _or.split('==')
         col = Model.rawAttributes[k]
-        key = col and k or Model.stats.dimensions[k]
-        throw Error('Filters set error') unless key
-        where[key] = {} unless where[key]
-        where[key].$or = [] unless where[key].$or
-        where[key].$or.push {$eq: dc v}
-    where
+        key = col and "`#{k}`" or Model.stats.dimensions[k]
+        throw Error("Filters set error: #{k}") unless key
+        $or.push ["#{key}=?", [dc v]]
+      $and.push {$or}
+    $and
 
   sort: (Model, params) ->
     {dimensions, metrics, sort}  = params
