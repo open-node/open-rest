@@ -273,13 +273,6 @@ utils =
         where[col]["$#{x}"] = value
     )
 
-  # 比较函数
-  compare:
-    gt: (val1, val2) -> utils.intval(val1) > utils.intval(val2)
-    gte: (val1, val2) -> utils.intval(val1) >= utils.intval(val2)
-    lt: (val1, val2) -> utils.intval(val1) < utils.intval(val2)
-    lte: (val1, val2) -> utils.intval(val1) <= utils.intval(val2)
-
   # 生成随机字符串
   randStr: (len, dict = RAND_STR_DICT) ->
     len = 3 if utils.intval(len) < 1
