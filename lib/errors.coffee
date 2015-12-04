@@ -27,7 +27,7 @@ module.exports = errors =
   # 1. 资源确实不存在，无法查找到
   # 2. 资源存在，但是 isDelete 为 yes
   # 3. 资源存在，但是操作者没有权限，做这个的目的是为了防止恶意的资源探测
-  notFound: (msg = 'ResourceNotExists', field) ->
+  notFound: (msg = 'Resource not found.', field) ->
     return new restify.ResourceNotFoundError msg unless field
     error =
       errors: [
