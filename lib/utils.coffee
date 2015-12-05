@@ -41,6 +41,12 @@ utils =
   ###
   pickParams: (req, cols, Model) ->
     attr = {}
+
+    # 当设置了只有管理员才可以修改的字段，并且当前用户不是管理员
+    # 则去掉那些只有管理员才能修改的字段
+    if Model.onlyAdminCols and (req.isAdmin isnt yes)
+      cols = _.filter(cols, (x) -> x not in Model.onlyAdminCols)
+
     _.each(cols, (x) ->
       return unless req.params.hasOwnProperty(x)
       return unless C = Model.rawAttributes[x]
@@ -125,7 +131,7 @@ utils =
   # 获取id，从 params 或者 hooks 中
   getId: (req, _id, _obj) ->
     obj = if _obj then req.hooks[_obj] else req.params
-    utils.intval obj[_id]
+    obj[_id]
 
   ucwords: (value) ->
     return value unless _.isString(value)

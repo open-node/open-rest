@@ -107,10 +107,6 @@ rest =
     (req, res, next) ->
       model = req.hooks[hook]
       cols = cols or Model.editableCols or Model.writableCols
-      # 当设置了只有管理员才可以修改的字段，并且当前用户不是管理员
-      # 则去掉那些只有管理员才能修改的字段
-      if Model.onlyAdminCols and (req.isAdmin isnt yes)
-        cols = _.filter(cols, (x) -> x not in Model.onlyAdminCols)
       attr = utils.pickParams(req, cols, Model)
       delete attr.id
       _.each(attr, (v, k) ->
