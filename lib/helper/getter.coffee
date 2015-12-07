@@ -10,8 +10,7 @@ model = require '../model'
 #         字符串，则读取 req.hooks[_obj]
 module.exports = (Model, hook, _id = 'id', _obj = null) ->
   (req, res, next) ->
-    obj = if _obj then req.hooks[_obj] else req.params
-    id = utils.intval obj[_id]
+    id  = utils.getId(req, _id, _obj)
     include = model.modelInclude(req.params, Model.includes)
     utils.callback(Model.find({where: {id}, include}), (error, model) ->
       return next(error) if error
