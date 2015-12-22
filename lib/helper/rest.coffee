@@ -9,12 +9,15 @@ errors  = require '../errors'
 # 因为有些属性对于某些接口需要隐藏
 # 比如 medias/:media/campaigns 中项目的 mediaIds 就不能显示出来
 # 否则媒体就能知道该项目还投放了那些媒体
-listAttrFilter = (ls, allowAttrs) ->
-  return ls unless allowAttrs
-  _.map ls, (x) ->
+itemAttrFilter = (allowAttrs) ->
+  (x) ->
     ret = {}
     ret[attr] = x[attr] for attr in allowAttrs
     ret
+
+listAttrFilter = (ls, allowAttrs) ->
+  return ls unless allowAttrs
+  _.map ls, itemAttrFilter(allowAttrs)
 
 rest =
 
@@ -54,7 +57,8 @@ rest =
           Model.findAll(options).then((result) ->
             res.header("X-Content-Record-Total", count) unless ignoreTotal
             ls = listAttrFilter(result, allowAttrs)
-            ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
+            unless hook
+              ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
             hook and (req.hooks[hook] = ls) or res.send(200, ls)
             next()
           ).catch(next)
@@ -76,7 +80,8 @@ rest =
       utils.callback(Model.findAll(options), (error, ls) ->
         return next(error) if error
         ls = listAttrFilter(ls, allowAttrs)
-        ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
+        unless hook
+          ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
         hook and (req.hooks[hook] = ls) or res.send(200, ls)
         next()
       )
@@ -87,6 +92,13 @@ rest =
       model = req.hooks[hook]
       ret = if model.toJSON then model.toJSON() else model
       _.each(attachs, (v, k) -> ret[k] = req.hooks[v] or req[v]) if attachs
+      if req.params.attrs
+        attrs = req.params.attrs.split(',')
+        if _.isArray(ret)
+          ret = listAttrFilter(ret, attrs)
+        else
+          ret = itemAttrFilter(attr)(ret)
+
       res.send(statusCode, ret)
       next()
 
