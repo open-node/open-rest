@@ -75,13 +75,14 @@ rest =
   # hook 默认为空，如果指定了hook，则数据不直接输出而是先挂在 hook上
   all: (Model, opt = null, allowAttrs, hook = null) ->
     (req, res, next) ->
-      options = (opt and req.hooks[opt]) or
-        Model.findAllOpts(req.params, yes)
+      options = (opt and req.hooks[opt]) or Model.findAllOpts(req.params, yes)
+      ignoreTotal = req.params._ignoreTotal is 'yes'
       utils.callback(Model.findAll(options), (error, ls) ->
         return next(error) if error
         ls = listAttrFilter(ls, allowAttrs)
         unless hook
           ls = listAttrFilter(ls, req.params.attrs.split(',')) if req.params.attrs
+        res.header("X-Content-Record-Total", ls.length) unless ignoreTotal
         hook and (req.hooks[hook] = ls) or res.send(200, ls)
         next()
       )
