@@ -6,7 +6,9 @@ model     = require './model'
 stats     = require './stats'
 
 # 随机字符串字典
-RAND_STR_DICT = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+RAND_STR_DICT =
+  noraml: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  strong: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~!@#$%^&*()_+<>{}|\=-`~'
 
 utils =
 
@@ -274,7 +276,11 @@ utils =
     )
 
   # 生成随机字符串
-  randStr: (len, dict = RAND_STR_DICT) ->
+  # @params
+  #   len int.unsigned 生成的随机串的长度
+  #   type enum('noraml', 'strong') 随即串的强度, defaultValue is noraml
+  randStr: (len, type = 'normal') ->
+    dict = RAND_STR_DICT[type] or RAND_STR_DICT.noraml
     len = 3 if utils.intval(len) < 1
     length = dict.length
     (dict[Math.floor((Math.random() * length))] for i in [1..len]).join('')

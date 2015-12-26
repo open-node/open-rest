@@ -251,10 +251,7 @@ describe 'Utils', ->
       assert.equal('string', typeof utils.randStr(5))
       done()
 
-    it 'Custom RAND_STR_DICT', (done) ->
-      dict = '!@#$%^&*()_+'
-      assert.equal(5, utils.randStr(5, dict).length)
-      assert.equal('string', typeof utils.randStr(5, dict))
-      str = utils.randStr(5, dict)
-      assert.ok s in dict for s in str
+    it 'Strong RAND_STR_DICT', (done) ->
+      assert.equal(5, utils.randStr(5, 'strong').length)
+      assert.equal('string', typeof utils.randStr(5, 'strong'))
       done()
