@@ -162,8 +162,11 @@ rest =
       where[x] = attr[x] for x in Model.unique
       Model.findOne({where}).then((model) ->
         if model
-          _.extend model, attr
-          model.isDelete = 'no'
+          if model.isDelete is 'yes'
+            _.extend model, attr
+            model.isDelete = 'no'
+          else
+            next(errors.ifError(Error('Resource exists.'), Model.unique[0]))
         else
           model = Model.build(attr)
         _save(model)
