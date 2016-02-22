@@ -24,6 +24,7 @@ module.exports = (server, ctls, defaults, opts = {}) ->
     apis.push "[#{verb.toUpperCase()}] #{routePath}"
 
     [ctl, action] = ctlAct.split('#')
+    evtName = "#{ctl}_#{action}"
 
     # 如果定义的对应的控制器，也有对应的方法则使用该方法
     actions = ctls[ctl][action] if ctls[ctl] and ctls[ctl][action]
@@ -46,6 +47,7 @@ module.exports = (server, ctls, defaults, opts = {}) ->
     # 将每一个action都用try catch处理
     actions = _.map(actions, (action) ->
       (req, res, next) ->
+        req.route.evtName = evtName
         try
           action(req, res, next)
         catch e
