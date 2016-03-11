@@ -37,18 +37,23 @@ statsCount = (Model, opts, dims, callback) ->
 #   startIndex: 0,
 #   maxResults: 20
 # }
+# conf 的结构如下，conf 是可选字段
+# {
+#   dimensions: {} // 这个的结构参考 Model 上 stats.dimensions 的结构
+#   metrics: {} // 这个的结构参考 Model 上 stats.metrics 的结构
+# }
 ###
-model.statistics = statistics = (params, where, callback) ->
+model.statistics = statistics = (params, where, conf, callback) ->
   Model = @
   {dimensions, metrics, filters, sort, startIndex, maxResults} = params
   return callback(Error('Forbidden statistics')) unless Model.statistics
   try
-    dims = utils.stats.dimensions(Model, params)
-    mets = utils.stats.metrics(Model, params)
+    dims = utils.stats.dimensions(Model, params, conf and conf.dimensions)
+    mets = utils.stats.metrics(Model, params, conf and conf.metrics)
     limit = utils.stats.pageParams(Model, params)
     listOpts = Model.findAllOpts(params)
     ands = [
-      utils.stats.filters(Model, filters)
+      utils.stats.filters(Model, filters, conf and conf.dimensions)
     ]
 
     ands.push(listOpts.where) if listOpts.where
@@ -71,6 +76,7 @@ model.statistics = statistics = (params, where, callback) ->
         x
       )
   catch e
+    console.error(e, e.stack)
     return callback(e)
   statsCount(Model, option, dims, (error, count) ->
     return callback(error) if error

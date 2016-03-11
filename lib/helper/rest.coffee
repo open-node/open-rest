@@ -22,10 +22,16 @@ listAttrFilter = (ls, allowAttrs) ->
 rest =
 
   # 单一资源的统计功能
-  statistics: (Model, options = null, hook) ->
+  # conf 是额外的附加的Model上的指标和纬度的设置
+  # 下面有 metrics 或 dimensions
+  # 提供这个功能的目的是有时候Model统计是指定和维度的定义并非静态的
+  # 而是跟着数据变动的,此时这个功能就变得十分有用
+  statistics: (Model, options = null, hook, _conf) ->
     (req, res, next) ->
+      conf = null
+      conf = req.hooks[_conf] if _conf
       where = options and req.hooks[options].where or ''
-      Model.statistics(req.params, where, (error, ret) ->
+      Model.statistics(req.params, where, conf, (error, ret) ->
         return next(error) if error
         [data, total] = ret
         res.header("X-Content-Record-Total", total)

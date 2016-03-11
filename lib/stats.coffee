@@ -9,7 +9,7 @@ defaultPagination =
 
 module.exports =
 
-  dimensions: (Model, params) ->
+  dimensions: (Model, params, _dims) ->
     dimensions = params.dimensions
     # 如果 dimensions 定义了
     return unless dimensions
@@ -20,6 +20,8 @@ module.exports =
     for dim in dimensions.split(',')
       # 如果不在允许的范围内，则直接报错
       key = Model.stats.dimensions[dim]
+      # 处理动态维度配置
+      key = _dims[dim] if (not key) and _dims and _dims[dim]
       throw Error('Dimensions dont allowed') unless key
       attr = {}
       attr[key] = dim
@@ -32,7 +34,7 @@ module.exports =
     return unless mets.length
     _.map(mets, (x) -> x.split(' AS ')[1])
 
-  metrics: (Model, params) ->
+  metrics: (Model, params, _mets) ->
     metrics = params.metrics
     # 如果没有设置了指标
     throw Error('Metrics must be required') unless metrics
@@ -43,11 +45,13 @@ module.exports =
     for met in metrics.split(',')
       # 如果指标不在允许的范围内，则直接报错
       key = Model.stats.metrics[met]
+      # 处理动态指标配置
+      key = _mets[met] if (not key) and _mets and _mets[met]
       throw Error('Metrics dont allowed') unless key
       mets.push "#{key} AS `#{met}`"
     return mets
 
-  filters: (Model, filters) ->
+  filters: (Model, filters, _dims) ->
     $and = []
     # 如果没有设置了过滤条件
     return $and unless filters
@@ -59,6 +63,8 @@ module.exports =
         [k, v] = _or.split('==')
         col = Model.rawAttributes[k]
         key = col and "`#{k}`" or Model.stats.dimensions[k]
+        # 处理动态维度配置
+        key = __dims[dim] if (not key) and _dims and _dims[dim]
         throw Error("Filters set error: #{k}") unless key
         $or.push ["#{key}=?", [dc v]]
       $and.push {$or}
