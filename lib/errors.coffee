@@ -38,7 +38,7 @@ module.exports = errors =
 
   # 用户没有权限
   notAllowed: (msg = 'Not allowed error.') ->
-    new restify.NotAuthorizedError msg
+    new restify.ForbiddenError msg
 
   # 用户为授权错误，有以下几种情况需要返回此错误
   # 1. 请求未携带 access_token
