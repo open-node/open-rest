@@ -22,10 +22,16 @@ listAttrFilter = (ls, allowAttrs) ->
 rest =
 
   # 单一资源的统计功能
-  statistics: (Model, options = null, hook) ->
+  # conf 是额外的附加的Model上的指标和纬度的设置
+  # 下面有 metrics 或 dimensions
+  # 提供这个功能的目的是有时候Model统计是指定和维度的定义并非静态的
+  # 而是跟着数据变动的,此时这个功能就变得十分有用
+  statistics: (Model, options = null, hook, _conf) ->
     (req, res, next) ->
+      conf = null
+      conf = req.hooks[_conf] if _conf
       where = options and req.hooks[options].where or ''
-      Model.statistics(req.params, where, (error, ret) ->
+      Model.statistics(req.params, where, conf, (error, ret) ->
         return next(error) if error
         [data, total] = ret
         res.header("X-Content-Record-Total", total)
@@ -107,10 +113,6 @@ rest =
     (req, res, next) ->
       model = req.hooks[hook]
       cols = cols or Model.editableCols or Model.writableCols
-      # 当设置了只有管理员才可以修改的字段，并且当前用户不是管理员
-      # 则去掉那些只有管理员才能修改的字段
-      if Model.onlyAdminCols and (req.isAdmin isnt yes)
-        cols = _.filter(cols, (x) -> x not in Model.onlyAdminCols)
       attr = utils.pickParams(req, cols, Model)
       delete attr.id
       _.each(attr, (v, k) ->
@@ -137,10 +139,11 @@ rest =
 
   # 修改某个资源描述的方法
   modify: (Model, hook, cols) ->
-    [
-      rest.beforeModify(Model, hook, cols)
-      rest.save(Model, hook, cols)
-    ]
+    (req, res, next) ->
+      rest.beforeModify(Model, hook, cols)(req, res, (error) ->
+        return next(error) if error
+        rest.save(Model, hook, cols)(req, res, next)
+      )
 
   beforeAdd: (Model, cols, hook = Model.name) ->
     (req, res, next) ->
@@ -166,8 +169,11 @@ rest =
       where[x] = attr[x] for x in Model.unique
       Model.findOne({where}).then((model) ->
         if model
-          _.extend model, attr
-          model.isDelete = 'no'
+          if model.isDelete is 'yes'
+            _.extend model, attr
+            model.isDelete = 'no'
+          else
+            next(errors.ifError(Error('Resource exists.'), Model.unique[0]))
         else
           model = Model.build(attr)
         _save(model)
@@ -175,10 +181,11 @@ rest =
 
   # 根据资源描述添加资源到集合上的方法
   add: (Model, cols, hook = Model.name, attachs = null) ->
-    [
-      rest.beforeAdd(Model, cols, hook)
-      rest.detail(hook, attachs, 201)
-    ]
+    (req, res, next) ->
+      rest.beforeAdd(Model, cols, hook)(req, res, (error) ->
+        return next(error) if error
+        rest.detail(hook, attachs, 201)(req, res, next)
+      )
 
   # 删除某个资源
   remove: (hook) ->

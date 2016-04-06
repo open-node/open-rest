@@ -27,7 +27,7 @@ module.exports = errors =
   # 1. 资源确实不存在，无法查找到
   # 2. 资源存在，但是 isDelete 为 yes
   # 3. 资源存在，但是操作者没有权限，做这个的目的是为了防止恶意的资源探测
-  notFound: (msg = 'ResourceNotExists', field) ->
+  notFound: (msg = 'Resource not found.', field) ->
     return new restify.ResourceNotFoundError msg unless field
     error =
       errors: [
@@ -37,22 +37,22 @@ module.exports = errors =
     new ArgumentError(error)
 
   # 用户没有权限
-  notAllowed: (msg = 'NotAllowedError') ->
-    new restify.NotAuthorizedError msg
+  notAllowed: (msg = 'Not allowed error.') ->
+    new restify.ForbiddenError msg
 
   # 用户为授权错误，有以下几种情况需要返回此错误
   # 1. 请求未携带 access_token
   # 2. 根据 access_token 无法从 open 获取用户
   # 3. 用户不存在于该系统
-  notAuth: (msg = 'NotAuthorizedError') ->
+  notAuth: (msg = 'Not authorized error.') ->
     new restify.NotAuthorizedError msg
 
   # 请求参数错误
-  invalidArgument: (msg = 'InvalidArgumentError') ->
+  invalidArgument: (msg = 'Invalid argument error.') ->
     new restify.InvalidArgumentError msg
 
   # 丢失参数错误
-  missingParameter: (msg = 'MissingParameterError', missings) ->
+  missingParameter: (msg = 'Missing parameter error.', missings) ->
     new restify.MissingParameterError msg, missings
 
   # SequelizeIfError
