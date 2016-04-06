@@ -139,10 +139,11 @@ rest =
 
   # 修改某个资源描述的方法
   modify: (Model, hook, cols) ->
-    [
-      rest.beforeModify(Model, hook, cols)
-      rest.save(Model, hook, cols)
-    ]
+    (req, res, next) ->
+      rest.beforeModify(Model, hook, cols)(req, res, (error) ->
+        return next(error) if error
+        rest.save(Model, hook, cols)(req, res, next)
+      )
 
   beforeAdd: (Model, cols, hook = Model.name) ->
     (req, res, next) ->
@@ -180,10 +181,11 @@ rest =
 
   # 根据资源描述添加资源到集合上的方法
   add: (Model, cols, hook = Model.name, attachs = null) ->
-    [
-      rest.beforeAdd(Model, cols, hook)
-      rest.detail(hook, attachs, 201)
-    ]
+    (req, res, next) ->
+      rest.beforeAdd(Model, cols, hook)(req, res, (error) ->
+        return next(error) if error
+        rest.detail(hook, attachs, 201)(req, res, next)
+      )
 
   # 删除某个资源
   remove: (hook) ->

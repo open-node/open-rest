@@ -1,6 +1,10 @@
 _         = require 'underscore'
+async     = require 'async'
 model     = require './model'
 utils     = require './utils'
+
+INTERRUPT = Error('interrupt')
+INTERRUPT.code = 'interrupt'
 
 # 路由器初始化
 # params
@@ -16,6 +20,29 @@ module.exports = (server, ctls, defaults, opts = {}) ->
     server.get opts.apis, (req, res, next) ->
       res.send apis
       next()
+
+  # 执行 ors, 即只要有一个没有返回错误就算通过
+  # 一般用于权限验证，比如某个操作既可以管理员，又可以是资源拥有者，又可以是私有IP
+  actionOrs = (actions, req, res, next) ->
+    # 循环顺序处理，如果遇到执行成功的则中断
+    async.mapSeries(actions, (action, callback) ->
+      try
+        action(req, res, (error) ->
+          callback((if error then null else INTERRUPT), error)
+        )
+      catch e
+        console.error e
+        console.error e.stack
+        callback(e)
+    , (error, results) ->
+      if error
+        # 如果错误是中断信号，则直接调用next
+        return next() if error.code is 'interrupt'
+        next(error)
+      else
+        # 找到第一个错误直接返回
+        next(_.find(results, (x) -> x))
+    )
 
   register = (verb, routePath, ctlAct) ->
 
@@ -35,9 +62,6 @@ module.exports = (server, ctls, defaults, opts = {}) ->
     # 如果都没有则抛出异常
     throw Error "控制器缺少route指定的方法" unless actions
 
-    # 如果actions是数组，则把数组弄成一维的
-    actions = _.flatten actions if _.isArray actions
-
     # 强制把actions处理成一个数组
     actions = [actions] unless _.isArray actions
 
@@ -48,8 +72,10 @@ module.exports = (server, ctls, defaults, opts = {}) ->
     actions = _.map(actions, (action) ->
       (req, res, next) ->
         req.route.evtName = evtName
+        return actionOrs(action, req, res, next) if _.isArray(action)
         try
-          action(req, res, next)
+          return action(req, res, next) if _.isFunction(action)
+          next()
         catch e
           console.error e
           console.error e.stack
