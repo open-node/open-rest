@@ -61,6 +61,12 @@ module.exports = (r) ->
 * [`resource`](#router-resource)
 
 ### Controller Definition
+
+The controller action is composed of a number of helper, is a control flow, each helper to achieve a single function, Helper can be reused in different controller action.
+
+
+* Controller must be a function or an array
+
 ```coffee
 module.exports =
 
@@ -75,18 +81,23 @@ module.exports =
   @apiVersion 1.0.0
   ###
   remove: [
+    # Query `version` placed on req.hooks.version
     helper.getter(Version, 'version')
+    # Check if req.hooks.version exists,
+    # If there is no Response will be 404 Not found, And stop to exec next step.
     helper.assert.exists('version')
     [ # Logical or, when a function is performed by means of a stop. All failed to return to the first error.
+      # Check req.hooks.version.creatorId equal to req.user.id
       helper.checker.ownSelf('creatorId', 'version')
+      # Check req.isAdmin is True.
       helper.checker.sysAdmin()
     ]
-    helper.version.isUsed('version', 'article')
+    # Check if the version(req.hooks.version) is being used
+    helper.version.isUsed('version')
+    # Remove the version (req.hooks.version), And Response output 204 Not-content.
     helper.rest.remove('version')
   ]
 ```
-
-* Controller must be a function or an array
 
 ### Model Definition
 ```coffee
@@ -112,20 +123,20 @@ module.exports = (sequelize) ->
       type: Sequelize.INTEGER.UNSIGNED
       allowNull: no
   }, {
-    comment: '文章版本表'
+    comment: 'version of article'
     freezeTableName: yes
     instanceMethods: {}
     classMethods: {}
   })
 ```
-** Special Fields **
+__Special Fields__
 * [`createdAt`](#model-createdAt)
 * [`updatedAt`](#model-updatedAt)
 * [`creatorId`](#model-creatorId)
 * [`clientIp`](#model-clientIp)
 * [`isDelete`](#model-isDelete)
 
-** Special Functions Config**
+__Special Functions Config__
 * [`unique`](#model-unique)
 * [`pagination`](#model-pagination)
 * [`stats`](#model-stats)
@@ -250,7 +261,7 @@ __Arguments__
 * `action` - Listen method, eg: 'user#detail'.
 
 <a name="router-patch"></a>
-### router.put(routePath, actionPath)
+### router.patch(routePath, actionPath)
 
 HTTP.verb `PATCH`
 
@@ -439,6 +450,106 @@ module.exports =
   ]
 ```
 
+## Model
+
+<a name="model-createdAt"></a>
+### createdAt
+* Auto record resource created datetime.
+* Dont need to define.
+
+<a name="model-updatedAt"></a>
+### updatedAt
+* Auto record resource modify datetime.
+* Dont need to define.
+
+__Close createdAt or updatedAt example__
+```coffee
+module.exports = (sequelize) ->
+  Version = U._.extend sequelize.define('version', {
+    id:
+      type: Sequelize.INTEGER.UNSIGNED
+      primaryKey: yes
+      autoIncrement: yes
+    articleId:
+      type: Sequelize.INTEGER.UNSIGNED
+      defaultValue: 0
+    name:
+      type: Sequelize.STRING(1024)
+      validate:
+        len: [1, 30]
+    summary:
+      type: Sequelize.STRING(1024)
+      comment: '文章摘要'
+    contents:
+      type: Sequelize.TEXT
+    creatorId:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+  }, {
+    comment: 'version of article'
+    freezeTableName: yes
+    instanceMethods: {}
+    classMethods: {}
+    # Close auto record created datetime
+    createdAt: no
+    # Close auto record modify datetime
+    updatedAt: no
+  })
+```
+
+<a name="model-creatorId"></a>
+### creatorId
+* Auto record resource creator, Associated user table ID.
+
+<a name="model-clientIp"></a>
+### clientIp
+* Auto record creator's ip address.
+
+<a name="model-isDelete"></a>
+### isDelete
+* Mark isDelete yes when resource removed, not realy removed, only mark.
+
+__Define creatorId, clientIp, isDelete  example__
+
+```coffee
+module.exports = (sequelize) ->
+  Version = U._.extend sequelize.define('version', {
+    id:
+      type: Sequelize.INTEGER.UNSIGNED
+      primaryKey: yes
+      autoIncrement: yes
+    articleId:
+      type: Sequelize.INTEGER.UNSIGNED
+      defaultValue: 0
+    name:
+      type: Sequelize.STRING(1024)
+      validate:
+        len: [1, 30]
+    summary:
+      type: Sequelize.STRING(1024)
+      comment: '文章摘要'
+    contents:
+      type: Sequelize.TEXT
+    # define for auto record resource creator
+    creatorId:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+    # define for auto record resource creator's ip address
+    clientIp:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+    # Mark isDelete yes when resource removed, not realy removed, only mark.
+    isDelete:
+      type: Sequelize.ENUM
+      values: ['yes', 'no']
+      defaultValue: 'no'
+  }, {
+    comment: 'version of article'
+    freezeTableName: yes
+    instanceMethods: {}
+    classMethods: {}
+  })
+```
 
 ### Contributing
 - Fork this repo
