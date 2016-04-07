@@ -298,7 +298,7 @@ __Arguments__
 * `name` - Name of the resource. eq: `user`, `book`, `order`
 * `uri` - Optional, A router patch.
 when uri is null, uri will be /${parent}s/:${parent}Id/${name}
-* `parent` - Name of the parent resource.eq: `user`, `book`
+* `parent` - Optional, Name of the parent resource.eq: `user`, `book`
 
 __Example____
 ./app/router.coffee
