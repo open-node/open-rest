@@ -206,15 +206,21 @@ HTTP.verb `GET`
 
 Equivalent to
 
-```js
-server.get(routePath, function(req, res, next) {...})
-```
+<pre>GET: /routePath</pre>
+
 
 __Arguments__
-* `uri` - A route path, eg: /users/:id
+* `routePath` - A route path, eg: /users/:id
 * `action` - Listen method, eg: 'user#detail'.
 
 __Example__
+
+./router.coffee
+```js
+module.exports = (r) ->
+  // GET: /users/:id
+  r.get   "/users/:id",        "user#detail"
+```
 
 ./controllers/user.coffee
 
@@ -231,84 +237,105 @@ module.exports =
 ```
 
 <a name="router-put"></a>
-### router.put(uri, actionPath)
+### router.put(routePath, actionPath)
 
 HTTP.verb `PUT`
+
 Equivalent to
-```js
-server.put(uri, function(req, res, next) {...})
-```
+
+<pre>PUT: /routePath</pre>
 
 __Arguments__
-* `uri` - A route path, eg: /users/:id
+* `routePath` - A route path, eg: /users/:id
 * `action` - Listen method, eg: 'user#detail'.
 
 <a name="router-patch"></a>
-### router.put(uri, actionPath)
+### router.put(routePath, actionPath)
 
 HTTP.verb `PATCH`
+
 Equivalent to
+
 ```js
-server.patch(uri, function(req, res, next) {...})
+<pre>PATCH: /routePath</pre>
 ```
 
 __Arguments__
-* `uri` - A route path, eg: /users/:id
+
+* `routePath` - A route path, eg: /users/:id
 * `action` - Listen method, eg: 'user#detail'.
 
 <a name="router-del"></a>
-### router.del(uri, actionPath)
+### router.del(routePath, actionPath)
 
 HTTP.verb `DELETE`
+
 Equivalent to
+
 ```js
-server.del(uri, function(req, res, next) {...})
+<pre>DELETE: /routePath</pre>
 ```
 
 __Arguments__
-* `uri` - A route path, eg: /users
+
+* `routePath` - A route path, eg: /users
 * `action` - Listen method, eg: 'user#list'.
 
 <a name="router-post"></a>
-### router.post(uri, actionPath)
+### router.post(routePath, actionPath)
 
 HTTP.verb `POST`
+
 Equivalent to
-```js
-server.post(uri, function(req, res, next) {...})
-```
+
+<pre>POST: /routePath</pre>
 
 __Arguments__
-* `uri` - A route path, eg: /users
+
+* `routePath` - A route path, eg: /users
 * `action` - Listen method, eg: 'user#add'.
 
 <a name="router-collection"></a>
-### router.collection(name, uri, parent)
+### router.collection(name, routePath, parent)
 
 HTTP.verb `POST` or `GET`
+
 Equivalent to
 
-router.get(uri, actionPath)
-router.post(uri, actionPath)
-
-```js
-//Create a resource.
-server.post(uri, function(req, res, next) {...})
-//List the resource.
-server.get(uri, function(req, res, next) {...})
-```
+<pre>
+// List the resource
+GET: /routePath
+// Create a resource
+POST: /routePath
+</pre>
 
 __Arguments__
+
 * `name` - Name of the resource. eq: `user`, `book`, `order`
-* `uri` - Optional, A router patch.
-when uri is null, uri will be /${parent}s/:${parent}Id/${name}
+* `routePath` - Optional, A router patch.
+when routePath is null, routePath will be /${parent}s/:${parent}Id/${name}
 * `parent` - Optional, Name of the parent resource.eq: `user`, `book`
 
-__Example____
+__Example__
+
 ./app/router.coffee
 ```js
 module.exports = (r) ->
+  // GET: /users/:userId/books
+  // POST: /users/:userId/books
   r.collection 'book', null, 'user'
+
+  // GET: /books
+  // POST: /books
+  r.collection 'book'
+
+  // GET: /users/book
+  // POST: /users/book
+  r.collection 'book', '/users/book'
+
+  // GET: /users/book
+  // POST: /users/book
+  r.collection 'book', '/users/book'
 ```
 
 ./app/controllers/user.coffee
@@ -329,74 +356,81 @@ module.exports =
 ### router.model(name, routePath)
 
 HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
+
 Equivalent to
 
-router.put(routePath, actionPath)
-router.patch(routePath, actionPath)
-router.get(routePath, actionPath)
-router.del(routePath, actionPath)
-
-```js
-// Modify a resource.
-server.put(routePath, function(req, res, next) {...})
-server.patch(routePath, function(req, res, next) {...})
-//Get a resource.
-server.get(routePath, function(req, res, next) {...})
-//Remove a resource.
-server.del(routePath, function(req, res, next) {...})
-```
+<pre>
+PUT: /routePath
+PATCH: /routePath
+GET: /routePath
+DELETE: /routePath
 
 __Arguments__
+
 * `name` - Name of the resource. eq: `user`, `book`, `order`
 * `routePath` - Optional, A router patch.
 when routePath is null, routePath will be /${name}s/:id
 
 
 <a name="router-resource"></a>
-### router.model(name, routePath)
+### router.resource(name, routePath)
 
 HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
+
 Equivalent to
 
-router.put(routePath, actionPath)
-router.patch(routePath, actionPath)
-router.get(routePath, actionPath)
-router.del(routePath, actionPath)
-
-```js
-// Modify a resource.
-server.put(routePath, function(req, res, next) {...})
-server.patch(routePath, function(req, res, next) {...})
-//Get a resource.
-server.get(routePath, function(req, res, next) {...})
-//Remove a resource.
-server.del(routePath, function(req, res, next) {...})
-```
+POST: /routePath
+PUT: /routePath/:id
+PATCH: /routePath/:id
+GET: /routePath
+GET: /routePath/:id
+DELETE: /routePath/:id
 
 __Arguments__
+
 * `name` - Name of the resource. eq: `user`, `book`, `order`
 * `routePath` - Optional, A router patch.
 when routePath is null, routePath will be /${name}s/:id
 
+__Example__
 
-
-
-__Example____
 ./app/router.coffee
 ```js
 module.exports = (r) ->
-  r.collection 'book', null, 'user'
+  // GET/POST: /books
+  // GET/PUT/PATCH/DELETE: /books/:id
+  r.resource 'book'
 ```
 
-./app/controllers/user.coffee
+./app/controllers/book.coffee
 ```js
 module.exports =
-  books: [
+  add: [
     ...
     ...
   ]
 
-  addBook: [
+  list: [
+    ...
+    ...
+  ]
+
+  detail: [
+    ...
+    ...
+  ]
+
+  modify: [
+    ...
+    ...
+  ]
+
+  remove: [
+    ...
+    ...
+  ]
+
+  detail: [
     ...
     ...
   ]
