@@ -116,7 +116,7 @@ module.exports = (sequelize) ->
         len: [1, 30]
     summary:
       type: Sequelize.STRING(1024)
-      comment: '文章摘要'
+      comment: 'Article summary'
     contents:
       type: Sequelize.TEXT
     creatorId:
@@ -527,7 +527,7 @@ module.exports = (sequelize) ->
         len: [1, 30]
     summary:
       type: Sequelize.STRING(1024)
-      comment: '文章摘要'
+      comment: 'Article summary'
     contents:
       type: Sequelize.TEXT
     # define for auto record resource creator
