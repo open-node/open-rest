@@ -364,6 +364,7 @@ PUT: /routePath
 PATCH: /routePath
 GET: /routePath
 DELETE: /routePath
+</pre>
 
 __Arguments__
 
