@@ -52,7 +52,8 @@ module.exports = (r) ->
   r.del   "/session", "user#logout"
 ```
 * [`get`](#router-get)
-* [`put`](#router-put), `patch`
+* [`patch`](#router-patch)
+* [`put`](#router-put)
 * [`post`](#router-post)
 * [`del`](#router-del)
 * [`collection`](#router-collection)
@@ -195,6 +196,208 @@ module.exports = (sequelize) ->
 * [`info`](#helper-console-info)
 * [`time`](#helper-console-time)
 * [`timeEnd`](#helper-console-timeEnd)
+
+## Router
+<a name="router-get"></a>
+
+### router.get(uri, actionPath)
+
+HTTP.verb `GET`
+Equivalent to
+```js
+server.get(uri, function(req, res, next) {...})
+```
+
+__Arguments__
+* `uri` - A route path, eg: /users/:id
+* `action` - Listen method, eg: 'user#detail'.
+
+__Example__
+./controllers/user.coffee
+```js
+U       = require '../lib/utils'
+helper  = require '../helper'
+User    = U.model('user')
+module.exports =
+  detail: [
+    helper.getter(User, 'user', 'id')
+    helper.checker.exists('user')
+    helper.rest.detail('user')
+  ]
+```
+
+<a name="router-put"></a>
+### router.put(uri, actionPath)
+
+HTTP.verb `PUT`
+Equivalent to
+```js
+server.put(uri, function(req, res, next) {...})
+```
+
+__Arguments__
+* `uri` - A route path, eg: /users/:id
+* `action` - Listen method, eg: 'user#detail'.
+
+<a name="router-patch"></a>
+### router.put(uri, actionPath)
+
+HTTP.verb `PATCH`
+Equivalent to
+```js
+server.patch(uri, function(req, res, next) {...})
+```
+
+__Arguments__
+* `uri` - A route path, eg: /users/:id
+* `action` - Listen method, eg: 'user#detail'.
+
+<a name="router-del"></a>
+### router.del(uri, actionPath)
+
+HTTP.verb `DELETE`
+Equivalent to
+```js
+server.del(uri, function(req, res, next) {...})
+```
+
+__Arguments__
+* `uri` - A route path, eg: /users
+* `action` - Listen method, eg: 'user#list'.
+
+<a name="router-post"></a>
+### router.post(uri, actionPath)
+
+HTTP.verb `POST`
+Equivalent to
+```js
+server.post(uri, function(req, res, next) {...})
+```
+
+__Arguments__
+* `uri` - A route path, eg: /users
+* `action` - Listen method, eg: 'user#add'.
+
+<a name="router-collection"></a>
+### router.collection(name, uri, parent)
+
+HTTP.verb `POST` or `GET`
+Equivalent to
+
+router.get(uri, actionPath)
+router.post(uri, actionPath)
+
+```js
+//Create a resource.
+server.post(uri, function(req, res, next) {...})
+//List the resource.
+server.get(uri, function(req, res, next) {...})
+```
+
+__Arguments__
+* `name` - Name of the resource. eq: `user`, `book`, `order`
+* `uri` - Optional, A router patch.
+when uri is null, uri will be /${parent}s/:${parent}Id/${name}
+* `parent` - Name of the parent resource.eq: `user`, `book`
+
+__Example____
+./app/router.coffee
+```js
+module.exports = (r) ->
+  r.collection 'book', null, 'user'
+```
+
+./app/controllers/user.coffee
+```js
+module.exports =
+  books: [
+    ...
+    ...
+  ]
+
+  addBook: [
+    ...
+    ...
+  ]
+```
+
+<a name="router-model"></a>
+### router.model(name, routePath)
+
+HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
+Equivalent to
+
+router.put(routePath, actionPath)
+router.patch(routePath, actionPath)
+router.get(routePath, actionPath)
+router.del(routePath, actionPath)
+
+```js
+// Modify a resource.
+server.put(routePath, function(req, res, next) {...})
+server.patch(routePath, function(req, res, next) {...})
+//Get a resource.
+server.get(routePath, function(req, res, next) {...})
+//Remove a resource.
+server.del(routePath, function(req, res, next) {...})
+```
+
+__Arguments__
+* `name` - Name of the resource. eq: `user`, `book`, `order`
+* `routePath` - Optional, A router patch.
+when routePath is null, routePath will be /${name}s/:id
+
+
+<a name="router-resource"></a>
+### router.model(name, routePath)
+
+HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
+Equivalent to
+
+router.put(routePath, actionPath)
+router.patch(routePath, actionPath)
+router.get(routePath, actionPath)
+router.del(routePath, actionPath)
+
+```js
+// Modify a resource.
+server.put(routePath, function(req, res, next) {...})
+server.patch(routePath, function(req, res, next) {...})
+//Get a resource.
+server.get(routePath, function(req, res, next) {...})
+//Remove a resource.
+server.del(routePath, function(req, res, next) {...})
+```
+
+__Arguments__
+* `name` - Name of the resource. eq: `user`, `book`, `order`
+* `routePath` - Optional, A router patch.
+when routePath is null, routePath will be /${name}s/:id
+
+
+
+
+__Example____
+./app/router.coffee
+```js
+module.exports = (r) ->
+  r.collection 'book', null, 'user'
+```
+
+./app/controllers/user.coffee
+```js
+module.exports =
+  books: [
+    ...
+    ...
+  ]
+
+  addBook: [
+    ...
+    ...
+  ]
+```
+
 
 ### Contributing
 - Fork this repo
