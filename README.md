@@ -125,7 +125,7 @@ module.exports = (sequelize) ->
 * [`clientIp`](#model-clientIp)
 * [`isDelete`](#model-isDelete)
 
-** Special Functions **
+** Special Functions Config**
 * [`unique`](#model-unique)
 * [`pagination`](#model-pagination)
 * [`stats`](#model-stats)
@@ -200,12 +200,14 @@ module.exports = (sequelize) ->
 ## Router
 <a name="router-get"></a>
 
-### router.get(uri, actionPath)
+### router.get(routePath, actionPath)
 
 HTTP.verb `GET`
+
 Equivalent to
+
 ```js
-server.get(uri, function(req, res, next) {...})
+server.get(routePath, function(req, res, next) {...})
 ```
 
 __Arguments__
@@ -213,7 +215,9 @@ __Arguments__
 * `action` - Listen method, eg: 'user#detail'.
 
 __Example__
+
 ./controllers/user.coffee
+
 ```js
 U       = require '../lib/utils'
 helper  = require '../helper'
