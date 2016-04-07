@@ -6,7 +6,7 @@ module.exports =
       console.log(msg)
       next()
 
-  log: (msg) ->
+  error: (msg) ->
     (req, res, next) ->
       console.error(msg)
       next()

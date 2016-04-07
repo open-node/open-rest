@@ -40,4 +40,3 @@ module.exports =
         return next(errors.notFound msg, field)
       return next(errors.notFound msg, field) if model.isDelete is 'yes'
       next()
-

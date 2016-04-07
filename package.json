@@ -30,7 +30,7 @@
     "commander": "^2.4.0",
     "mysql": "^2.5.2",
     "restify": "4.0.3",
-    "sequelize": "3.13.0",
+    "sequelize": "3.21.0",
     "underscore": "1.8.3"
   }
 }

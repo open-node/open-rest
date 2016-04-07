@@ -20,7 +20,7 @@ params =
       return next() unless missings.length
       next errors.missingParameter("Missing required params: #{missings}")
 
-  # 将 parmas 的可以做一个简单的映射
+  # 将 params 的可以做一个简单的映射
   map: (dict) ->
     (req, res, next) ->
       for k, v of dict
