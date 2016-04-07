@@ -380,12 +380,14 @@ HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
 
 Equivalent to
 
+<pre>
 POST: /routePath
 PUT: /routePath/:id
 PATCH: /routePath/:id
 GET: /routePath
 GET: /routePath/:id
 DELETE: /routePath/:id
+</pre>
 
 __Arguments__
 
