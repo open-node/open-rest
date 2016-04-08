@@ -139,12 +139,12 @@ __Special Fields__
 __Special Functions Config__
 * [`unique`](#model-unique)
 * [`pagination`](#model-pagination)
-* [`stats`](#model-stats)
 * [`sort`](#model-sort)
-* [`searchCols`](#model-searchCols)
 * [`writableCols`](#model-writableCols)
 * [`editableCols`](#model-editableCols)
 * [`onlyAdminCols`](#model-onlyAdminCols)
+* [`searchCols`](#model-searchCols)
+* [`stats`](#model-stats)
 
 ### lib/utils
 * [`callback`](#utils-callback)
@@ -550,6 +550,339 @@ module.exports = (sequelize) ->
     classMethods: {}
   })
 ```
+
+<a name="model-unique"></a>
+### unique
+* With the use of `isDelete`, can achieve automatic recovery, in the use of `helper.rest.add`.
+
+__Define isDelete unique example__
+
+```coffee
+module.exports = (sequelize) ->
+  Version = U._.extend sequelize.define('version', {
+    id:
+      type: Sequelize.INTEGER.UNSIGNED
+      primaryKey: yes
+      autoIncrement: yes
+    articleId:
+      type: Sequelize.INTEGER.UNSIGNED
+      defaultValue: 0
+    name:
+      type: Sequelize.STRING(1024)
+      validate:
+        len: [1, 30]
+    summary:
+      type: Sequelize.STRING(1024)
+      comment: 'Article summary'
+    contents:
+      type: Sequelize.TEXT
+    # define for auto record resource creator
+    creatorId:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+    # define for auto record resource creator's ip address
+    clientIp:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+    # Mark isDelete yes when resource removed, not realy removed, only mark.
+    isDelete:
+      type: Sequelize.ENUM
+      values: ['yes', 'no']
+      defaultValue: 'no'
+  }, {
+    comment: 'version of article'
+    freezeTableName: yes
+    instanceMethods: {}
+    classMethods: {}
+  }, {
+    includes: ['articleId', 'name']
+  })
+```
+
+<a name="model-pagination"></a>
+### pagination
+* Define `pagination` to control pagination, in the use of `helper.rest.list`.
+* pagination params is `startIndex` and `maxResults`
+
+__Define pagination example__
+
+```coffee
+module.exports = (sequelize) ->
+  Version = U._.extend sequelize.define('version', {
+    id:
+      type: Sequelize.INTEGER.UNSIGNED
+      primaryKey: yes
+      autoIncrement: yes
+    articleId:
+      type: Sequelize.INTEGER.UNSIGNED
+      defaultValue: 0
+    name:
+      type: Sequelize.STRING(1024)
+      validate:
+        len: [1, 30]
+    summary:
+      type: Sequelize.STRING(1024)
+      comment: 'Article summary'
+    contents:
+      type: Sequelize.TEXT
+    # define for auto record resource creator
+    creatorId:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+    # define for auto record resource creator's ip address
+    clientIp:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+    # Mark isDelete yes when resource removed, not realy removed, only mark.
+    isDelete:
+      type: Sequelize.ENUM
+      values: ['yes', 'no']
+      defaultValue: 'no'
+  }, {
+    comment: 'version of article'
+    freezeTableName: yes
+    instanceMethods: {}
+    classMethods: {}
+  }, {
+    pagination:
+      maxResults: 10 // per page size default value.
+      maxResultsLimit: 5000 // Max per page size.
+      maxStartIndex: 500000 // Max startIndex value.
+  })
+```
+
+<a name="model-sort"></a>
+### sort
+* Define `sort` to control order of list, in the use of `helper.rest.list`.
+* Sort params is `sort` in queryString
+* `sort=-date` is date desc, `sort=date` is date asc.
+
+__Define sort example__
+
+```coffee
+module.exports = (sequelize) ->
+  Version = U._.extend sequelize.define('version', {
+    id:
+      type: Sequelize.INTEGER.UNSIGNED
+      primaryKey: yes
+      autoIncrement: yes
+    articleId:
+      type: Sequelize.INTEGER.UNSIGNED
+      defaultValue: 0
+    name:
+      type: Sequelize.STRING(1024)
+      validate:
+        len: [1, 30]
+    summary:
+      type: Sequelize.STRING(1024)
+      comment: 'Article summary'
+    contents:
+      type: Sequelize.TEXT
+    # define for auto record resource creator
+    creatorId:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+    # define for auto record resource creator's ip address
+    clientIp:
+      type: Sequelize.INTEGER.UNSIGNED
+      allowNull: no
+    # Mark isDelete yes when resource removed, not realy removed, only mark.
+    isDelete:
+      type: Sequelize.ENUM
+      values: ['yes', 'no']
+      defaultValue: 'no'
+  }, {
+    comment: 'version of article'
+    freezeTableName: yes
+    instanceMethods: {}
+    classMethods: {}
+  }, {
+    sort:
+      default: 'id' // 使用 `help.params.list` 时，如果用户没有指定排序方式则采用 id 升序排列
+      allow: ['id', 'expiresAt', 'updatedAt', 'createdAt'] // 定义允许排序的字段
+  })
+```
+
+<a name="model-writableCols"></a>
+### writableCols
+* 定义一个数组，用来指定添加时哪些字段是允许用户自行指定的，在使用 helper.rest.add 时生效
+
+<a name="model-editableCols"></a>
+### editableCols
+* 定义一个数组，用来指定编辑时哪些字段是允许用户自行指定的，在使用 helper.rest.modify 时生效
+* 如果没有定义此值则使用 writableCols 设置
+
+<a name="model-onlyAdminCols"></a>
+### onlyAdminCols
+* 定义一个数组，用来指定添加或编辑时哪些字段只允许管理员指定，在使用 helper.rest.modify, helper.rest.add 时生效
+
+
+__Define writableCols, editableCols, onlyAdminCols example__
+
+```coffee
+module.exports = (sequelize) ->
+  User = U._.extend sequelize.define('user', {
+    id:
+      type: Sequelize.INTEGER.UNSIGNED
+      primaryKey: yes
+      autoIncrement: yes
+    name:
+      type: Sequelize.STRING
+      allowNull: no
+      set: (val) -> @setDataValue 'name', U.nt2space(val)
+      validate:
+        len: [2, 30]
+    role:
+      type: Sequelize.ENUM
+      values: ['member', 'admin']
+      allowNull: no
+      defaultValue: 'member'
+    email:
+      unique: yes
+      type: Sequelize.STRING
+      allowNull: no
+      validate:
+        isEmail: yes
+      comment: '用户email地址'
+    status:
+      type: Sequelize.ENUM
+      values: ['enabled', 'disabled']
+      defaultValue: 'enabled'
+      allowNull: no
+    isDelete:
+      type: Sequelize.ENUM
+      values: ['yes', 'no']
+      defaultValue: 'no'
+      allowNull: no
+      comment: '是否被删除'
+  }, {
+    comment: '系统用户表'
+    freezeTableName: yes
+    instanceMethods: {}
+    classMethods: {}
+  }), ModelBase, {
+    unique: ['email']
+    sort:
+      default: 'id'
+      allow: ['id', 'name', 'email', 'status', 'updatedAt', 'createdAt']
+    writableCols: [
+      'email', 'name', 'status', 'role', 'switchs'
+    ]
+    editableCols: [
+      'name', 'name', 'status', 'switchs', 'role'
+    ]
+    # `role` `status`, `switchs` 这三个字段只有管理员可以操作
+    onlyAdminCols: [
+      'role', 'status', 'switchs'
+    ]
+  }
+```
+
+<a name="model-searchCols"></a>
+### searchCols
+* 定义哪些列允许搜索的，搜索方式是怎么的，在使用 helper.rest.list 生效
+* 配合 queryString 中 q, _searchs 来使用搜索功能
+
+<a name="model-searchCols"></a>
+### searchCols
+* 定义哪些列允许搜索的，搜索方式是怎么的，在使用 helper.rest.list
+* 配合 queryString 中 q, _searchs 来使用搜索功能
+
+<a name="model-stats"></a>
+### stats
+* 定义统计相关的配置，在使用 helper.rest.statistics 时生效
+* 统计功能使用 queryString 中的一下参数
+  * `dimensions` 统计的维度，多个用逗号隔开
+  * `metrics` 统计的指标，多个用逗号隔开
+  * `sort` 结果的排序方式，用法类似于 list 中的 sort, `sort=-count` 按 count 降序，`sort=date` 按 count 升序
+  * `filters` 过滤条件，对 dimensions 或者metrics的过滤
+
+__Define searchCols, stats example__
+
+```coffee
+module.exports = (sequelize) ->
+  User = U._.extend sequelize.define('user', {
+    id:
+      type: Sequelize.INTEGER.UNSIGNED
+      primaryKey: yes
+      autoIncrement: yes
+    name:
+      type: Sequelize.STRING
+      allowNull: no
+      set: (val) -> @setDataValue 'name', U.nt2space(val)
+      validate:
+        len: [2, 30]
+    role:
+      type: Sequelize.ENUM
+      values: ['member', 'admin']
+      allowNull: no
+      defaultValue: 'member'
+    email:
+      unique: yes
+      type: Sequelize.STRING
+      allowNull: no
+      validate:
+        isEmail: yes
+      comment: '用户email地址'
+    status:
+      type: Sequelize.ENUM
+      values: ['enabled', 'disabled']
+      defaultValue: 'enabled'
+      allowNull: no
+    isDelete:
+      type: Sequelize.ENUM
+      values: ['yes', 'no']
+      defaultValue: 'no'
+      allowNull: no
+      comment: '是否被删除'
+  }, {
+    comment: '系统用户表'
+    freezeTableName: yes
+    instanceMethods: {}
+    classMethods: {}
+  }), ModelBase, {
+    unique: ['email']
+    sort:
+      default: 'id'
+      allow: ['id', 'name', 'email', 'status', 'updatedAt', 'createdAt']
+    writableCols: [
+      'email', 'name', 'status', 'role', 'switchs'
+    ]
+    editableCols: [
+      'name', 'name', 'status', 'switchs', 'role'
+    ]
+    # `role` `status`, `switchs` 这三个字段只有管理员可以操作
+    onlyAdminCols: [
+      'role', 'status', 'switchs'
+    ]
+    searchCols:
+      # 定义允许name字段搜索，搜索的方式为 LIKE 匹配
+      name:
+        op: 'LIKE'
+        match: "%{1}%"
+      # 定义允许email字段搜索，搜索的方式为 LIKE 匹配
+      email:
+        op: 'LIKE'
+        match: "%{1}%"
+    stats:
+      # 定义有哪些维度
+      dimensions:
+        # 日期维度，及计算方式
+        date: 'DATE(`user`.`createdAt`)'
+        # 状态维度，及计算方式
+        status: '`user`.`status`'
+      # 定义有哪些指标
+      metrics:
+        # 总数指标以及计算方式
+        count: 'COUNT(`user`.`id`)'
+        # 状态正常的数量以及计算方式
+        enableds: "SUM(IF(`user`.`status`='enabled', 1, 0))"
+        # 禁用用户的数量以及计算方式
+        disableds: "SUM(IF(`user`.`status`='disabled', 1, 0))"
+  }
+```
+
+
 
 ### Contributing
 - Fork this repo
