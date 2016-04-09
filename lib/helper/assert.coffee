@@ -6,37 +6,37 @@ errors  = require '../errors'
 
 module.exports =
   # 检测某字段是否与指定的值是否相同，如果不同则报错
-  equal: (field, value, _obj, msg) ->
+  equal: (field, value, _obj, error) ->
+    error = Error(error) unless error instanceof Error
     (req, res, next) ->
       excepted = (_obj and req.hooks[_obj] or req.params)[field]
-      return next(Error msg) unless excepted is value
+      return next(error) unless excepted is value
       next()
 
   # 检测某字段是否与指定的值是否不相同，如果相同则报错
-  notEqual: (field, value, _obj, msg) ->
+  notEqual: (field, value, _obj, error) ->
+    error = Error(error) unless error instanceof Error
     (req, res, next) ->
       excepted = (_obj and req.hooks[_obj] or req.params)[field]
-      return next(Error msg) if excepted is value
+      return next(error) if excepted is value
       next()
 
   # 检测某个字段是否在某个数组里包含
-  inArray: (key1, obj1, key2, obj2, msg) ->
+  inArray: (key1, obj1, key2, obj2, error) ->
+    error = Error(error) unless error instanceof Error
     (req, res, next) ->
       value1 = req.hooks[obj1][key1]
       value2 = req.hooks[obj2][key2]
       value2 = value2.split(',') if _.isString value2
       value2 = _.map(value2, (x) -> +x) if _.isNumber value1
-      return next(Error msg) unless value1 in value2
+      return next(error) unless value1 in value2
       next()
 
   # 检测是否存在
-  exists: (hook, msg = null, allowNull = no, deleteKey, field) ->
+  exists: (hook, error) ->
+    error = errors.notFound(error) unless error instanceof Error
     (req, res, next) ->
       model = req.hooks[hook]
-      unless model
-        if allowNull
-          delete req.params[deleteKey]
-          return next()
-        return next(errors.notFound msg, field)
-      return next(errors.notFound msg, field) if model.isDelete is 'yes'
+      return next(error) unless model
+      return next(error) if model.isDelete is 'yes'
       next()

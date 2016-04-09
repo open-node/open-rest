@@ -121,7 +121,7 @@ rest =
       )
       next()
 
-  save: (Model, hook, cols) ->
+  save: (Model, hook) ->
     (req, res, next) ->
       model = req.hooks[hook]
       # 如果没有变化，则不需要保存，也不需要记录日志
@@ -142,7 +142,7 @@ rest =
     (req, res, next) ->
       rest.beforeModify(Model, hook, cols)(req, res, (error) ->
         return next(error) if error
-        rest.save(Model, hook, cols)(req, res, next)
+        rest.save(Model, hook)(req, res, next)
       )
 
   beforeAdd: (Model, cols, hook = Model.name) ->

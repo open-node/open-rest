@@ -161,20 +161,10 @@ __Special Functions Config__
 * [`file2Module`](#utils-file2Module)
 * [`getId`](#utils-getId)
 * [`ucwords`](#utils-ucwords)
-* [`stats`](#utils-stats)
-  * [`dimensions`](#utils-stats-dimensions)
-  * [`group`](#utils-stats-group)
-  * [`metrics`](#utils-stats-metrics)
-  * [`filters`](#utils-stats-filters)
-  * [`sort`](#utils-stats-sort)
-  * [`pageParams`](#utils-stats-pageParams)
 * [`nt2space`](#utils-nt2space)
 * [`getToken`](#utils-getToken)
 * [`getSql`](#utils-getSql)
 * [`str2arr`](#utils-str2arr)
-* [`searchOpt`](#utils-searchOpt)
-* [`mergeSearchOrs`](#utils-mergeSearchOrs)
-* [`findOptFilter`](#utils-findOptFilter)
 * [`randStr`](#utils-randStr)
 
 ###  helper/rest
@@ -1024,7 +1014,178 @@ __Arguments__
 * `len` 随机字符串的长度
 * `type` 随即字符串的类型, 可选 `noraml` or `strong`，默认是 `noraml`
 
+##  helper/rest
 
+<a name="helper-rest-list"></a>
+### helper.rest.list(Model, opt = null, allowAttrs, hook = null)
+* 标准的 list 方法
+* 默认会排除 isDelete=yes 的资源，如果要查看全部资源请使用 showDelete=yes 来显示
+
+__Arguments__
+* `Model` 要查询的资源 Model 定义
+* `opt` 可选参数，指定 option 的位置 req.hooks[option] 指定 option 就不会通过 Model.findAllOpts(req.params) 来计算 option 了。
+* `allowAttrs` 可选参数，允许返回的属性，不指定则返回全部属性
+* `hook` 可选参数，如果指定则从数据库查询出来的数据会放置在 req.hooks[hook] 上，而非直接 res.send 出去
+
+<a name="helper-rest-beforeModify"></a>
+### helper.rest.beforeModify(Model, hook, cols)
+* 修改资源之前的操作，会把修改的部分都赋值上去，但是不会保存
+
+__Arguments__
+* `Model` 要操作的资源 Model 定义
+* `hook` 资源所在位置 req.hooks[hook]
+* `cols` 可选参数，资源允许修改的字段，不填会选用 `Model.editableCols` 或 `Model.writableCols`
+
+<a name="helper-rest-save"></a>
+### helper.rest.save(Model, hook)
+* 修改资源 `rest.beforeModify` 之后的操作，会把变化保存到数据库
+
+__Arguments__
+* `Model` 要操作的资源 Model 定义
+* `hook` 资源所在位置 req.hooks[hook]
+
+<a name="helper-rest-modify"></a>
+### helper.rest.modify(Model, hook, cols)
+* 标准的修改资源的方法，`helper.rest.beforeModify` 和 `helper.rest.save` 的组合
+
+__Arguments__
+* `Model` 要操作的资源 Model 定义
+* `hook` 资源所在位置 req.hooks[hook]
+* `cols` 可选参数，资源允许修改的字段，不填会选用 `Model.editableCols` 或 `Model.writableCols`
+
+<a name="helper-rest-detail"></a>
+### helper.rest.detail(hook, attachs = null, statusCode = 200)
+* 标准的输出资源的方法
+
+__Arguments__
+* `hook` 资源所在位置 req.hooks[hook]
+* `attachs` 可选参数，要附加到资源上的对象 例如: {"user": "user", "book": "userBook"}，会把 `req.hooks` 上的 `user` 以及 `userBook` 附加到资源的 `user` 和 `book` 上
+* `statusCode` 可选参数, 指定返回的`http.header.statusCode`, 默认值为 `200`
+
+<a name="helper-rest-beforeAdd"></a>
+### helper.rest.beforeAdd(Model, cols, hook = Model.name)
+* 标准的添加资源前的方法，会自动处理 `isDelete`，`unique` 来确定是真实添加一条数据还是恢复一条已删除的数据, 只添加不输出
+
+__Arguments__
+* `Model` 要操作的资源 Model 定义
+* `cols` 可选参数，资源允许修改的字段，不填会选用 `Model.editableCols` 或 `Model.writableCols`
+* `hook` 可选参数，资源所在位置 `req.hooks[hook]`, 默认为 `Model.name`
+
+<a name="helper-rest-add"></a>
+### helper.rest.add(Model, cols, hook = Model.name, attachs = null)
+* 标准的添加资源前的方法，`helper.rest.beforeAdd` 和 `helper.rest.detail` 的组合
+
+__Arguments__
+* `Model` 要操作的资源 Model 定义
+* `cols` 可选参数，资源允许修改的字段，不填会选用 `Model.editableCols` 或 `Model.writableCols`
+* `hook` 可选参数，资源所在位置 `req.hooks[hook]`, 默认为 `Model.name`
+* `attachs` 可选参数，要附加到资源上的对象 例如: {"user": "user", "book": "userBook"}，会把 `req.hooks` 上的 `user` 以及 `userBook` 附加到资源的 `user` 和 `book` 上
+
+<a name="helper-rest-remove"></a>
+### helper.rest.remove(hook)
+* 标准的删除的方法, 会自动处理 `isDelete`, 如果定义了 `isDelete` 字段，则不会真实删除数据，仅标记当前数据的 `isDelete` = `yes`
+
+__Arguments__
+* `hook` 资源所在位置 `req.hooks[hook]`
+
+## helper-getter
+
+<a name="helper-getter"></a>
+### helper.getter(Model, hook, id = 'id', obj = null)
+* 标准的从数据库某表获取一条记录的操作
+
+__Arguments__
+* `Model` 要操作的资源 Model 定义
+* `hook` 获取到的资源放置在何处 `req.hooks[hook]`
+* `id` 可选参数，获取 `id` 的名称, 默认值为 id
+* `obj` 可选参数，获取 `id` 的对象, 不填的时候从 req.params 上获取, 如果设置了则从 req.hooks[obj] 上获取
+
+## helper/params
+
+<a name="helper-params-omit"></a>
+### helper.params.omit(key1, key2, key3, ...)
+* 从 `req.params` 上删除掉某些参数
+
+__Arguments__
+* `key1` 要删除掉的参数名称
+* `key2` 第二个要删除的参数名称，后续以此类推
+
+<a name="helper-params-required"></a>
+### helper.params.required(keys)
+* 在 `req.params` 上验证某些参数是否存在, 主要用在验证必选参数, 如果缺少某些参数，则返回 `409`
+
+__Arguments__
+* `keys` 要验证的名称，数组类型
+
+<a name="helper-params-map"></a>
+### helper.params.map(dict)
+* 将 `req.params` 根据指定的指定的字典做映射转换
+
+__Arguments__
+* `dict` `source => target` 结构对象，`source`，`target` 均为字符串
+
+## helper/assert
+
+<a name="helper-assert-equal"></a>
+### helper.assert.equal(field, value, obj, error)
+* 用来判断某个值是否和指定的值相等，不等则输出错误
+
+__Arguments__
+* `field` 要判断的键名
+* `value` 要比较的静态的值, 不能是引用
+* `obj` 要判断的对象，默认是 `req.params`, 如果制定了 `obj` 则为: `req.hooks[obj]`
+* `error` 如果不相等，输出的错误信息, String 类型或者 Error 类型
+
+<a name="helper-assert-notEqual"></a>
+### helper.assert.notEqual(field, value, obj, error)
+* 用来判断某个值是否和指定的值不相等，相等则输出错误, 这个和 `helper.assert.equal` 刚好相反
+
+__Arguments__
+* `field` 要判断的键名
+* `value` 要比较的静态的值, 不能是引用
+* `obj` 要判断的对象，默认是 `req.params`, 如果制定了 `obj` 则为: `req.hooks[obj]`
+* `error` 如果相等，输出的错误信息, String 类型或者 Error 类型
+
+<a name="helper-assert-inArray"></a>
+### helper.assert.inArray(field1, obj1, field2, obj2, error)
+* 用来判断某个值是否和某个值所包含，不包含则输出错误, 利用 `field1`, `obj1` 找到一个值 `val1`，判断是否在 `field2`, `obj2` 指定的变量 `val2` 中, 使用 `[val2].indexOf(val1) > -1 ` 判断， 如果 `val2` 是字符串，会使用逗号 `,` 切割
+
+__Arguments__
+* `field1` 要判断的键名
+* `obj1` 要判断的对象，默认是 `req.params`, 如果制定了 `obj` 则为: `req.hooks[obj]`
+* `field2` 要比较的静态的值, 不能是引用
+* `obj2` 要判断的对象，默认是 `req.params`, 如果制定了 `obj` 则为: `req.hooks[obj]`
+* `error` 如果不包含，输出的错误信息, String 类型或者 Error 类型
+
+<a name="helper-assert-exists"></a>
+### helper.assert.exists(hook, error)
+* 验证 `req.hooks` 上某个键名是否存在，不存在则输出错误
+
+__Arguments__
+* `hook` 要验证的变量 req.hooks[hook]
+* `error` 可选参数，如果不存在，输出的错误信息, String 类型或者 Error 类型, 默认值为 error.notFound()
+
+## helper/console
+
+<a name="helper-console-log"></a>
+### helper.console.log(variable, ...)
+* 和 `console.log` 用法类似，只是在请求的时候触发, 这一系列的 helper 都用来调试, 在控制器方法数组的第一级使用不影响 API 的行为, 如果在二级数组使用会影响 API 的行为，因为二级数组是逻辑或的关系，只要有一个执行成功就会通过，而 `helper.console` 这个系列的执行都是可以通过的
+
+<a name="helper-console-error"></a>
+### helper.console.error(variable, ...)
+* 类似与 `console.error`
+
+<a name="helper-console-info"></a>
+### helper.console.info(variable, ...)
+* 类似与 `console.info`
+
+<a name="helper-console-time"></a>
+### helper.console.time(key)
+* 类似与 `console.time`
+
+<a name="helper-console-timeEnd"></a>
+### helper.console.time(key)
+* 类似与 `console.timeEnd`
 
 ### Contributing
 - Fork this repo

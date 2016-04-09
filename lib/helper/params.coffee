@@ -4,10 +4,10 @@ errors    = require '../errors'
 params =
 
   # 忽略掉指定属性
-  omit: (omitValues...) ->
+  omit: (keys...) ->
     (req, res, next) ->
       return next() unless req.params?
-      req.params = _.omit(req.params, omitValues)
+      req.params = _.omit(req.params, keys)
       next()
 
   # 检测必要参数
