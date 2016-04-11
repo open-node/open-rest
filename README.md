@@ -762,11 +762,6 @@ module.exports = (sequelize) ->
 * 定义哪些列允许搜索的，搜索方式是怎么的，在使用 helper.rest.list 生效
 * 配合 queryString 中 q, _searchs 来使用搜索功能
 
-<a name="model-searchCols"></a>
-### searchCols
-* 定义哪些列允许搜索的，搜索方式是怎么的，在使用 helper.rest.list
-* 配合 queryString 中 q, _searchs 来使用搜索功能
-
 <a name="model-stats"></a>
 ### stats
 * 定义统计相关的配置，在使用 helper.rest.statistics 时生效
