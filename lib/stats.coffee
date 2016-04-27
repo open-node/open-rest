@@ -1,6 +1,7 @@
-_         = require 'underscore'
-Sequelize = require 'sequelize'
-dc        = decodeURIComponent
+_           = require 'underscore'
+Sequelize   = require 'sequelize'
+dc          = decodeURIComponent
+pageParams  = require './page-params'
 
 defaultPagination =
   maxResults: 10
@@ -90,8 +91,4 @@ module.exports =
 
   pageParams: (Model, params) ->
     pagination = Model.stats.pagination or defaultPagination
-    startIndex = (+params.startIndex or 0)
-    maxResults = (+params.maxResults or +pagination.maxResults)
-    limit = Math.min(maxResults, pagination.maxResultsLimit)
-    offset = Math.min(startIndex, pagination.maxStartIndex)
-    [offset, limit]
+    pageParams(pagination, params)

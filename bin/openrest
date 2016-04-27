@@ -10,6 +10,7 @@ params
   .version(pkg.version)
   .option('table-sync', '根据model定义同步表结构')
   .option('init',       '初始化一个新的应用')
+  .option('ls',         '列出有那些可用的样板工程')
   .parse(process.argv)
 
 # 初始化一个应用

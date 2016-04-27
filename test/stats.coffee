@@ -249,7 +249,7 @@ describe 'stats', ->
       Model =
         stats: {}
       params = {}
-      expected = [0, 10]
+      expected = offset: 0, limit: 10
       assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
@@ -259,7 +259,7 @@ describe 'stats', ->
       params =
         startIndex: 20
         maxResults: 15
-      expected = [20, 15]
+      expected = offset: 20, limit: 15
       assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
@@ -271,7 +271,7 @@ describe 'stats', ->
             maxResultsLimit: 2000
             maxStartIndex: 50000
       params = {}
-      expected = [0, 20]
+      expected = offset: 0, limit: 20
       assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
@@ -284,7 +284,7 @@ describe 'stats', ->
             maxStartIndex: 50000
       params =
         startIndex: 50
-      expected = [50, 20]
+      expected = offset: 50, limit: 20
       assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
@@ -297,7 +297,7 @@ describe 'stats', ->
             maxStartIndex: 50000
       params =
         startIndex: 5000000
-      expected = [50000, 20]
+      expected = offset: 50000, limit: 20
       assert.deepEqual stats.pageParams(Model, params), expected
       done()
 
@@ -311,6 +311,20 @@ describe 'stats', ->
       params =
         startIndex: 5000000
         maxResults: 10000
-      expected = [50000, 2000]
+      expected = offset: 50000, limit: 2000
+      assert.deepEqual stats.pageParams(Model, params), expected
+      done()
+
+    it "set pagination lt 0", (done) ->
+      Model =
+        stats:
+          pagination:
+            maxResults: 20
+            maxResultsLimit: 2000
+            maxStartIndex: 50000
+      params =
+        startIndex: -1
+        maxResults: -10
+      expected = offset: 0, limit: 0
       assert.deepEqual stats.pageParams(Model, params), expected
       done()

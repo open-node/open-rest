@@ -1,7 +1,8 @@
 # model of open-rest
-_         = require 'underscore'
-utils     = require './utils'
-Sequelize = require 'sequelize'
+_             = require 'underscore'
+utils         = require './utils'
+Sequelize     = require 'sequelize'
+_pageParams   = require './page-params'
 
 # 存放 models 的定义
 Models = {}
@@ -67,8 +68,8 @@ model.statistics = statistics = (params, where, conf, callback) ->
       where: Sequelize.and.apply(Sequelize, ands)
       group: utils.stats.group(dims)
       order: utils.stats.sort(Model, params)
-      offset: limit[0]
-      limit: limit[1]
+      offset: limit.offset
+      limit: limit.limit
       raw: yes
     if listOpts.include
       option.include = _.map(listOpts.include, (x) ->
@@ -112,6 +113,7 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
   searchOrs.push utils.searchOpt(Model, params._searchs, params.q)
 
   # 处理关联资源的过滤条件
+  # 以及关联资源允许返回的字段
   if includes
     _.each(includes, (x) ->
       includeWhere = {}
@@ -126,6 +128,9 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
       searchOrs.push utils.searchOpt(x.model, params._searchs, params.q, x.as)
 
       x.where = includeWhere if _.size(includeWhere)
+
+      # 以及关联资源允许返回的字段
+      x.attributes = x.model.allowIncludeCols if x.model.allowIncludeCols
     )
 
   # 将 searchOrs 赋到 where 上
@@ -173,11 +178,7 @@ model.modelInclude = modelInclude = (params, includes) ->
 # }
 ###
 model.pageParams = pageParams = (params) ->
-  pagination = @pagination
-  startIndex = (+params.startIndex or 0)
-  maxResults = (+params.maxResults or +pagination.maxResults)
-  limit: Math.min(maxResults, pagination.maxResultsLimit)
-  offset: Math.min(startIndex, pagination.maxStartIndex)
+  _pageParams(@pagination, params)
 
 ###
 # 处理排序参数

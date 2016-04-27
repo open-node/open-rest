@@ -144,6 +144,7 @@ __Special Functions Config__
 * [`writableCols`](#model-writableCols)
 * [`editableCols`](#model-editableCols)
 * [`onlyAdminCols`](#model-onlyAdminCols)
+* [`allowIncludeCols`](#model-allowIncludeCols)
 * [`searchCols`](#model-searchCols)
 * [`stats`](#model-stats)
 
@@ -695,8 +696,11 @@ module.exports = (sequelize) ->
 ### onlyAdminCols
 * 定义一个数组，用来指定添加或编辑时哪些字段只允许管理员指定，在使用 helper.rest.modify, helper.rest.add 时生效
 
+<a name="model-allowIncludeCols"></a>
+### allowIncludeCols
+* 定义一个数组，用来指定当资源被其他资源包含的时候（include）的时候那些列可以被查询返回，常见于 User 中，User 会被其他资源包含，但是 User 里的某些列需要隐藏，例如： password, email 等
 
-__Define writableCols, editableCols, onlyAdminCols example__
+__Define writableCols, editableCols, onlyAdminCols allowIncludeCols example__
 
 ```coffee
 module.exports = (sequelize) ->
@@ -754,6 +758,8 @@ module.exports = (sequelize) ->
     onlyAdminCols: [
       'role', 'status', 'switchs'
     ]
+    # 当 `user` 被其他资源包含的时候仅返回 `id`, `name`, `status` 三个字段，其余的不返回
+    allowIncludeCols: ['id', 'name', 'status']
   }
 ```
 
