@@ -186,6 +186,7 @@ __Special Functions Config__
 * [`omit`](#helper-params-omit)
 * [`required`](#helper-params-required)
 * [`map`](#helper-params-map)
+* [`assign`](#helper-params-assign)
 
 ### helper/assert
 * [`equal`](#helper-assert-equal)
@@ -1120,10 +1121,18 @@ __Arguments__
 
 <a name="helper-params-map"></a>
 ### helper.params.map(dict)
-* 将 `req.params` 根据指定的指定的字典做映射转换
+* 将 `req.params` 根据指定的字典做映射转换
 
 __Arguments__
 * `dict` `source => target` 结构对象，`source`，`target` 均为字符串
+
+<a name="helper-params-assign"></a>
+### helper.params.assign(key, value)
+* 将 `req.params` 根据指定的 `key` 赋值为 `value`
+
+__Arguments__
+* `key` 要赋值的参数名称
+* `value` 要赋值的值
 
 ## helper/assert
 

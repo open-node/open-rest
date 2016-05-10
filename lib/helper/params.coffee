@@ -27,5 +27,11 @@ params =
         req.params[v] = req.params[k]
       next()
 
+  # 给params赋值
+  assign: (key, value) ->
+    (req, res, next) ->
+      req.params[key] = value
+      next()
+
 module.exports = params
 
