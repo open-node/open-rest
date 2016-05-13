@@ -104,7 +104,7 @@ rest =
         if _.isArray(ret)
           ret = listAttrFilter(ret, attrs)
         else
-          ret = itemAttrFilter(attr)(ret)
+          ret = itemAttrFilter(attrs)(ret)
 
       res.send(statusCode, ret)
       next()
