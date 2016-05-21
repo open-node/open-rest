@@ -165,7 +165,7 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
 # 或者 undefined
 model.modelInclude = modelInclude = (params, includes) ->
   return unless includes
-  return unless params.includes
+  return unless _.isString(params.includes)
   ret = _.filter(params.includes.split(','), (x) -> includes[x])
   return if ret.length is 0
   _.map(ret, (x) -> _.clone(includes[x]))
