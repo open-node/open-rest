@@ -1056,13 +1056,14 @@ __Arguments__
 * `cols` 可选参数，资源允许修改的字段，不填会选用 `Model.editableCols` 或 `Model.writableCols`
 
 <a name="helper-rest-detail"></a>
-### helper.rest.detail(hook, attachs = null, statusCode = 200)
+### helper.rest.detail(hook, attachs = null, statusCode = 200, attrFilter = true)
 * 标准的输出资源的方法
 
 __Arguments__
 * `hook` 资源所在位置 req.hooks[hook]
 * `attachs` 可选参数，要附加到资源上的对象 例如: {"user": "user", "book": "userBook"}，会把 `req.hooks` 上的 `user` 以及 `userBook` 附加到资源的 `user` 和 `book` 上
 * `statusCode` 可选参数, 指定返回的`http.header.statusCode`, 默认值为 `200`
+* `attrFilter` 可选参数，是否通过 req.params.attrs 过滤结果，默认值为 `true` 过滤
 
 <a name="helper-rest-beforeAdd"></a>
 ### helper.rest.beforeAdd(Model, cols, hook = Model.name)

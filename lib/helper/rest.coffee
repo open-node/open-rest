@@ -94,12 +94,12 @@ rest =
       )
 
   # 获取单个资源详情的方法
-  detail: (hook, attachs = null, statusCode = 200) ->
+  detail: (hook, attachs = null, statusCode = 200, attrFilter = yes) ->
     (req, res, next) ->
       model = req.hooks[hook]
       ret = if model.toJSON then model.toJSON() else model
       _.each(attachs, (v, k) -> ret[k] = req.hooks[v] or req[v]) if attachs
-      if req.params.attrs
+      if (attrFilter is yes) and (_.isString(req.params.attrs))
         attrs = req.params.attrs.split(',')
         if _.isArray(ret)
           ret = listAttrFilter(ret, attrs)
