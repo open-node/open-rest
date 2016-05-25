@@ -16,7 +16,7 @@ params =
     unless _.all(keys, (x) -> _.isString(x))
       throw Error('params keys every item must be a string')
     (req, res, next) ->
-      missings = _.filter(keys, (key) -> not req.params[key])
+      missings = _.filter(keys, (key) -> not req.params.hasOwnProperty(key))
       return next() unless missings.length
       next errors.missingParameter("Missing required params: #{missings}")
 
