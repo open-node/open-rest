@@ -48,8 +48,10 @@ module.exports = errors =
     new restify.NotAuthorizedError msg
 
   # 请求参数错误
-  invalidArgument: (msg = 'Invalid argument error.') ->
-    new restify.InvalidArgumentError msg
+  invalidArgument: (msg = 'Invalid argument error.', values) ->
+    error = new restify.InvalidArgumentError msg
+    error.body.value = values if values and values.length
+    error
 
   # 丢失参数错误
   missingParameter: (msg = 'Missing parameter error.', missings) ->
@@ -79,3 +81,9 @@ module.exports = errors =
         message: msg
         values: values
       ]
+
+  # 标准错误，直接返回 Error, 只是可以增加 value 字段
+  error: (msg, values...) ->
+    error = new Error(msg)
+    error.value = values
+    error

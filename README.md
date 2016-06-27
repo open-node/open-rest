@@ -32,6 +32,15 @@ mkdir ~/restapi && open-rest init && cd ~/restapi
 └── README.md
 </pre>
 
+## 请求执行顺序
+<pre>
+# 业务逻辑之前的统一处理，比如用户身份的获取, 基础权限的判断
+middle-wares
+
+# 核心业务逻辑
+controllers
+</pre>
+
 ## Run
 <pre>./index.coffee</pre>
 OR

@@ -77,22 +77,22 @@ module.exports = (opts) ->
     res.charSet opts.config.charset or 'utf-8'
     next()
 
+  middleWareIterator = (middleWare) ->
+    server.use (req, res, next) ->
+      try
+        middleWare(req, res, next)
+      catch error
+        console.error new Date, req.url, error, error.stack
+        next error
+
+
   # 自定义中间件
   # 需要自定义一些中间件，请写在这里
   if fs.existsSync(opts.middleWarePath)
     do ->
       middleWares = require opts.middleWarePath
       return unless _.isArray middleWares
-      _.each middleWares, (middleWare) ->
-        server.use (req, res, next) ->
-          try
-            middleWare(req, res, next)
-          catch error
-            console.error new Date
-            console.error req.url
-            console.error error
-            console.error error.stack
-            next error
+      _.each middleWares, middleWareIterator
 
   # 路由初始化、控制器载入
   require(opts.routePath) new Router(
