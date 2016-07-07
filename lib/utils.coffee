@@ -30,11 +30,16 @@ utils =
     parseInt(value, mode) or 0
 
   # 根据设置的路径，获取对象
-  getModules: (_path) ->
+  getModules: (_path, exts, excludes) ->
+    return _path if _.isObject(_path)
     modules = {}
-    for file in utils.readdir(_path, ['coffee', 'js'])
+    for file in utils.readdir(_path, exts, excludes)
       moduleName = utils.file2Module file
-      modules[moduleName] = require "#{_path}/#{file}"
+      m = require "#{_path}/#{file}"
+      if (_.size(m) is 1) and m.default?
+        modules[moduleName] = m.default
+      else
+        modules[moduleName] = m
 
     modules
 

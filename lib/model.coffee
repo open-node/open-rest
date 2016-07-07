@@ -216,16 +216,17 @@ model.init = (opt, path) ->
   sequelize = new Sequelize(opt.name, opt.user, opt.pass, opt)
   sequelize.query "SET time_zone='+0:00'"
 
-  for file in utils.readdir(path, ['coffee', 'js'], ['index', 'base'])
-    moduleName = utils.file2Module file
-    Models[moduleName] = require("#{path}/#{file}")(sequelize)
+  _.each(utils.getModules(path, ['coffee', 'js'], ['index', 'base']), (v, k) ->
+    Models[k] = v(sequelize)
+  )
 
   # model 之间关系的定义
   # 未来代码模块化更好，每个文件尽可能独立
   # 这里按照资源的紧密程度来分别设定资源的结合关系
   # 否则所有的结合关系都写在一起会很乱
-  for file in utils.readdir("#{path}/associations")
-    require("#{path}/associations/#{file}")(Models)
+  _.each(utils.getModules("#{path}/associations", ['coffee', 'js']), (v) ->
+    v(Models)
+  )
 
   # 处理 model 定义的 includes
   _.each(Models, (Model, name) ->
