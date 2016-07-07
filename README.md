@@ -4,12 +4,25 @@ Standard restful api server, Base on restify and sequelize
 
 ## Installation
 ```bash
-npm install -g open-rest
+npm install open-rest --save
 ```
 
 ## Quick Start
 ```bash
-mkdir ~/restapi && open-rest init && cd ~/restapi
+// 克隆样本功能
+git clone git@github.com:open-node/open-rest-es6-boilerplate.git myApp
+cd myApp
+
+// 安装依赖库包
+npm install
+
+// 编辑配置文件
+vim ./src/app/configs/config.development.es
+
+// 生成数据库表结构
+node ./build/index.js table-sync
+// or
+mysql -uroot -p -d dbname < ./src/app/configs/table.sql
 ```
 
 ## App directory agreement
@@ -23,10 +36,8 @@ mkdir ~/restapi && open-rest init && cd ~/restapi
 │   ├── middle-wares
 │   ├── models
 │   └── routes.coffee
-├── cluster.coffee
-├── cron.coffee
-├── index.coffee
-├── socket.coffee
+├── index.js
+├── socket.js
 ├── LICENSE
 ├── package.json
 └── README.md
