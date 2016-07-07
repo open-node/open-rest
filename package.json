@@ -29,7 +29,7 @@
     "async": "^1.4.0",
     "commander": "^2.4.0",
     "mysql": "^2.5.2",
-    "restify": "4.0.3",
+    "restify": "4.1.1",
     "sequelize": "3.21.0",
     "underscore": "1.8.3"
   }

@@ -252,4 +252,14 @@ model.init = (opt, path) ->
     )
   )
 
+  # 判断如果是 development 模式下 sync 表结构
+  # 同时满足两个条件 development 模式, process.argv 包含 table-sync
+  if (process.env.NODE_ENV is 'development') and ('table-sync' in process.argv)
+    _.each(Models, (Model) ->
+      Model
+        .sync()
+        .then(console.log.bind(console, "Synced"))
+        .catch(console.error.bind(console))
+    )
+
 module.exports = model
