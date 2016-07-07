@@ -30,7 +30,7 @@ requiredCheck = (opts) ->
     else
       opts["#{_path}Path"] = "#{opts.appPath}/#{_path}s"
   )
-  opts.config = require opts.configPath
+  opts.config = utils.es6import(require(opts.configPath))
 
   # 中间件路径的处理
   unless opts.middleWarePath

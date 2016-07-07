@@ -35,13 +35,16 @@ utils =
     modules = {}
     for file in utils.readdir(_path, exts, excludes)
       moduleName = utils.file2Module file
-      m = require "#{_path}/#{file}"
-      if (_.size(m) is 1) and m.default?
-        modules[moduleName] = m.default
-      else
-        modules[moduleName] = m
+      modules[moduleName] = utils.es6import(require("#{_path}/#{file}"))
 
     modules
+
+  ###
+  # 兼容 es6 的 export
+  ###
+  es6import: (obj) ->
+    isES6 = (_.size(obj) is 1) and obj.default?
+    return if isES6 then obj.default else obj
 
   ###
   # 从 req 中提取所需的参数
