@@ -97,7 +97,7 @@ module.exports = (opts) ->
   # 路由初始化、控制器载入
   require(opts.routePath) new Router(
     server
-    utils.getModules(opts.controllerPath)
+    utils.getModules(opts.controllerPath, ['coffee', 'js'])
     defaultCtl
     opts.config.route
   )

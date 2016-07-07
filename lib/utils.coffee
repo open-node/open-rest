@@ -33,6 +33,7 @@ utils =
   getModules: (_path, exts, excludes) ->
     return _path if _.isObject(_path)
     modules = {}
+    return modules unless fs.existsSync(_path)
     for file in utils.readdir(_path, exts, excludes)
       moduleName = utils.file2Module file
       modules[moduleName] = utils.es6import(require("#{_path}/#{file}"))
