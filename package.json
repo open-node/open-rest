@@ -1,6 +1,6 @@
 {
   "name": "open-rest",
-  "version": "5.1.1",
+  "version": "5.1.3",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "commander": "^2.4.0",
     "mysql": "^2.5.2",
     "restify": "4.0.3",
-    "sequelize": "3.13.0",
+    "sequelize": "3.21.0",
     "underscore": "1.8.3"
   }
 }
