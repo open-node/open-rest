@@ -90,7 +90,7 @@ module.exports = (opts) ->
   # 需要自定义一些中间件，请写在这里
   if fs.existsSync(opts.middleWarePath)
     do ->
-      middleWares = require opts.middleWarePath
+      middleWares = utils.es6import(require(opts.middleWarePath))
       return unless _.isArray middleWares
       _.each middleWares, middleWareIterator
 
