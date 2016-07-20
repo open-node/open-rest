@@ -16,13 +16,9 @@ cd myApp
 // 安装依赖库包
 npm install
 
-// 编辑配置文件
-vim ./src/app/configs/config.development.es
+// 安装部署
+npm run setup
 
-// 生成数据库表结构
-node ./build/index.js table-sync
-// or
-mysql -uroot -p -d dbname < ./src/app/configs/table.sql
 ```
 
 ## App directory agreement
