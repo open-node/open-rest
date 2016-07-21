@@ -22,7 +22,7 @@ npm run setup
 ```
 
 ## App directory agreement
-<pre>
+
 ├── app
 │   ├── configs
 │   ├── controllers
@@ -37,21 +37,21 @@ npm run setup
 ├── LICENSE
 ├── package.json
 └── README.md
-</pre>
+
 
 ## 请求执行顺序
-<pre>
+
 # 业务逻辑之前的统一处理，比如用户身份的获取, 基础权限的判断
 middle-wares
 
 # 核心业务逻辑
 controllers
-</pre>
+
 
 ## Run
-<pre>./index.coffee</pre>
+./index.coffee
 OR
-<pre>./cluster.coffee</pre>
+./cluster.coffee
 
 ## Test
 ```bash
@@ -78,7 +78,7 @@ module.exports = (r) ->
 
 ### Controller Definition
 
-控制器模块按照约定定义在 ./controllers 目录下，每个控制器模块返回一个对象，对象的 key 是 action，值是一个函数或者一些列函数组合成的数组，每一个函数在请求的时候都会按照定义的顺序去执行
+控制器模块按照约定定义在 ./controllers 目录下，每个控制器模块返回一个对象，对象的 key 是 action，值是一个函数或者一系列函数组合成的数组，每一个函数在请求的时候都会按照定义的顺序去执行
 
 
 ```coffee
@@ -226,12 +226,12 @@ HTTP.verb `GET`
 
 Equivalent to
 
-<pre>GET: /routePath</pre>
+GET: /routePath
 
 
 __Arguments__
 * `routePath` - 路由的路径，例如: `/users/:id` or `/users/:userId/books`
-* `actionPath` - 监听的动作，例如：`user#detail` 表示 user 控制器模块的 detail 方法。`user#books" 表示 user 控制器模块的 books 方法
+* `actionPath` - 监听的动作，例如：`user#detail` 表示 user 控制器模块的 detail 方法。`user#books` 表示 user 控制器模块的 books 方法
 
 __Example__
 
@@ -263,7 +263,7 @@ HTTP.verb `PUT`
 
 等价于
 
-<pre>PUT: /routePath</pre>
+PUT: /routePath
 
 __Arguments__
 * 同上 [`router.get`](#router-get)
@@ -276,7 +276,7 @@ HTTP.verb `PATCH`
 等价于
 
 ```js
-<pre>PATCH: /routePath</pre>
+PATCH: /routePath
 ```
 
 __Arguments__
@@ -290,7 +290,7 @@ HTTP.verb `DELETE`
 等价于
 
 ```js
-<pre>DELETE: /routePath</pre>
+DELETE: /routePath
 ```
 
 __Arguments__
@@ -303,7 +303,7 @@ HTTP.verb `POST`
 
 等价于
 
-<pre>POST: /routePath</pre>
+POST: /routePath
 
 __Arguments__
 * 同上 [`router.get`](#router-get)
@@ -315,12 +315,12 @@ HTTP.verb `POST` or `GET`
 
 等价于
 
-<pre>
+
 // List the resource
 GET: /routePath
 // Create a resource
 POST: /routePath
-</pre>
+
 
 __Arguments__
 
@@ -340,10 +340,6 @@ module.exports = (r) ->
   // GET: /books
   // POST: /books
   r.collection 'book'
-
-  // GET: /users/book
-  // POST: /users/book
-  r.collection 'book', '/users/book'
 
   // GET: /users/book
   // POST: /users/book
@@ -371,12 +367,12 @@ HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
 
 等价于
 
-<pre>
+
 PUT: /routePath
 PATCH: /routePath
 GET: /routePath
 DELETE: /routePath
-</pre>
+
 
 __Arguments__
 
@@ -420,14 +416,14 @@ HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
 
 等价于
 
-<pre>
+
 POST: /routePath
 PUT: /routePath/:id
 PATCH: /routePath/:id
 GET: /routePath
 GET: /routePath/:id
 DELETE: /routePath/:id
-</pre>
+
 
 __Arguments__
 
@@ -926,8 +922,8 @@ __Arguments__
 
 
 <a name="utils-pickParams"></a>
-* 从 web 请求的 req 中提取用户提交的值
 ### utils.pickParams(req, cols, Model)
+* 从 web 请求的 req 中提取用户提交的值
 
 __Arguments__
 * `req` web 请求的 request 对象
