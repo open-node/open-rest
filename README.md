@@ -22,7 +22,7 @@ npm run setup
 ```
 
 ## App directory agreement
-
+<pre>
 ├── app
 │   ├── configs
 │   ├── controllers
@@ -37,7 +37,7 @@ npm run setup
 ├── LICENSE
 ├── package.json
 └── README.md
-
+</pre>
 
 ## 请求执行顺序
 
