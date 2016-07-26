@@ -3,11 +3,11 @@
 fs          = require "fs"
 restify     = require "restify"
 _           = require "underscore"
-Router      = require "./router"
+Router      = require "open-router"
 helper      = require "./helper"
-defaultCtl  = require "./controller"
 model       = require "./model"
 utils       = require "./utils"
+defaultCtl  = require "./controller"
 openrest    = require "../package"
 
 # 检查参数的正确性
@@ -95,12 +95,12 @@ module.exports = (opts) ->
       _.each middleWares, middleWareIterator
 
   # 路由初始化、控制器载入
-  require(opts.routePath) new Router(
+  require(opts.routePath)(new Router(
     server
     utils.getModules(opts.controllerPath, ['coffee', 'js'])
     defaultCtl
     opts.config.route
-  )
+  ))
 
   # 监听错误，打印出来，方便调试
   server.on 'uncaughtException', (req, res, route, error) ->

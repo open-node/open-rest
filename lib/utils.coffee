@@ -2,7 +2,6 @@ fs        = require 'fs'
 path      = require 'path'
 _         = require 'underscore'
 mysql     = require 'mysql'
-model     = require './model'
 stats     = require './stats'
 
 # 随机字符串字典

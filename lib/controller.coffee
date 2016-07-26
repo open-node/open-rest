@@ -9,14 +9,20 @@
 _       = require 'underscore'
 utils   = require './utils'
 helper  = require './helper'
+model   = require './model'
 
 module.exports =
 
   # 获取资源列表的通用方法
-  list: helper.rest.list
+  list: (ctl) ->
+    Model = model(ctl)
+    [
+      helper.rest.list(Model)
+    ]
 
   # 获取单个资源详情的方法
-  detail: (Model) ->
+  detail: (ctl) ->
+    Model = model(ctl)
     [
       helper.getter(Model, Model.name)
       helper.assert.exists(Model.name)
@@ -24,7 +30,8 @@ module.exports =
     ]
 
   # 修改某个资源描述的方法
-  modify: (Model) ->
+  modify: (ctl) ->
+    Model = model(ctl)
     [
       helper.getter(Model, Model.name)
       helper.assert.exists(Model.name)
@@ -32,10 +39,15 @@ module.exports =
     ]
 
   # 根据资源描述添加资源到集合上的方法
-  add: helper.rest.add
+  add: (ctl) ->
+    Model = model(ctl)
+    [
+      helper.rest.add(Model)
+    ]
 
   # 删除某个资源
-  remove: (Model) ->
+  remove: (ctl) ->
+    Model = model(ctl)
     [
       helper.getter(Model, Model.name)
       helper.assert.exists(Model.name)
