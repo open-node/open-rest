@@ -93,7 +93,7 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
   where = {}
   Model = @
   includes = modelInclude(params, Model.includes)
-  _.each(Model.filterAttrs or Model.rawAttributes, (attr, name) ->
+  _.each(Model.filterAttrs or _.keys(Model.rawAttributes), (name) ->
     utils.findOptFilter(params, name, where)
   )
   if Model.rawAttributes.isDelete and not params.showDelete
@@ -117,7 +117,7 @@ model.findAllOpts = findAllOpts = (params, isAll = no) ->
   if includes
     _.each(includes, (x) ->
       includeWhere = {}
-      _.each(x.model.filterAttrs or x.model.rawAttributes, (attr, name) ->
+      _.each(x.model.filterAttrs or _.keys(x.model.rawAttributes), (name) ->
         utils.findOptFilter(params[x.as], name, includeWhere, name)
       )
       if x.model.rawAttributes.isDelete and not params.showDelete
