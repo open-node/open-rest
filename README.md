@@ -226,7 +226,7 @@ HTTP.verb `GET`
 
 Equivalent to
 
-* GET: /routePath
+> GET: /routePath
 
 __Arguments__
 * `routePath` - 路由的路径，例如: `/users/:id` or `/users/:userId/books`
@@ -262,7 +262,7 @@ HTTP.verb `PUT`
 
 等价于
 
-* PUT: /routePath
+> PUT: /routePath
 
 __Arguments__
 * 同上 [`router.get`](#router-get)
@@ -274,7 +274,7 @@ HTTP.verb `PATCH`
 
 等价于
 
-* PATCH: /routePath
+> PATCH: /routePath
 
 __Arguments__
 * 同上 [`router.get`](#router-get)
@@ -286,7 +286,7 @@ HTTP.verb `DELETE`
 
 等价于
 
-* DELETE: /routePath
+> DELETE: /routePath
 
 __Arguments__
 * 同上 [`router.get`](#router-get)
@@ -298,7 +298,7 @@ HTTP.verb `POST`
 
 等价于
 
-* POST: /routePath
+> POST: /routePath
 
 __Arguments__
 * 同上 [`router.get`](#router-get)
@@ -310,8 +310,8 @@ HTTP.verb `POST` or `GET`
 
 等价于
 
-* GET: /routePath
-* POST: /routePath
+> GET: /routePath
+> POST: /routePath
 
 
 __Arguments__
@@ -359,10 +359,10 @@ HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
 
 等价于
 
-* PUT: /routePath
-* PATCH: /routePath
-* GET: /routePath
-* DELETE: /routePath
+> PUT: /routePath
+> PATCH: /routePath
+> GET: /routePath
+> DELETE: /routePath
 
 __Arguments__
 
@@ -406,12 +406,12 @@ HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
 
 等价于
 
-* POST: /routePath
-* PUT: /routePath/:id
-* PATCH: /routePath/:id
-* GET: /routePath
-* GET: /routePath/:id
-* DELETE: /routePath/:id
+> POST: /routePath
+> PUT: /routePath/:id
+> PATCH: /routePath/:id
+> GET: /routePath
+> GET: /routePath/:id
+> DELETE: /routePath/:id
 
 __Arguments__
 
