@@ -311,8 +311,8 @@ HTTP.verb `POST` or `GET`
 等价于
 
 > GET: /routePath
-> POST: /routePath
 
+> POST: /routePath
 
 __Arguments__
 
@@ -360,8 +360,11 @@ HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
 等价于
 
 > PUT: /routePath
+
 > PATCH: /routePath
+
 > GET: /routePath
+
 > DELETE: /routePath
 
 __Arguments__
