@@ -407,10 +407,15 @@ HTTP.verb `DELETE` or `GET` or `PATCH` or `PUT`
 等价于
 
 > POST: /routePath
+
 > PUT: /routePath/:id
+
 > PATCH: /routePath/:id
+
 > GET: /routePath
+
 > GET: /routePath/:id
+
 > DELETE: /routePath/:id
 
 __Arguments__
