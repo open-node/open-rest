@@ -2,6 +2,9 @@
 
 Standard restful api server, Base on restify and sequelize
 
+[![Build status](https://api.travis-ci.org/open-node/open-rest.svg?branch=master)](https://travis-ci.org/open-node/open-rest)
+
+
 ## Installation
 ```bash
 npm install open-rest --save
