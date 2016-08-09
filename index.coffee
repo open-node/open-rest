@@ -1,6 +1,6 @@
 rest = require "./lib/initialize"
 
-rest.Router     = require "./lib/router"
+rest.Router     = require "open-router"
 rest.helper     = require "./lib/helper"
 rest.defaultCtl = require "./lib/controller"
 rest.model      = require "./lib/model"
