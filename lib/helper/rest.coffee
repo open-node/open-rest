@@ -27,6 +27,19 @@ rest =
   # 提供这个功能的目的是有时候Model统计是指定和维度的定义并非静态的
   # 而是跟着数据变动的,此时这个功能就变得十分有用
   statistics: (Model, options = null, hook, _conf) ->
+
+    unless Model instanceof Sequelize.Model
+      throw Error("First arguments `Model` must be an Sequelize Class.")
+
+    if (options and !_.isString(options))
+      throw Error("Second argument `options` must be a String.")
+
+    if (hook and !_.isString(hook))
+      throw Error("Third  argument `hook` must be a String.")
+
+    if (_conf and !_.isString(_conf))
+      throw Error("The 4th argument `_conf` must be a String.")
+
     (req, res, next) ->
       conf = null
       conf = req.hooks[_conf] if _conf
@@ -44,6 +57,25 @@ rest =
   # allowAttrs 那些字段是被允许的
   # hook 默认为空，如果指定了hook，则数据不直接输出而是先挂在 hook上
   list: (Model, opt = null, allowAttrs, hook = null) ->
+
+    unless Model instanceof Sequelize.Model
+      throw Error("First arguments `Model` must be an Sequelize Class.")
+
+    if (opt and !_.isString(opt))
+      throw Error("Second argument `opt` must be a String.")
+
+    if (allowAttrs)
+      unless !_.isArray(allowAttrs)
+        throw Error("Third arguments `allowAttrs` must be an Array.")
+      for x in allowAttrs
+        unless _.isString(x)
+          throw Error("Third arguments `allowAttrs` each item in the array must be a string.")
+        unless Model.rawAttributes[x]
+          throw Error("Third arguments `allowAttrs` has non-exists field: #{x}.")
+
+    if (hook and !_.isString(hook))
+      throw Error("The 4th argument `hook` must be a String.")
+
     # 统计符合条件的条目数
     getTotal = (opt, ignoreTotal, callback) ->
       return callback() if ignoreTotal
@@ -80,6 +112,19 @@ rest =
   # allowAttrs 那些字段是被允许的
   # hook 默认为空，如果指定了hook，则数据不直接输出而是先挂在 hook上
   all: (Model, opt = null, allowAttrs, hook = null) ->
+
+    unless Model instanceof Sequelize.Model
+      throw Error("First arguments `Model` must be an Sequelize Class.")
+
+    if (opt and !_.isString(opt))
+      throw Error("Second argument `options` must be a String.")
+
+    if (allowAttrs and !_.isArray(allowAttrs))
+      throw Error("Third arguments `allowAttrs` must be an Array.")
+
+    if (hook and !_.isString(hook))
+      throw Error("The 4th argument `hook` must be a String.")
+
     (req, res, next) ->
       options = (opt and req.hooks[opt]) or Model.findAllOpts(req.params, yes)
       ignoreTotal = req.params._ignoreTotal is 'yes'
@@ -95,6 +140,19 @@ rest =
 
   # 获取单个资源详情的方法
   detail: (hook, attachs = null, statusCode = 200, attrFilter = yes) ->
+
+    if (hook and !_.isString(hook))
+      throw Error("First arguments `hook` must be a String.")
+
+    if (attachs and !_.isObject(attachs))
+      throw Error("Second argument `attachs` must be a Hash.")
+
+    if _.isNumber(statusCode)
+      throw Error("Third argument `statusCode` must be a Number.")
+
+    if attrFilter in [yes, no]
+      throw Error("The 4th arguments `attrFilter` must be an Boolean.")
+
     (req, res, next) ->
       model = req.hooks[hook]
       ret = if model.toJSON then model.toJSON() else model
@@ -110,6 +168,16 @@ rest =
       next()
 
   beforeModify: (Model, hook, cols) ->
+
+    unless Model instanceof Sequelize.Model
+      throw Error("First arguments `Model` must be an Sequelize Class.")
+
+    if !_.isString(hook)
+      throw Error("Second argument `hook` must be a String.")
+
+    if (cols and !_.isArray(cols))
+      throw Error("Third argument `cols` must be an Array.")
+
     (req, res, next) ->
       model = req.hooks[hook]
       cols = cols or Model.editableCols or Model.writableCols
@@ -122,6 +190,13 @@ rest =
       next()
 
   save: (Model, hook) ->
+
+    unless Model instanceof Sequelize.Model
+      throw Error("First arguments `Model` must be an Sequelize Class.")
+
+    if (hook and !_.isString(hook))
+      throw Error("Second argument `hook` must be a String.")
+
     (req, res, next) ->
       model = req.hooks[hook]
       # 如果没有变化，则不需要保存，也不需要记录日志
@@ -139,6 +214,16 @@ rest =
 
   # 修改某个资源描述的方法
   modify: (Model, hook, cols) ->
+
+    unless Model instanceof Sequelize.Model
+      throw Error("First arguments `Model` must be an Sequelize Class.")
+
+    if (hook and !_.isString(hook))
+      throw Error("Second argument `hook` must be a String.")
+
+    if (cols and !_.isArray(cols))
+      throw Error("Third argument `cols` must be an Array.")
+
     (req, res, next) ->
       rest.beforeModify(Model, hook, cols)(req, res, (error) ->
         return next(error) if error
@@ -146,6 +231,16 @@ rest =
       )
 
   beforeAdd: (Model, cols, hook = Model.name) ->
+
+    unless Model instanceof Sequelize.Model
+      throw Error("First arguments `Model` must be an Sequelize Class.")
+
+    if (cols and !_.isArray(cols))
+      throw Error("Second argument `cols` must be an Array.")
+
+    if !_.isString(hook)
+      throw Error("Third argument `hook` must be a String.")
+
     (req, res, next) ->
       attr = utils.pickParams(req, cols or Model.writableCols, Model)
       attr.creatorId = req.user.id if Model.rawAttributes.creatorId
@@ -181,6 +276,19 @@ rest =
 
   # 根据资源描述添加资源到集合上的方法
   add: (Model, cols, hook = Model.name, attachs = null) ->
+
+    unless Model instanceof Sequelize.Model
+      throw Error("First arguments `Model` must be an Sequelize Class.")
+
+    if (cols and !_.isArray(cols))
+      throw Error("Second argument `cols` must be an Array.")
+
+    if !_.isString(hook)
+      throw Error("Third argument `hook` must be a String.")
+
+    if (attachs and !_.isObject(attachs))
+      throw Error("The 4th argument `attachs` must be a Hash.")
+
     (req, res, next) ->
       rest.beforeAdd(Model, cols, hook)(req, res, (error) ->
         return next(error) if error
@@ -189,6 +297,10 @@ rest =
 
   # 删除某个资源
   remove: (hook) ->
+
+    if !_.isString(hook)
+      throw Error("First argument `hook` must be a String.")
+
     (req, res, next) ->
       model = req.hooks[hook]
       # 资源如果有isDelete 字段则修改isDelete 为yes即可

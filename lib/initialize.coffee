@@ -82,7 +82,7 @@ module.exports = (opts) ->
       try
         middleWare(req, res, next)
       catch error
-        console.error new Date, req.url, error, error.stack
+        utils.log.error(req.url, error, error.stack)
         next error
 
 
@@ -104,12 +104,9 @@ module.exports = (opts) ->
 
   # 监听错误，打印出来，方便调试
   server.on 'uncaughtException', (req, res, route, error) ->
-    console.error new Date
-    console.error route
-    console.error error
-    console.error error.stack
+    utils.log.error(route, error, error.stack)
     res.send(500, 'Internal error') unless res.finished
 
   # 设置监听
   server.listen service.port or 8080, service.ip, ->
-    console.log '%s listening at %s', server.name, server.url
+    utils.log.info('%s listening at %s', server.name, server.url)

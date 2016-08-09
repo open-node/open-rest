@@ -77,7 +77,7 @@ model.statistics = statistics = (params, where, conf, callback) ->
         x
       )
   catch e
-    console.error(e, e.stack)
+    utils.log.error(e, e.stack)
     return callback(e)
   statsCount(Model, option, dims, (error, count) ->
     return callback(error) if error
@@ -258,8 +258,8 @@ model.init = (opt, path) ->
     _.each(Models, (Model) ->
       Model
         .sync()
-        .then(console.log.bind(console, "Synced"))
-        .catch(console.error.bind(console))
+        .then(utils.log.info.bind(utils.log, "Synced"))
+        .catch(utils.log.error)
     )
 
 module.exports = model

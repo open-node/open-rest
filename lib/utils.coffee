@@ -299,4 +299,10 @@ utils =
     length = dict.length
     (dict[Math.floor((Math.random() * length))] for i in [1..len]).join('')
 
+  # 处理日志
+  log:
+    info: console.info.bind(console)
+    error: console.error.bind(console)
+    warn: console.warn.bind(console)
+
 module.exports = utils
