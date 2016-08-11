@@ -63,11 +63,12 @@ rest =
 
   # 批量添加
   add: (Model, cols, hook = "#{Model.name}s", attachs = null) ->
-    [
-      rest.validate(Model, cols, hook)
-      rest.save(hook, Model)
-      rest.detail(hook, attachs, 201)
-    ]
+    (req, res, next) ->
+    async.series([
+      (callback) -> rest.validate(Model, cols, hook)(req, res, callback)
+      (callback) -> rest.save(hook, Model)(req, res, callback)
+      (callback) -> rest.detail(hook, attachs, 201)(req, res, callback)
+    ], next)
 
 module.exports = rest
 
