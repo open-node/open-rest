@@ -1,6 +1,6 @@
 {
   "name": "open-rest",
-  "version": "6.5.5",
+  "version": "6.5.4",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
@@ -24,9 +24,8 @@
   "dependencies": {
     "async": "^1.4.0",
     "commander": "^2.4.0",
-    "func-delegate": "^0.2.1",
     "mysql": "^2.5.2",
-    "open-router": "^0.2.0",
+    "open-router": "^0.1.1",
     "restify": "4.1.1",
     "sequelize": "3.21.0",
     "underscore": "1.8.3"

@@ -217,9 +217,7 @@ model.init = (opt, path) ->
   sequelize.query "SET time_zone='+0:00'"
 
   _.each(utils.getModules(path, ['coffee', 'js'], ['index', 'base']), (v, k) ->
-    Model = v(sequelize)
-    Model.model = model
-    Models[k] = Model
+    Models[k] = v(sequelize)
   )
 
   # model 之间关系的定义
