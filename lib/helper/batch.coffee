@@ -45,10 +45,10 @@ rest =
       )
 
   # 报错
-  save: (hook, Model) ->
+  save: (hook, Model, opt) ->
     (req, res, next) ->
       ls = _.map(req.hooks[hook], (x) -> x.toJSON())
-      p = _.isArray(req.body) and Model.bulkCreate(ls) or Model.create(ls[0])
+      p = _.isArray(req.body) and Model.bulkCreate(ls, opt) or Model.create(ls[0])
       utils.callback(p, (error, results) ->
         err = errors.sequelizeIfError error
         return next(err) if err
@@ -62,11 +62,11 @@ rest =
       )
 
   # 批量添加
-  add: (Model, cols, hook = "#{Model.name}s", attachs = null) ->
+  add: (Model, cols, hook = "#{Model.name}s", attachs = null, createOpt) ->
     (req, res, next) ->
       async.series([
         (callback) -> rest.validate(Model, cols, hook)(req, res, callback)
-        (callback) -> rest.save(hook, Model)(req, res, callback)
+        (callback) -> rest.save(hook, Model, createOpt)(req, res, callback)
         (callback) -> rest.detail(hook, attachs, 201)(req, res, callback)
       ], next)
 
