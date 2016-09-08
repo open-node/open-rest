@@ -16,3 +16,5 @@ test/*
 docs
 docs/*
 npm-debug.log
+coverage
+coverage/*

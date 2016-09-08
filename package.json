@@ -22,12 +22,16 @@
   },
   "homepage": "https://github.com/open-node/open-rest",
   "dependencies": {
-    "async": "^1.4.0",
     "commander": "^2.4.0",
+    "lodash": "^4.15.0",
     "mysql": "^2.5.2",
-    "open-router": "^0.1.1",
+    "open-router": "^0.2.0",
     "restify": "4.1.1",
-    "sequelize": "3.21.0",
-    "underscore": "1.8.3"
+    "sequelize": "3.21.0"
+  },
+  "devDependencies": {
+    "codecov": "^1.0.1",
+    "istanbul": "^0.4.4",
+    "mocha": "^3.0.2"
   }
 }

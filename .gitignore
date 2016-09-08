@@ -5,3 +5,5 @@ psd
 thumb
 *.log
 *~
+coverage
+coverage/*
