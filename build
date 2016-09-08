@@ -1,3 +1,0 @@
-#! /bin/bash
-
-coffee -c `find {./lib,./index.coffee} -type f -name '*.coffee'`

@@ -11,4 +11,8 @@ thumb
 samples
 build
 *~
+test
+test/*
+docs
+docs/*
 npm-debug.log
