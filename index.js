@@ -14,4 +14,8 @@ process.on('uncaughtException', function(error) {
   rest.utils.logger.error(error);
 });
 
+process.on('rejectionHandled', function(error) {
+  rest.utils.logger.error(error);
+});
+
 module.exports = rest;
