@@ -230,7 +230,10 @@ describe('lib/utils', function() {
       assert.throws(function() {
         utils.readdir(['hello'], 'js');
       }, function(error) {
-        return error instanceof Error && error.message === 'path must be a string';
+        return error instanceof Error && (
+          error.message === 'path must be a string' ||
+          error.message === 'path must be a string or Buffer'
+        );
       });
       done();
     });
