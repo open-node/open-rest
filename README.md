@@ -3,6 +3,8 @@
 Standard restful api server, Base on restify and sequelize
 
 [![Build status](https://api.travis-ci.org/open-node/open-rest.svg?branch=master)](https://travis-ci.org/open-node/open-rest)
+[![codecov](https://codecov.io/gh/open-node/open-rest/branch/master/graph/badge.svg)](https://codecov.io/gh/open-node/open-rest)
+
 
 
 ## Installation

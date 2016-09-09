@@ -4,4 +4,6 @@ node_js:
   - "4.2.4"
   - "6.2.2"
 before_script:
-  - npm install -g coffee-script mocha
+  - mocha
+after_success:
+  - codecov
