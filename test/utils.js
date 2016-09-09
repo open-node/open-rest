@@ -2,7 +2,7 @@ var assert  = require('assert')
   , _       = require('lodash')
   , utils   = require('../lib/utils');
 
-describe('Utils', function() {
+describe('lib/utils', function() {
 
   describe('#intval', function() {
     it("noraml", function(done) {

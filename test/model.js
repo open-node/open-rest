@@ -3,7 +3,7 @@ var assert  = require('assert')
   , utils   = require('../lib/utils')
   , model   = require('../lib/model');
 
-describe('model', function() {
+describe('lib/model', function() {
 
   describe('#init', function() {
     var errorLog = utils.logger.error;
