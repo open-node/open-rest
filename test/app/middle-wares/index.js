@@ -3,4 +3,4 @@ module.exports = [
     req._middleWare = 'This is the first middleWare.';
     next();
   }
-]
+];

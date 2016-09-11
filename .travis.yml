@@ -3,5 +3,12 @@ node_js:
   - "4.2.2"
   - "4.2.4"
   - "6.2.2"
+
+services:
+  - mysql
+
+before_script:
+  - "mysql -e 'create database open_rest;'"
+
 after_success:
   - codecov

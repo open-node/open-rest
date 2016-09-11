@@ -13,7 +13,11 @@ process.on('uncaughtException', function(error) {
   rest.utils.logger.error(error);
 });
 
-process.on('unhandledRejection', function(error) {
+process.on('unhandledRejection', function(reason, p) {
+  rest.utils.logger.error(reason, p);
+});
+
+process.on('rejectionHandled', function(error) {
   rest.utils.logger.error(error);
 });
 

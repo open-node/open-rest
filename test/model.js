@@ -1,6 +1,7 @@
 var assert  = require('assert')
   , _       = require('lodash')
   , utils   = require('../lib/utils')
+  , db      = require('./app/configs').db
   , model   = require('../lib/model');
 
 describe('lib/model', function() {
@@ -10,14 +11,14 @@ describe('lib/model', function() {
     utils.logger.error = function() {};
 
     it('model dir non-exists', function(done) {
-      model.init({}, __dirname + '/models-non-exists', true);
+      model.init(db, __dirname + '/models-non-exists', true);
       assert.ok(true);
 
       done();
     });
 
     it('model dir exists', function(done) {
-      model.init({}, __dirname + '/models');
+      model.init(db, __dirname + '/models');
 
       assert.ok(true);
       done();
@@ -56,7 +57,7 @@ describe('lib/model', function() {
 
       process.argv.push('table-sync');
 
-      model.init({}, __dirname + '/models');
+      model.init(db, __dirname + '/models');
 
       utils.logger.info = infoLog;
       process.env.NODE_ENV = NODE_ENV;
@@ -70,7 +71,7 @@ describe('lib/model', function() {
 
       process.env.NODE_ENV = 'development';
 
-      model.init({}, __dirname + '/models');
+      model.init(db, __dirname + '/models');
 
       utils.logger.error = errorLog;
       utils.logger.info = infoLog;
