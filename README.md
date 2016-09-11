@@ -36,9 +36,8 @@ npm run setup
 │   ├── locale
 │   ├── middle-wares
 │   ├── models
-│   └── routes.coffee
+│   └── routes.js
 ├── index.js
-├── socket.js
 ├── LICENSE
 ├── package.json
 └── README.md
