@@ -1,5 +1,6 @@
 var rest   = require('../')
   , _      = require('lodash')
+  , axios  = require('axios')
   , assert = require('assert');
 
 describe('integrate', function() {
@@ -101,7 +102,7 @@ describe('integrate', function() {
 
     restify.createServer = function(option) {
       assert.equal('open-rest', option.name);
-      assert.equal(pkg.version, option.version);
+      assert.equal('1.0.0', option.version);
 
       return createServer.call(restify, option);
     };
@@ -183,7 +184,7 @@ describe('integrate', function() {
       done();
     });
 
-    it('define app path', function(done) {
+    it('request home /', function(done) {
       var _root = __dirname + '/app';
       U.logger.info = function() {};
       U.logger.error = function() {};
@@ -191,17 +192,74 @@ describe('integrate', function() {
       var listen = rest({
         appPath: _root,
         middleWarePath: __dirname + '/app/no-middle-wares'
-      });
+      }, function(error, server) {
+        assert.equal(null, error);
+        assert.ok(listen.listening);
 
-      setTimeout(function() {
         restify.createServer = createServer;
         U.logger.info = log;
         U.logger.error = errorLog;
         model.init = modelInit;
-        if (listen.listening) listen.close();
 
-        done();
-      }, 100);
+        axios.get('http://127.0.0.1:8080/').then(function(response) {
+          if (listen.listening) listen.close();
+          try {
+            assert.equal(200, response.status);
+            assert.equal('OK', response.statusText);
+            assert.equal('application/json; charset=utf-8', response.headers['content-type']);
+            assert.equal('Hello world, I am open-rest.', response.data);
+          } catch (e) {
+            return done(e);
+          }
+          done();
+        }).catch(function(error) {
+          if (listen.listening) listen.close();
+          assert.equal(null, error);
+          done();
+        });
+      });
+
+    });
+
+    it('request /unexpetion ', function(done) {
+      var _root = __dirname + '/app';
+      U.logger.info = function() {};
+      U.logger.error = function() {};
+
+      var listen = rest({
+        appPath: _root,
+        middleWarePath: __dirname + '/app/no-middle-wares'
+      }, function(error, server) {
+        assert.equal(null, error);
+        assert.ok(listen.listening);
+
+        restify.createServer = createServer;
+        U.logger.info = log;
+        U.logger.error = errorLog;
+        model.init = modelInit;
+
+        axios.get('http://127.0.0.1:8080/unexception').then(function(response) {
+          if (listen.listening) listen.close();
+          try {
+            assert.equal(200, response.status);
+            assert.equal('OK', response.statusText);
+            assert.equal('application/json; charset=utf-8', response.headers['content-type']);
+            assert.equal('Hello world, I am open-rest.', response.data);
+          } catch (e) {
+            return done(e);
+          }
+          done();
+        }).catch(function(error) {
+          if (listen.listening) listen.close();
+          assert.equal(500, error.response.status);
+          assert.equal('Internal Server Error', error.response.statusText);
+          assert.deepEqual({
+            message: 'Ooh, there are some errors.'
+          }, error.response.data);
+          done();
+        });
+      });
+
     });
 
   });
