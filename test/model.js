@@ -10,7 +10,7 @@ describe('lib/model', function() {
     utils.logger.error = function() {};
 
     it('model dir non-exists', function(done) {
-      model.init({}, __dirname + '/models-non-exists');
+      model.init({}, __dirname + '/models-non-exists', true);
       assert.ok(true);
 
       done();
