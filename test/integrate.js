@@ -186,6 +186,7 @@ describe('integrate', function() {
 
     it('request home /', function(done) {
       var _root = __dirname + '/app';
+      console.error = function() {};
       U.logger.info = function() {};
       U.logger.error = function() {};
 
@@ -197,12 +198,9 @@ describe('integrate', function() {
         assert.ok(listen.listening);
 
         restify.createServer = createServer;
-        U.logger.info = log;
-        U.logger.error = errorLog;
         model.init = modelInit;
 
         axios.get('http://127.0.0.1:8080/').then(function(response) {
-          if (listen.listening) listen.close();
           try {
             assert.equal(200, response.status);
             assert.equal('OK', response.statusText);
@@ -211,6 +209,9 @@ describe('integrate', function() {
           } catch (e) {
             return done(e);
           }
+          if (listen.listening) listen.close();
+          U.logger.info = log;
+          U.logger.error = errorLog;
           done();
         }).catch(function(error) {
           if (listen.listening) listen.close();
@@ -221,14 +222,51 @@ describe('integrate', function() {
 
     });
 
-    it('request /unexpetion ', function(done) {
+    it('request home / middleWareThrowError', function(done) {
       var _root = __dirname + '/app';
+      console.error = function() {};
       U.logger.info = function() {};
       U.logger.error = function() {};
 
       var listen = rest({
         appPath: _root,
-        middleWarePath: __dirname + '/app/no-middle-wares'
+        middleWarePath: __dirname + '/app/middle-wares'
+      }, function(error, server) {
+        assert.equal(null, error);
+        assert.ok(listen.listening);
+
+        restify.createServer = createServer;
+        model.init = modelInit;
+
+        axios.get('http://127.0.0.1:8080/?middleWareThrowError=yes').catch(function(error) {
+          if (listen.listening) listen.close();
+          assert.equal(500, error.response.status);
+          assert.equal('Internal Server Error', error.response.statusText);
+          assert.deepEqual({
+            message: 'Sorry, there are some errors in middle-ware.'
+          }, error.response.data);
+          done();
+        });
+      });
+
+    });
+
+
+    it('request /unexpetion ', function(done) {
+      var _root = __dirname + '/app';
+      var errorLog = console.error;
+      var _done = function() {
+        if (listen.listening) listen.close();
+        console.error = errorLog;
+        done();
+      };
+      U.logger.info = function() {};
+      U.logger.error = function() {};
+      console.error = function() {};
+
+      var listen = rest({
+        appPath: _root,
+        middleWarePath: __dirname + '/app/middle-wares'
       }, function(error, server) {
         assert.equal(null, error);
         assert.ok(listen.listening);
@@ -238,25 +276,13 @@ describe('integrate', function() {
         U.logger.error = errorLog;
         model.init = modelInit;
 
-        axios.get('http://127.0.0.1:8080/unexception').then(function(response) {
-          if (listen.listening) listen.close();
-          try {
-            assert.equal(200, response.status);
-            assert.equal('OK', response.statusText);
-            assert.equal('application/json; charset=utf-8', response.headers['content-type']);
-            assert.equal('Hello world, I am open-rest.', response.data);
-          } catch (e) {
-            return done(e);
-          }
-          done();
-        }).catch(function(error) {
-          if (listen.listening) listen.close();
+        axios.get('http://127.0.0.1:8080/unexception').catch(function(error) {
           assert.equal(500, error.response.status);
           assert.equal('Internal Server Error', error.response.statusText);
           assert.deepEqual({
             message: 'Ooh, there are some errors.'
           }, error.response.data);
-          done();
+          _done();
         });
       });
 
