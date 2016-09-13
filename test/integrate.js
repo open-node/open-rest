@@ -117,17 +117,15 @@ describe('integrate', function() {
       U.logger.info = function() {};
       U.logger.error = function() {};
 
-      var listen = rest(__dirname + '/app');
-
-      setTimeout(function() {
+      var listen = rest(__dirname + '/app', function(error, server) {
         restify.createServer = createServer;
         U.logger.info = log;
         U.logger.error = errorLog;
         model.init = modelInit;
-        if (listen.listening) listen.close();
+        listen.close();
 
         done();
-      }, 100);
+      });
     });
 
     it('define app path', function(done) {
@@ -138,13 +136,12 @@ describe('integrate', function() {
       var listen = rest({
         appPath: _root
       });
-
       setTimeout(function() {
         restify.createServer = createServer;
         U.logger.info = log;
         U.logger.error = errorLog;
         model.init = modelInit;
-        if (listen.listening) listen.close();
+        listen.close();
 
         done();
       }, 100);
@@ -195,7 +192,7 @@ describe('integrate', function() {
         middleWarePath: __dirname + '/app/no-middle-wares'
       }, function(error, server) {
         assert.equal(null, error);
-        assert.ok(listen.listening);
+        if (listen.hasOwnProperty('listening')) assert.ok(listen.listening);
 
         restify.createServer = createServer;
         model.init = modelInit;
@@ -209,12 +206,12 @@ describe('integrate', function() {
           } catch (e) {
             return done(e);
           }
-          if (listen.listening) listen.close();
+          listen.close();
           U.logger.info = log;
           U.logger.error = errorLog;
           done();
         }).catch(function(error) {
-          if (listen.listening) listen.close();
+          listen.close();
           assert.equal(null, error);
           done();
         });
@@ -233,13 +230,13 @@ describe('integrate', function() {
         middleWarePath: __dirname + '/app/middle-wares'
       }, function(error, server) {
         assert.equal(null, error);
-        assert.ok(listen.listening);
+        if (listen.hasOwnProperty('listening')) assert.ok(listen.listening);
 
         restify.createServer = createServer;
         model.init = modelInit;
 
         axios.get('http://127.0.0.1:8080/?middleWareThrowError=yes').catch(function(error) {
-          if (listen.listening) listen.close();
+          listen.close();
           assert.equal(500, error.response.status);
           assert.equal('Internal Server Error', error.response.statusText);
           assert.deepEqual({
@@ -256,7 +253,7 @@ describe('integrate', function() {
       var _root = __dirname + '/app';
       var errorLog = console.error;
       var _done = function() {
-        if (listen.listening) listen.close();
+        listen.close();
         console.error = errorLog;
         done();
       };
@@ -269,7 +266,7 @@ describe('integrate', function() {
         middleWarePath: __dirname + '/app/middle-wares'
       }, function(error, server) {
         assert.equal(null, error);
-        assert.ok(listen.listening);
+        if (listen.hasOwnProperty('listening')) assert.ok(listen.listening);
 
         restify.createServer = createServer;
         U.logger.info = log;

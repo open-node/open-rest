@@ -5,7 +5,9 @@ module.exports = {
   },
   unexception: [
     function(req, res, next) {
-      throw Error('Ooh, there are some errors.');
+      setTimeout(function() {
+        next(Error('Ooh, there are some errors.'));
+      }, 20);
     }
   ]
 };
