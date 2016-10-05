@@ -43,10 +43,11 @@ npm run setup
 └── README.md
 </pre>
 
+## index.js
 ```js
 var rest = require('open-rest');
 
-rest(__dirname);
+rest(__dirname + '/app');
 ```
 
 ### Contributing
