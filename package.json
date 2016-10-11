@@ -27,7 +27,7 @@
     "mysql": "^2.5.2",
     "open-router": "^0.2.0",
     "restify": "4.1.1",
-    "sequelize": "3.21.0"
+    "sequelize": "3.24.3"
   },
   "devDependencies": {
     "axios": "^0.14.0",
