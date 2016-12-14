@@ -113,3 +113,6 @@ module.exports = (opts) ->
   # 设置监听
   server.listen service.port or 8080, service.ip, ->
     console.log '%s listening at %s', server.name, server.url
+
+  # 需要返回 `server` 对象
+  server
