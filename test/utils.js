@@ -1,373 +1,329 @@
-var assert  = require('assert')
-  , _       = require('lodash')
-  , utils   = require('../lib/utils');
+const assert = require('assert');
+const _ = require('lodash');
+const utils = require('../lib/utils');
 
-describe('lib/utils', function() {
-
-  describe('#intval', function() {
-    it("noraml", function(done) {
+describe('lib/utils', () => {
+  describe('#intval', () => {
+    it('noraml', (done) => {
       assert.equal(2, utils.intval(2));
       return done();
     });
-    it("string 2", function(done) {
+    it('string 2', (done) => {
       assert.equal(2, utils.intval('2'));
       return done();
     });
-    it("string 2aa", function(done) {
+    it('string 2aa', (done) => {
       assert.equal(2, utils.intval('2aa'));
       return done();
     });
-    it("8 mode 10", function(done) {
+    it('8 mode 10', (done) => {
       assert.equal(8, utils.intval('10', 8));
       return done();
     });
-    return it("string aaa, result is number 0", function(done) {
+    return it('string aaa, result is number 0', (done) => {
       assert.equal(0, utils.intval('aaa'));
       return done();
     });
   });
 
-  describe('#file2Module', function() {
-    it("filename return filename", function(done) {
+  describe('#file2Module', () => {
+    it('filename return filename', (done) => {
       assert.equal('filename', utils.file2Module('filename'));
       return done();
     });
-    return it("file-name return fileName", function(done) {
+    return it('file-name return fileName', (done) => {
       assert.equal('fileName', utils.file2Module('file-name'));
       return done();
     });
   });
 
-  describe('#nt2space', function() {
-
-    it('行首和行尾的空格应该被替换掉', function(done) {
+  describe('#nt2space', () => {
+    it('行首和行尾的空格应该被替换掉', (done) => {
       assert.equal('first', utils.nt2space(' first '));
       return done();
     });
 
-    it('换行符、空格和制表符应该被替换为一个空格', function(done) {
-      assert.equal('first second end', utils.nt2space('first\n\t\r\f\v  second\\n\\t\\f\\v\\r end'));
+    it('换行符、空格和制表符应该被替换为一个空格', (done) => {
+      const result = utils.nt2space('first\n\t\r\f\v  second\\n\\t\\f\\v\\r end');
+      assert.equal('first second end', result);
       return done();
     });
 
-    it('n,t,r,f,v不应该被替换掉', function(done) {
+    it('n,t,r,f,v不应该被替换掉', (done) => {
       assert.equal('ntrfv', utils.nt2space('ntrfv'));
       return done();
     });
 
-    it('isnt a string', function(done) {
-
+    it('isnt a string', (done) => {
       assert.equal(0, utils.nt2space(0));
       assert.equal(1, utils.nt2space(1));
       assert.deepEqual([1], utils.nt2space([1]));
-      assert.deepEqual({name: 'Hello'}, utils.nt2space({name: 'Hello'}));
+      assert.deepEqual({ name: 'Hello' }, utils.nt2space({ name: 'Hello' }));
 
       done();
     });
-
   });
 
-  describe('#getToken', function() {
-    return it("优先获取头信息里的 x-auth-token", function(done) {
-      var req;
-      req = {
+  describe('#getToken', () => {
+    it('优先获取头信息里的 x-auth-token', (done) => {
+      const req = {
         headers: {
-          "x-auth-token": "Hi, I'm token"
+          'x-auth-token': 'Hi, I\'m token',
         },
         params: {
-          access_token: "access_token",
-          accessToken: "accessToken"
-        }
+          access_token: 'access_token',
+          accessToken: 'accessToken',
+        },
       };
-      assert.equal("Hi, I'm token", utils.getToken(req));
+      assert.equal('Hi, I\'m token', utils.getToken(req));
       req.headers = {};
-      assert.equal("access_token", utils.getToken(req));
+      assert.equal('access_token', utils.getToken(req));
       req.params.access_token = null;
-      assert.equal("accessToken", utils.getToken(req));
-      return done();
+      assert.equal('accessToken', utils.getToken(req));
+      done();
     });
   });
 
-  describe('#randStr', function() {
-
-    it('Length is 5', function(done) {
+  describe('#randStr', () => {
+    it('Length is 5', (done) => {
       assert.equal(5, utils.randStr(5).length);
       assert.equal(5, utils.randStr(5).length);
       assert.equal(5, utils.randStr(5).length);
-      return done();
+      done();
     });
 
-    it('Type must be string', function(done) {
+    it('Type must be string', (done) => {
       assert.equal('string', typeof utils.randStr(5));
       assert.equal('string', typeof utils.randStr(5));
       assert.equal('string', typeof utils.randStr(5));
-      return done();
+      done();
     });
 
-    it('Strong RAND_STR_DICT', function(done) {
+    it('Strong RAND_STR_DICT', (done) => {
       assert.equal(5, utils.randStr(5, 'strong').length);
       assert.equal('string', typeof utils.randStr(5, 'strong'));
-      return done();
+      done();
     });
 
-    it('len lt 1', function(done) {
+    it('len lt 1', (done) => {
       assert.equal(3, utils.randStr(-1).length);
       done();
     });
 
-    it('type non-exists, type as dist', function(done) {
+    it('type non-exists, type as dist', (done) => {
       assert.equal(11111, +utils.randStr(5, '1'));
 
       done();
     });
-
   });
 
-  describe('#ucwords', function() {
-
-    it("value isnt a string", function(done) {
+  describe('#ucwords', () => {
+    it('value isnt a string', (done) => {
       assert.equal(123456, utils.ucwords(123456));
 
       done();
     });
 
-    it('normal', function(done) {
-      assert.equal('String', utils.ucwords('string'))
-      assert.equal('String', utils.ucwords('String'))
-      assert.equal('String', utils.ucwords(new String('string')))
-      assert.equal('String', utils.ucwords(new String('String')))
+    it('normal', (done) => {
+      assert.equal('String', utils.ucwords('string'));
+      assert.equal('String', utils.ucwords(String('string')));
 
       done();
     });
-
   });
 
-  describe('#callback', function() {
-
-    it("then branch", function(done) {
-      var promise = new Promise(function(resolve, reject) {
-        setTimeout(function() {
+  describe('#callback', () => {
+    it('then branch', (done) => {
+      const promise = new Promise((resolve) => {
+        setTimeout(() => {
           resolve(20);
         }, 10);
       });
 
-      utils.callback(promise, function(error, result) {
-
+      utils.callback(promise, (error, result) => {
         try {
           assert.equal(null, error);
           assert.equal(20, result);
         } catch (e) {
           return done(e);
         }
-        done();
-
+        return done();
       });
     });
 
-    it("catch branch", function(done) {
-      var promise = new Promise(function(resolve, reject) {
-        setTimeout(function() {
+    it('catch branch', (done) => {
+      const promise = new Promise((resolve, reject) => {
+        setTimeout(() => {
           reject(Error('Hello world'));
         }, 10);
       });
 
-      utils.callback(promise, function(error, result) {
-
+      utils.callback(promise, (error) => {
         try {
           assert.ok(error instanceof Error);
           assert.equal('Hello world', error.message);
         } catch (e) {
           return done(e);
         }
-        done();
-
+        return done();
       });
     });
-
   });
 
-  describe('#getModules', function() {
-
-    it('_path isnt a string', function(done) {
+  describe('#getModules', () => {
+    it('_path isnt a string', (done) => {
       assert.equal(0, utils.getModules(0));
       assert.deepEqual([0], utils.getModules([0]));
 
       done();
     });
 
-    it('_path non-exists', function(done) {
-      assert.deepEqual({}, utils.getModules(__dirname + '/non-exists-dir', ['js'], ['index']));
+    it('_path non-exists', (done) => {
+      assert.deepEqual({}, utils.getModules(`${__dirname}/non-exists-dir`, ['js'], ['index']));
 
       done();
     });
 
-    it('_path exists, exclude ', function(done) {
-      assert.deepEqual({
-        hello: 'This is a module, name is hello',
-        es6Default: 'This is a es6 module, name is es6Default',
-        helloWorld: 'This is a module, name is helloWorld'
-      }, utils.getModules(__dirname + '/dir', ['js'], ['index']));
-
-      done();
-    });
-
-    it('_path exists, exclude unset ', function(done) {
+    it('_path exists, exclude ', (done) => {
       assert.deepEqual({
         hello: 'This is a module, name is hello',
         es6Default: 'This is a es6 module, name is es6Default',
         helloWorld: 'This is a module, name is helloWorld',
-        index: 'This is a module, name is index'
-      }, utils.getModules(__dirname + '/dir', ['js']));
+      }, utils.getModules(`${__dirname}/dir`, ['js'], ['index']));
 
       done();
     });
 
+    it('_path exists, exclude unset ', (done) => {
+      assert.deepEqual({
+        hello: 'This is a module, name is hello',
+        es6Default: 'This is a es6 module, name is es6Default',
+        helloWorld: 'This is a module, name is helloWorld',
+        index: 'This is a module, name is index',
+      }, utils.getModules(`${__dirname}/dir`, ['js']));
+
+      done();
+    });
   });
 
-  describe('#readdir', function() {
-
-    it('_path isnt a string', function(done) {
-      assert.throws(function() {
+  describe('#readdir', () => {
+    it('_path isnt a string', (done) => {
+      assert.throws(() => {
         utils.readdir(['hello'], 'js');
-      }, function(error) {
-        return error instanceof Error && (
+      }, (error) => (
+        error instanceof Error && (
           error.message === 'path must be a string' ||
           error.message === 'path must be a string or Buffer'
-        );
-      });
+        )
+      ));
       done();
     });
 
-    it('_path exists, exclude ', function(done) {
-      var actual = utils.readdir(__dirname + '/dir', 'js', 'index');
-      actual = _.sortBy(actual);
+    it('_path exists, exclude ', (done) => {
+      const actual = _.sortBy(utils.readdir(`${__dirname}/dir`, 'js', 'index'));
 
-      assert.deepEqual([
-        'es6-default',
-        'hello',
-        'hello-world'
-      ], actual);
-
-      done();
-    });
-
-    it('_path exists, exclude unset ', function(done) {
-      var actual = utils.readdir(__dirname + '/dir', ['js']);
-      actual = _.sortBy(actual);
       assert.deepEqual([
         'es6-default',
         'hello',
         'hello-world',
-        'index'
       ], actual);
 
       done();
     });
 
+    it('_path exists, exclude unset ', (done) => {
+      const actual = _.sortBy(utils.readdir(`${__dirname}/dir`, ['js']));
+      assert.deepEqual([
+        'es6-default',
+        'hello',
+        'hello-world',
+        'index',
+      ], actual);
+
+      done();
+    });
   });
 
-  describe('#isPrivateIp', function() {
-    var whiteList = ['192.168.4.115', '192.168.4.114'];
+  describe('#isPrivateIp', () => {
+    const whiteList = ['192.168.4.115', '192.168.4.114'];
 
-    it('return true', function(done) {
+    it('return true', (done) => {
       assert.equal(true, utils.isPrivateIp('192.168.4.114', whiteList));
       assert.equal(true, utils.isPrivateIp('192.168.4.115', whiteList));
 
-      done()
+      done();
     });
 
-    it('return false', function(done) {
+    it('return false', (done) => {
       assert.equal(false, utils.isPrivateIp('192.168.6.114', whiteList));
       assert.equal(false, utils.isPrivateIp('192.168.6.115', whiteList));
 
-      done()
+      done();
     });
-
   });
 
-  describe('#remoteIp', function() {
-
-    it('connection.remoteAddress exists', function(done) {
-      var req = {
-        connection: { remoteAddress: '58.215.168.153' }
-      };
+  describe('#remoteIp', () => {
+    it('connection.remoteAddress exists', (done) => {
+      const req = { connection: { remoteAddress: '58.215.168.153' } };
       assert.equal('58.215.168.153', utils.remoteIp(req));
 
       done();
     });
 
-    it('socket.remoteAddress exists', function(done) {
-      var req = {
-        socket: { remoteAddress: '58.215.168.153' }
-      };
+    it('socket.remoteAddress exists', (done) => {
+      const req = { socket: { remoteAddress: '58.215.168.153' } };
       assert.equal('58.215.168.153', utils.remoteIp(req));
 
       done();
     });
 
-    it('connection.socket.remoteAddress exists', function(done) {
-      var req = {
-        connection: {
-          socket: { remoteAddress: '58.215.168.153' }
-        }
-      };
+    it('connection.socket.remoteAddress exists', (done) => {
+      const req = { connection: { socket: { remoteAddress: '58.215.168.153' } } };
       assert.equal('58.215.168.153', utils.remoteIp(req));
 
       done();
     });
-
   });
 
-  describe('#clientIp', function() {
-
-    it('x-forwarded-for exists', function(done) {
-      var req = {
-        headers: {
-          "x-forwarded-for": '10.0.0.20'
-        },
-        connection: { remoteAddress: '58.215.168.153' }
+  describe('#clientIp', () => {
+    it('x-forwarded-for exists', (done) => {
+      const req = {
+        headers: { 'x-forwarded-for': '10.0.0.20' },
+        connection: { remoteAddress: '58.215.168.153' },
       };
       assert.equal('10.0.0.20', utils.clientIp(req));
 
       done();
     });
 
-    it('x-forwarded-for non-exists, x-real-ip exists', function(done) {
-      var req = {
-        headers: {
-          "x-real-ip": '10.0.0.30'
-        },
-        connection: { remoteAddress: '58.215.168.153' }
+    it('x-forwarded-for non-exists, x-real-ip exists', (done) => {
+      const req = {
+        headers: { 'x-real-ip': '10.0.0.30' },
+        connection: { remoteAddress: '58.215.168.153' },
       };
       assert.equal('10.0.0.30', utils.clientIp(req));
 
       done();
     });
 
-    it('x-forwarded-for non-exists, x-real-ip non-exists', function(done) {
-      var req = {
-        headers: {
-        },
-        connection: { remoteAddress: '58.215.168.153' }
+    it('x-forwarded-for non-exists, x-real-ip non-exists', (done) => {
+      const req = {
+        headers: {},
+        connection: { remoteAddress: '58.215.168.153' },
       };
       assert.equal('58.215.168.153', utils.clientIp(req));
 
       done();
     });
-
   });
 
-  describe('#realIp', function() {
-    var proxyIps = [
-      '58.215.168.153'
-    ];
+  describe('#realIp', () => {
+    const proxyIps = ['58.215.168.153'];
 
-    it('remoteIp in proxyIps', function(done) {
-      var req = {
-        headers: {
-          "x-real-ip": '10.0.0.30'
-        },
-        connection: { remoteAddress: '58.215.168.153' }
+    it('remoteIp in proxyIps', (done) => {
+      const req = {
+        headers: { 'x-real-ip': '10.0.0.30' },
+        connection: { remoteAddress: '58.215.168.153' },
       };
       assert.equal('10.0.0.30', utils.realIp(req, proxyIps));
       req.headers['x-real-ip'] = null;
@@ -376,43 +332,45 @@ describe('lib/utils', function() {
       done();
     });
 
-    it('remoteIp not in proxyIps', function(done) {
-      var req = {
-        headers: {
-          "x-real-ip": '10.0.0.30'
-        },
-        connection: { remoteAddress: '58.215.168.169' }
+    it('remoteIp not in proxyIps', (done) => {
+      const req = {
+        headers: { 'x-real-ip': '10.0.0.30' },
+        connection: { remoteAddress: '58.215.168.169' },
       };
       assert.equal('58.215.168.169', utils.realIp(req));
 
       done();
     });
-
   });
 
-  describe('#getSql', function() {
-
-    it('keyword exists', function(done) {
-      assert.equal('SELECT SQL_NO_CACHE * FROM `user` WHERE `id`>20 ORDER BY `id` DESC LIMIT 10, 200', utils.getSql({
+  describe('#getSql', () => {
+    it('keyword exists', (done) => {
+      const expect = [
+        'SELECT SQL_NO_CACHE *',
+        'FROM `user`',
+        'WHERE `id`>20',
+        'ORDER BY `id` DESC',
+        'LIMIT 10, 200',
+      ].join(' ');
+      assert.equal(expect, utils.getSql({
         select: '*',
         table: '`user`',
         where: '`id`>20',
         sort: '`id` DESC',
-        limit: '10, 200'
+        limit: '10, 200',
       }, 'SQL_NO_CACHE'));
 
       done();
     });
 
-    it('keyword non-exists', function(done) {
+    it('keyword non-exists', (done) => {
       assert.equal('SELECT * FROM `user` GROUP BY `gender`', utils.getSql({
         select: '*',
         table: '`user`',
-        group: '`gender`'
+        group: '`gender`',
       }));
 
       done();
     });
   });
-
 });
