@@ -6,10 +6,20 @@ Standard restful api server, Base on restify and sequelize
 [![codecov](https://codecov.io/gh/open-node/open-rest/branch/master/graph/badge.svg)](https://codecov.io/gh/open-node/open-rest)
 
 
-
 ## Installation
 ```bash
 npm install open-rest --save
+```
+
+## Usage
+```javascript
+const Rest = require('open-rest');
+
+const rest = new Rest(`${__dirname}/app/`);
+rest.listen(8080, '127.0.0.1', (error, server) => {
+  if (error) throw error;
+  console.log(`Service started at: ${new Date()}`);
+});
 ```
 
 ## Quick Start
