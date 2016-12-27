@@ -1,39 +1,31 @@
-var rest      = require('../')
-  , assert    = require('assert');
+const rest = require('../');
+const assert = require('assert');
 
-describe('process', function() {
+describe('process', () => {
+  describe('#event rejection-handled', () => {
+    it('trigger regjection-handled', (done) => {
+      const p = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject(new Error('sss'));
+        }, 10);
+      });
 
-  describe('#event rejection-handled', function() {
-
-    it('trigger regjection-handled', function(done) {
-
-      var loggerError = rest.utils.logger.error;
-      var p = new Promise(function(resolve, reject){
-        setTimeout(function(){
-          reject(new Error("sss"))
-        }, 10)
-      })
-
-      rest.utils.logger.error = function(p) {
-        if (!(p instanceof Promise)) return;
-        p.catch(function(error) {
+      rest.utils.logger.error = (promise) => {
+        if (!(promise instanceof Promise)) return;
+        promise.catch((error) => {
           try {
             assert.equal('sss', error.message);
             assert.ok(error instanceof Error);
-          } catch(e) {
+          } catch (e) {
             return done(e);
           }
-          done();
+          return done();
         });
       };
 
-      setTimeout(function(){
-        p.then(function(){
-        })
+      setTimeout(() => {
+        p.then(() => {});
       }, 20);
-
     });
-
   });
-
 });
