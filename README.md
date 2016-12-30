@@ -17,12 +17,16 @@ npm install open-rest --save
 ## Usage
 ```javascript
 const rest = require('open-rest');
-const routers = require('./app/routes');
+const routes = require('./app/routes');
 const middleWares = require('./app/middle-wares');
 
 const controllers = rest.utils.getModules(`${__dirname}/app/controllers`, 'js');
+const service = {
+  name: 'open-rest',
+  version: '1.0.0',
+};
 
-const server = rest({ routers, controllers, middleWares, service });
+const server = rest({ routes, controllers, middleWares, service });
 server.listen(8080, '127.0.0.1', (error, server) => {
   if (error) throw error;
   console.log(`Service started at: ${new Date()}`);

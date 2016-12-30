@@ -4,7 +4,7 @@ const axios = require('axios');
 const assert = require('assert');
 const restify = require('restify');
 const U = require('../lib/utils');
-const routers = require('./app/routes');
+const routes = require('./app/routes');
 const middleWares = require('./app/middle-wares');
 
 const controllers = rest.utils.getModules(`${__dirname}/app/controllers`, 'js');
@@ -107,7 +107,7 @@ describe('integrate', () => {
       U.logger.info = () => {};
       U.logger.error = () => {};
 
-      const server = rest({ routers, controllers, middleWares: null, service });
+      const server = rest({ routes, controllers, middleWares: null, service });
       const listen = server.listen(8080, '127.0.0.1', () => {
         restify.createServer = createServer;
         U.logger.info = log;
@@ -123,7 +123,7 @@ describe('integrate', () => {
       U.logger.info = () => {};
       U.logger.error = () => {};
 
-      const server = rest({ routers, controllers, middleWares, service });
+      const server = rest({ routes, controllers, middleWares, service });
       const listen = server.listen(8080, '127.0.0.1', (error) => {
         restify.createServer = createServer;
         U.logger.info = log;
@@ -152,7 +152,7 @@ describe('integrate', () => {
     });
 
     it('request home / middleWareThrowError', (done) => {
-      const server = rest({ routers, controllers, middleWares, service });
+      const server = rest({ routes, controllers, middleWares, service });
       const listen = server.listen(8080, '127.0.0.1', (error) => {
         console.error = () => {};
         U.logger.info = () => {};
@@ -183,7 +183,7 @@ describe('integrate', () => {
       U.logger.error = () => {};
       console.error = () => {};
 
-      const server = rest({ routers, controllers, middleWares, service });
+      const server = rest({ routes, controllers, middleWares, service });
       const listen = server.listen(8080, '127.0.0.1', (error) => {
         const _done = () => {
           U.logger.info = log;
@@ -214,7 +214,7 @@ describe('integrate', () => {
       U.logger.error = () => {};
       console.error = () => {};
 
-      const server = rest({ routers, controllers, middleWares, service });
+      const server = rest({ routes, controllers, middleWares, service });
       const listen = server.listen(8080, '127.0.0.1', (error) => {
         const _done = () => {
           U.logger.info = log;
@@ -259,7 +259,7 @@ describe('integrate', () => {
       };
       console.error = () => {};
 
-      const server = rest({ routers, controllers, middleWares, service });
+      const server = rest({ routes, controllers, middleWares, service });
       listen = server.listen(8080, '127.0.0.1', (error) => {
         const req = {};
         const res = { finished: true };
