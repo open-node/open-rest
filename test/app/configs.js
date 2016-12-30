@@ -1,4 +1,4 @@
-var env = process.env;
+const env = process.env;
 
 module.exports = {
   name: 'Open-rest test service',
@@ -6,7 +6,7 @@ module.exports = {
     name: 'open-rest',
     version: '1.0.0',
     ip: '127.0.0.1',
-    port: '8080'
+    port: '8080',
   },
   db: {
     host: env.ORT_HOST || '127.0.0.1',
@@ -14,14 +14,14 @@ module.exports = {
     name: env.ORT_NAME || 'open_rest',
     encode: {
       set: 'utf8',
-      collation: 'utf8_general_ci'
+      collation: 'utf8_general_ci',
     },
     user: env.ORT_USER || 'root',
     pass: env.ORT_PASS || '',
     dialect: 'mysql',
     dialectOptions: {
       supportBigNumbers: true,
-      charset: 'utf8mb4'
+      charset: 'utf8mb4',
     },
     logging: false,
     define: {
@@ -30,13 +30,13 @@ module.exports = {
       syncOnAssociation: false,
       charset: 'utf8',
       collate: 'utf8_general_ci',
-      engine: 'InnoDB'
+      engine: 'InnoDB',
     },
     syncOnAssociation: true,
     pool: {
       min: 2,
       max: 10,
       idle: 300 * 1000,
-    }
-  }
+    },
+  },
 };

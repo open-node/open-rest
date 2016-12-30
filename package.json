@@ -1,10 +1,12 @@
 {
   "name": "open-rest",
-  "version": "7.0.1",
+  "version": "8.0.0-rc",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
-    "test": "npm install && ./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec"
+    "_test": "mocha",
+    "test": "npm run eslint && nyc --reporter=lcov --reporter=text-summary npm run _test",
+    "eslint": "eslint {./index.js,./lib,./test} && echo '\u001b[32m\u001b[1mEslint validate success.\u001b[22m\u001b[39m'"
   },
   "repository": {
     "type": "git",
@@ -22,15 +24,12 @@
   },
   "homepage": "https://github.com/open-node/open-rest",
   "dependencies": {
-    "commander": "^2.4.0",
-    "lodash": "^4.15.0",
-    "mysql": "^2.5.2",
-    "open-router": "^0.2.0",
-    "restify": "4.1.1",
-    "axios": "^0.14.0",
-    "sequelize": "3.24.3"
+    "lodash": "4.15.0",
+    "open-router": "0.2.0",
+    "restify": "4.1.1"
   },
   "devDependencies": {
+    "axios": "^0.14.0",
     "babel-eslint": "^7.1.1",
     "codecov": "^1.0.1",
     "eslint": "^3.10.0",
@@ -38,7 +37,8 @@
     "eslint-plugin-import": "^1.16.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.4.1",
-    "istanbul": "^0.4.4",
-    "mocha": "^3.0.2"
+    "mocha": "^3.0.2",
+    "codecov": "^1.0.1",
+    "nyc": "^10.0.0"
   }
 }

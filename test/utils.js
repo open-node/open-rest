@@ -260,6 +260,12 @@ describe('lib/utils', () => {
 
       done();
     });
+
+    it('whiteList is null', (done) => {
+      assert.equal(false, utils.isPrivateIp('192.168.6.114'));
+
+      done();
+    });
   });
 
   describe('#remoteIp', () => {

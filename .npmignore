@@ -8,6 +8,7 @@ thumb
 /index.coffee
 /lib/*.coffee
 /lib/helper/*.coffee
+.nyc_output/
 samples
 build
 *~

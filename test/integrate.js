@@ -4,10 +4,14 @@ const axios = require('axios');
 const assert = require('assert');
 const restify = require('restify');
 const U = require('../lib/utils');
-const model = require('../lib/model');
-const config = require('./app/configs');
+const routers = require('./app/routes');
+const middleWares = require('./app/middle-wares');
 
-const hasOwnProperty = Object.prototype.hasOwnProperty;
+const controllers = rest.utils.getModules(`${__dirname}/app/controllers`, 'js');
+const service = {
+  name: 'open-rest',
+  version: '1.0.0',
+};
 
 describe('integrate', () => {
   describe('#un-init', () => {
@@ -76,8 +80,8 @@ describe('integrate', () => {
 
     it('attach object check', (done) => {
       const attachs = [
-        'Router', 'helper', 'model', 'utils',
-        'errors', 'restify', 'Sequelize', 'mysql',
+        'Router', 'helper', 'utils',
+        'errors', 'restify',
       ];
       _.each(attachs, (x) => {
         assert.ok(rest[x]);
@@ -91,7 +95,6 @@ describe('integrate', () => {
     const log = U.logger.info;
     const errorLog = U.logger.error;
     const createServer = restify.createServer;
-    const modelInit = model.init;
 
     restify.createServer = (option) => {
       assert.equal('open-rest', option.name);
@@ -100,95 +103,32 @@ describe('integrate', () => {
       return createServer.call(restify, option);
     };
 
-    model.init = (db, modelPath) => {
-      assert.deepEqual(config.db, db);
-      assert.equal(`${__dirname}/app/models`, modelPath);
-      return modelInit.call(model, db, modelPath, true);
-    };
-
-    it('only difined root path', (done) => {
+    it('argument all right', (done) => {
       U.logger.info = () => {};
       U.logger.error = () => {};
 
-      const listen = rest(`${__dirname}/app`, () => {
+      const server = rest({ routers, controllers, middleWares: null, service });
+      const listen = server.listen(8080, '127.0.0.1', () => {
         restify.createServer = createServer;
         U.logger.info = log;
         U.logger.error = errorLog;
-        model.init = modelInit;
         listen.close();
 
         done();
       });
-    });
-
-    it('define app path', (done) => {
-      const _root = `${__dirname}/app`;
-      U.logger.info = () => {};
-      U.logger.error = () => {};
-
-      const listen = rest({ appPath: _root });
-      setTimeout(() => {
-        restify.createServer = createServer;
-        U.logger.info = log;
-        U.logger.error = errorLog;
-        model.init = modelInit;
-        listen.close();
-
-        done();
-      }, 100);
-    });
-
-    it('appPath non-exists', (done) => {
-      assert.throws(() => {
-        rest({ configPath: `${__dirname}/app/configs` });
-      }, (error) => (
-        error instanceof Error && error.message === 'Lack appPath: absolute path of your app'
-      ));
-
-      done();
-    });
-
-    it('route path type error or non-exists', (done) => {
-      assert.throws(() => {
-        rest({
-          appPath: `${__dirname}/app`,
-          configPath: `${__dirname}/app/configs.js`,
-          routePath: [`${__dirname}/app/route`],
-        });
-      }, (error) => {
-        const except = 'routePath must be a string and be a existed path';
-        return error instanceof Error && error.message === except;
-      });
-
-      assert.throws(() => {
-        rest({
-          appPath: `${__dirname}/app`,
-          configPath: `${__dirname}/app/configs.js`,
-          routePath: `${__dirname}/app/route`,
-        });
-      }, (error) => {
-        const except = 'routePath must be a string and be a existed path';
-        return error instanceof Error && error.message === except;
-      });
-
-      done();
     });
 
     it('request home /', (done) => {
-      const _root = `${__dirname}/app`;
       console.error = () => {};
       U.logger.info = () => {};
       U.logger.error = () => {};
 
-      const listen = rest({
-        appPath: _root,
-        middleWarePath: `${__dirname}/app/no-middle-wares`,
-      }, (error) => {
-        assert.equal(null, error);
-        if (hasOwnProperty.call(listen, 'listening')) assert.ok(listen.listening);
-
+      const server = rest({ routers, controllers, middleWares, service });
+      const listen = server.listen(8080, '127.0.0.1', (error) => {
         restify.createServer = createServer;
-        model.init = modelInit;
+        U.logger.info = log;
+        U.logger.error = errorLog;
+        assert.equal(null, error);
 
         axios.get('http://127.0.0.1:8080/').then((response) => {
           try {
@@ -212,66 +152,124 @@ describe('integrate', () => {
     });
 
     it('request home / middleWareThrowError', (done) => {
-      const _root = `${__dirname}/app`;
-      console.error = () => {};
-      U.logger.info = () => {};
-      U.logger.error = () => {};
-
-      const listen = rest({
-        appPath: _root,
-        middleWarePath: `${__dirname}/app/middle-wares`,
-      }, (error) => {
-        assert.equal(null, error);
-        if (hasOwnProperty(listen, 'listening')) assert.ok(listen.listening);
+      const server = rest({ routers, controllers, middleWares, service });
+      const listen = server.listen(8080, '127.0.0.1', (error) => {
+        console.error = () => {};
+        U.logger.info = () => {};
+        U.logger.error = () => {};
 
         restify.createServer = createServer;
-        model.init = modelInit;
+        assert.equal(null, error);
 
-        axios.get('http://127.0.0.1:8080/?middleWareThrowError=yes').catch(() => {
+        restify.createServer = createServer;
+
+        axios.get('http://127.0.0.1:8080/?middleWareThrowError=yes').catch((err) => {
+          U.logger.info = log;
+          U.logger.error = errorLog;
           listen.close();
-          assert.equal(500, error.response.status);
-          assert.equal('Internal Server Error', error.response.statusText);
+          assert.equal(500, err.response.status);
+          assert.equal('Internal Server Error', err.response.statusText);
           assert.deepEqual({
             message: 'Sorry, there are some errors in middle-ware.',
-          }, error.response.data);
+          }, err.response.data);
           done();
         });
       });
     });
 
     it('request /unexpetion ', (done) => {
-      let listen;
-      const _root = `${__dirname}/app`;
       const errorlog = console.error;
-      const _done = () => {
-        listen.close();
-        console.error = errorlog;
-        done();
-      };
       U.logger.info = () => {};
       U.logger.error = () => {};
       console.error = () => {};
 
-      listen = rest({
-        appPath: _root,
-        middleWarePath: `${__dirname}/app/middle-wares`,
-      }, (error) => {
-        assert.equal(null, error);
-        if (hasOwnProperty.call(listen, 'listening')) assert.ok(listen.listening);
+      const server = rest({ routers, controllers, middleWares, service });
+      const listen = server.listen(8080, '127.0.0.1', (error) => {
+        const _done = () => {
+          U.logger.info = log;
+          U.logger.error = errorLog;
+          listen.close();
+          console.error = errorlog;
+          done();
+        };
 
         restify.createServer = createServer;
-        U.logger.info = log;
-        U.logger.error = errorLog;
-        model.init = modelInit;
+        assert.equal(null, error);
+        restify.createServer = createServer;
 
         axios.get('http://127.0.0.1:8080/unexception').catch((err) => {
-          assert.equal(500, error.response.status);
+          assert.equal(500, err.response.status);
           assert.equal('Internal Server Error', err.response.statusText);
           assert.deepEqual({
             message: 'Ooh, there are some errors.',
-          }, error.response.data);
+          }, err.response.data);
           _done();
         });
+      });
+    });
+
+    it('request /unexpetion server uncaughtException', (done) => {
+      const errorlog = console.error;
+      U.logger.info = () => {};
+      U.logger.error = () => {};
+      console.error = () => {};
+
+      const server = rest({ routers, controllers, middleWares, service });
+      const listen = server.listen(8080, '127.0.0.1', (error) => {
+        const _done = () => {
+          U.logger.info = log;
+          U.logger.error = errorLog;
+          listen.close();
+          console.error = errorlog;
+          done();
+        };
+
+        const req = {};
+        const res = {
+          finished: false,
+          send: (statusCode, txt) => {
+            assert.equal(500, statusCode);
+            assert.equal('Internal error', txt);
+            _done();
+          },
+        };
+        const router = {};
+        const err = new Error('There are some errors');
+
+        restify.createServer = createServer;
+        assert.equal(null, error);
+        restify.createServer = createServer;
+        server.emit('uncaughtException', req, res, router, err);
+      });
+    });
+
+    it('request /unexpetion server uncaughtException', (done) => {
+      const errorlog = console.error;
+      let listen;
+      U.logger.info = () => {};
+      U.logger.error = (route, error) => {
+        assert.deepEqual({ name: 'This is router' }, route);
+        assert.deepEqual(new Error('There are some errors'), error);
+
+        U.logger.info = log;
+        U.logger.error = errorLog;
+        listen.close();
+        console.error = errorlog;
+        done();
+      };
+      console.error = () => {};
+
+      const server = rest({ routers, controllers, middleWares, service });
+      listen = server.listen(8080, '127.0.0.1', (error) => {
+        const req = {};
+        const res = { finished: true };
+        const router = { name: 'This is router' };
+        const err = new Error('There are some errors');
+
+        restify.createServer = createServer;
+        assert.equal(null, error);
+        restify.createServer = createServer;
+        server.emit('uncaughtException', req, res, router, err);
       });
     });
   });

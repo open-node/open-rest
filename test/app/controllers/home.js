@@ -1,13 +1,13 @@
 module.exports = {
-  index: function(req, res, next) {
+  index: (req, res, next) => {
     res.send('Hello world, I am open-rest.');
     next();
   },
   unexception: [
-    function(req, res, next) {
-      setTimeout(function() {
+    (req, res, next) => {
+      setTimeout(() => {
         next(Error('Ooh, there are some errors.'));
       }, 20);
-    }
-  ]
+    },
+  ],
 };

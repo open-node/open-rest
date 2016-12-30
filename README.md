@@ -13,10 +13,14 @@ npm install open-rest --save
 
 ## Usage
 ```javascript
-const Rest = require('open-rest');
+const rest = require('open-rest');
+const routers = require('./app/routes');
+const middleWares = require('./app/middle-wares');
 
-const rest = new Rest(`${__dirname}/app/`);
-rest.listen(8080, '127.0.0.1', (error, server) => {
+const controllers = rest.utils.getModules(`${__dirname}/app/controllers`, 'js');
+
+const server = rest({ routers, controllers, middleWares, service });
+server.listen(8080, '127.0.0.1', (error, server) => {
   if (error) throw error;
   console.log(`Service started at: ${new Date()}`);
 });
@@ -53,13 +57,6 @@ npm run setup
 └── README.md
 </pre>
 
-## index.js
-```js
-var rest = require('open-rest');
-
-rest(__dirname + '/app');
-```
-
 ### Contributing
 - Fork this repo
 - Clone your repo
@@ -70,7 +67,7 @@ rest(__dirname + '/app');
 - Open a pull request, and enjoy <3
 
 ### MIT license
-Copyright (c) 2016 Open-node
+Copyright (c) 2017 Open-node
 Author Redstone Zhao
 Email: 13740080@qq.com
 
