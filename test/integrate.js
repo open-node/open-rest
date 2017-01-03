@@ -12,6 +12,11 @@ describe('integrate', () => {
       assert.ok(rest.start instanceof Function);
       assert.ok(rest.plugin instanceof Function);
       assert.equal(rest.plugin(), rest);
+      assert.equal(U, rest.utils);
+      assert.ok(rest.Router);
+      assert.ok(rest.helper);
+      assert.ok(rest.errors);
+      assert.ok(rest.restify);
 
       done();
     });
