@@ -4,19 +4,14 @@ const axios = require('axios');
 const assert = require('assert');
 const restify = require('restify');
 const U = require('../lib/utils');
-const routes = require('./app/routes');
-const middleWares = require('./app/middle-wares');
-
-const controllers = rest.utils.getModules(`${__dirname}/app/controllers`, 'js');
-const service = {
-  name: 'open-rest',
-  version: '1.0.0',
-};
 
 describe('integrate', () => {
   describe('#un-init', () => {
     it('check type', (done) => {
-      assert.ok(rest instanceof Function);
+      assert.ok(rest instanceof Object);
+      assert.ok(rest.start instanceof Function);
+      assert.ok(rest.plugin instanceof Function);
+      assert.equal(rest.plugin(), rest);
 
       done();
     });
@@ -107,8 +102,9 @@ describe('integrate', () => {
       U.logger.info = () => {};
       U.logger.error = () => {};
 
-      const server = rest({ routes, controllers, middleWares: null, service });
-      const listen = server.listen(8080, '127.0.0.1', () => {
+      const listen = rest.start(`${__dirname}/app`, (error, server) => {
+        assert.equal(null, error);
+        assert.ok(server);
         restify.createServer = createServer;
         U.logger.info = log;
         U.logger.error = errorLog;
@@ -123,8 +119,9 @@ describe('integrate', () => {
       U.logger.info = () => {};
       U.logger.error = () => {};
 
-      const server = rest({ routes, controllers, middleWares, service });
-      const listen = server.listen(8080, '127.0.0.1', (error) => {
+      const listen = rest.start(`${__dirname}/app`, (error, server) => {
+        assert.equal(null, error);
+        assert.ok(server);
         restify.createServer = createServer;
         U.logger.info = log;
         U.logger.error = errorLog;
@@ -152,8 +149,9 @@ describe('integrate', () => {
     });
 
     it('request home / middleWareThrowError', (done) => {
-      const server = rest({ routes, controllers, middleWares, service });
-      const listen = server.listen(8080, '127.0.0.1', (error) => {
+      const listen = rest.start(`${__dirname}/app`, (error, server) => {
+        assert.equal(null, error);
+        assert.ok(server);
         console.error = () => {};
         U.logger.info = () => {};
         U.logger.error = () => {};
@@ -183,8 +181,9 @@ describe('integrate', () => {
       U.logger.error = () => {};
       console.error = () => {};
 
-      const server = rest({ routes, controllers, middleWares, service });
-      const listen = server.listen(8080, '127.0.0.1', (error) => {
+      const listen = rest.start(`${__dirname}/app`, (error, server) => {
+        assert.equal(null, error);
+        assert.ok(server);
         const _done = () => {
           U.logger.info = log;
           U.logger.error = errorLog;
@@ -214,8 +213,9 @@ describe('integrate', () => {
       U.logger.error = () => {};
       console.error = () => {};
 
-      const server = rest({ routes, controllers, middleWares, service });
-      const listen = server.listen(8080, '127.0.0.1', (error) => {
+      const listen = rest.start(`${__dirname}/app`, (error, server) => {
+        assert.equal(null, error);
+        assert.ok(server);
         const _done = () => {
           U.logger.info = log;
           U.logger.error = errorLog;
@@ -244,8 +244,20 @@ describe('integrate', () => {
     });
 
     it('request /unexpetion server uncaughtException', (done) => {
+      const listen = rest.start(`${__dirname}/app`, (error, server) => {
+        assert.equal(null, error);
+        assert.ok(server);
+        const req = {};
+        const res = { finished: true };
+        const router = { name: 'This is router' };
+        const err = new Error('There are some errors');
+
+        restify.createServer = createServer;
+        assert.equal(null, error);
+        restify.createServer = createServer;
+        server.emit('uncaughtException', req, res, router, err);
+      });
       const errorlog = console.error;
-      let listen;
       U.logger.info = () => {};
       U.logger.error = (route, error) => {
         assert.deepEqual({ name: 'This is router' }, route);
@@ -258,18 +270,26 @@ describe('integrate', () => {
         done();
       };
       console.error = () => {};
+    });
 
-      const server = rest({ routes, controllers, middleWares, service });
-      listen = server.listen(8080, '127.0.0.1', (error) => {
-        const req = {};
-        const res = { finished: true };
-        const router = { name: 'This is router' };
-        const err = new Error('There are some errors');
+    it('listen there are some error', (done) => {
+      restify.createServer = (option) => {
+        assert.equal('open-rest', option.name);
+        assert.equal('1.0.0', option.version);
 
+        const server = createServer.call(restify, option);
+
+        server.listen = (port, ip, callback) => {
+          callback(new Error('There is an error when listen'));
+        };
+        return server;
+      };
+      rest.start(`${__dirname}/app`, (error, server) => {
+        assert.ok(server);
+        assert.ok(error);
+        assert.deepEqual(new Error('There is an error when listen'), error);
         restify.createServer = createServer;
-        assert.equal(null, error);
-        restify.createServer = createServer;
-        server.emit('uncaughtException', req, res, router, err);
+        done();
       });
     });
   });

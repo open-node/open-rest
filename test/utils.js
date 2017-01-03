@@ -379,4 +379,11 @@ describe('lib/utils', () => {
       done();
     });
   });
+
+  describe('#require', () => {
+    it('require non-exists module', (done) => {
+      assert.equal(null, utils.require(`${__dirname}/hello-world`));
+      done();
+    });
+  });
 });
