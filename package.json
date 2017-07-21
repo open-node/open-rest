@@ -1,6 +1,6 @@
 {
   "name": "open-rest",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
@@ -24,14 +24,13 @@
   },
   "homepage": "https://github.com/open-node/open-rest",
   "dependencies": {
-    "lodash": "4.15.0",
-    "open-router": "0.2.0",
+    "lodash": "^4.15.0",
+    "open-router": "1.0.0",
     "restify": "4.1.1"
   },
   "devDependencies": {
     "axios": "^0.14.0",
     "babel-eslint": "^7.1.1",
-    "codecov": "^1.0.1",
     "eslint": "^3.10.0",
     "eslint-config-airbnb": "^10.0.1",
     "eslint-plugin-import": "^1.16.0",
