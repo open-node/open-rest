@@ -25,7 +25,7 @@
   "homepage": "https://github.com/open-node/open-rest",
   "dependencies": {
     "lodash": "^4.15.0",
-    "open-router": "1.0.0",
+    "open-router": "1.0.1",
     "restify": "4.1.1"
   },
   "devDependencies": {
