@@ -1,6 +1,6 @@
 {
   "name": "open-rest",
-  "version": "8.0.2",
+  "version": "8.0.3",
   "description": "Standard rest server, Base on restify and sequelize",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "dependencies": {
     "lodash": "^4.15.0",
     "open-router": "1.0.1",
-    "restify": "4.1.1"
+    "restify": "4.3.2"
   },
   "devDependencies": {
     "axios": "^0.14.0",
@@ -38,6 +38,6 @@
     "eslint-plugin-react": "^6.4.1",
     "mocha": "^3.0.2",
     "codecov": "^1.0.1",
-    "nyc": "^10.0.0"
+    "nyc": "^11.3.0"
   }
 }
