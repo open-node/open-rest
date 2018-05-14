@@ -1,20 +1,20 @@
-const rest = require('./lib/initialize');
+const rest = require("./lib/initialize");
 
-rest.Router = require('open-router');
-rest.helper = require('./lib/helper');
-rest.utils = require('./lib/utils');
-rest.errors = require('./lib/errors');
-rest.restify = require('restify');
+rest.Router = require("open-router");
+rest.helper = require("./lib/helper");
+rest.utils = require("./lib/utils");
+rest.errors = require("./lib/errors");
+rest.restify = require("restify");
 
-process.on('uncaughtException', (error) => {
+process.on("uncaughtException", error => {
   rest.utils.logger.error(error);
 });
 
-process.on('unhandledRejection', (reason, p) => {
+process.on("unhandledRejection", (reason, p) => {
   rest.utils.logger.error(reason, p);
 });
 
-process.on('rejectionHandled', (error) => {
+process.on("rejectionHandled", error => {
   rest.utils.logger.error(error);
 });
 

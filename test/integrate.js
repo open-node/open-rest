@@ -1,13 +1,13 @@
-const rest = require('../');
-const _ = require('lodash');
-const axios = require('axios');
-const assert = require('assert');
-const restify = require('restify');
-const U = require('../lib/utils');
+const rest = require("../");
+const _ = require("lodash");
+const axios = require("axios");
+const assert = require("assert");
+const restify = require("restify");
+const U = require("../lib/utils");
 
-describe('integrate', () => {
-  describe('#un-init', () => {
-    it('check type', (done) => {
+describe("integrate", () => {
+  describe("#un-init", () => {
+    it("check type", done => {
       assert.ok(rest instanceof Object);
       assert.ok(rest.start instanceof Function);
       assert.ok(rest.plugin instanceof Function);
@@ -21,26 +21,26 @@ describe('integrate', () => {
       done();
     });
 
-    it('uncaughtException', (done) => {
+    it("uncaughtException", done => {
       const errorLog = rest.utils.logger.error;
-      rest.utils.logger.error = (error) => {
+      rest.utils.logger.error = error => {
         assert.ok(error instanceof Error);
-        assert.equal('Hello this is a uncaught expection.', error.message);
+        assert.equal("Hello this is a uncaught expection.", error.message);
         rest.utils.logger.error = errorLog;
 
         done();
       };
 
       setTimeout(() => {
-        throw Error('Hello this is a uncaught expection.');
+        throw Error("Hello this is a uncaught expection.");
       }, 10);
     });
 
-    it('rejectionHandled', (done) => {
+    it("rejectionHandled", done => {
       const errorLog = rest.utils.logger.error;
-      rest.utils.logger.error = (error) => {
+      rest.utils.logger.error = error => {
         assert.ok(error instanceof Error);
-        assert.equal('Hello this is a unregist rejection', error.message);
+        assert.equal("Hello this is a unregist rejection", error.message);
         rest.utils.logger.error = errorLog;
 
         done();
@@ -48,21 +48,21 @@ describe('integrate', () => {
 
       const promise = new Promise((resolve, reject) => {
         setTimeout(() => {
-          reject(Error('Hello this is a unregist rejection'));
+          reject(Error("Hello this is a unregist rejection"));
         }, 10);
       });
       setTimeout(() => {
         promise.then(() => {
-          console.log('Dont run here!');
+          console.log("Dont run here!");
         });
       }, 10);
     });
 
-    it('unhandleRejection', (done) => {
+    it("unhandleRejection", done => {
       const errorLog = rest.utils.logger.error;
-      rest.utils.logger.error = (error) => {
+      rest.utils.logger.error = error => {
         assert.ok(error instanceof Error);
-        assert.equal('Hello this is a unregist rejection', error.message);
+        assert.equal("Hello this is a unregist rejection", error.message);
         rest.utils.logger.error = errorLog;
 
         done();
@@ -70,20 +70,17 @@ describe('integrate', () => {
 
       const promise = new Promise((resolve, reject) => {
         setTimeout(() => {
-          reject(Error('Hello this is a unregist rejection'));
+          reject(Error("Hello this is a unregist rejection"));
         }, 10);
       });
       promise.then(() => {
-        console.log('Dont run here!');
+        console.log("Dont run here!");
       });
     });
 
-    it('attach object check', (done) => {
-      const attachs = [
-        'Router', 'helper', 'utils',
-        'errors', 'restify',
-      ];
-      _.each(attachs, (x) => {
+    it("attach object check", done => {
+      const attachs = ["Router", "helper", "utils", "errors", "restify"];
+      _.each(attachs, x => {
         assert.ok(rest[x]);
       });
 
@@ -91,19 +88,19 @@ describe('integrate', () => {
     });
   });
 
-  describe('#inited', () => {
+  describe("#inited", () => {
     const log = U.logger.info;
     const errorLog = U.logger.error;
-    const createServer = restify.createServer;
+    const { createServer } = restify;
 
-    restify.createServer = (option) => {
-      assert.equal('open-rest', option.name);
-      assert.equal('1.0.0', option.version);
+    restify.createServer = option => {
+      assert.equal("open-rest", option.name);
+      assert.equal("1.0.0", option.version);
 
       return createServer.call(restify, option);
     };
 
-    it('argument all right', (done) => {
+    it("argument all right", done => {
       U.logger.info = () => {};
       U.logger.error = () => {};
 
@@ -119,7 +116,7 @@ describe('integrate', () => {
       });
     });
 
-    it('request home /', (done) => {
+    it("request home /", done => {
       console.error = () => {};
       U.logger.info = () => {};
       U.logger.error = () => {};
@@ -132,28 +129,34 @@ describe('integrate', () => {
         U.logger.error = errorLog;
         assert.equal(null, error);
 
-        axios.get('http://127.0.0.1:8080/').then((response) => {
-          try {
-            assert.equal(200, response.status);
-            assert.equal('OK', response.statusText);
-            assert.equal('application/json; charset=utf-8', response.headers['content-type']);
-            assert.equal('Hello world, I am open-rest.', response.data);
-          } catch (e) {
-            return done(e);
-          }
-          listen.close();
-          U.logger.info = log;
-          U.logger.error = errorLog;
-          return done();
-        }).catch(() => {
-          listen.close();
-          assert.equal(null, error);
-          done();
-        });
+        axios
+          .get("http://127.0.0.1:8080/")
+          .then(response => {
+            try {
+              assert.equal(200, response.status);
+              assert.equal("OK", response.statusText);
+              assert.equal(
+                "application/json; charset=utf-8",
+                response.headers["content-type"]
+              );
+              assert.equal("Hello world, I am open-rest.", response.data);
+            } catch (e) {
+              return done(e);
+            }
+            listen.close();
+            U.logger.info = log;
+            U.logger.error = errorLog;
+            return done();
+          })
+          .catch(() => {
+            listen.close();
+            assert.equal(null, error);
+            done();
+          });
       });
     });
 
-    it('request home / middleWareThrowError', (done) => {
+    it("request home / middleWareThrowError", done => {
       const listen = rest.start(`${__dirname}/app`, (error, server) => {
         assert.equal(null, error);
         assert.ok(server);
@@ -166,21 +169,26 @@ describe('integrate', () => {
 
         restify.createServer = createServer;
 
-        axios.get('http://127.0.0.1:8080/?middleWareThrowError=yes').catch((err) => {
-          U.logger.info = log;
-          U.logger.error = errorLog;
-          listen.close();
-          assert.equal(500, err.response.status);
-          assert.equal('Internal Server Error', err.response.statusText);
-          assert.deepEqual({
-            message: 'Sorry, there are some errors in middle-ware.',
-          }, err.response.data);
-          done();
-        });
+        axios
+          .get("http://127.0.0.1:8080/?middleWareThrowError=yes")
+          .catch(err => {
+            U.logger.info = log;
+            U.logger.error = errorLog;
+            listen.close();
+            assert.equal(500, err.response.status);
+            assert.equal("Internal Server Error", err.response.statusText);
+            assert.deepEqual(
+              {
+                message: "Sorry, there are some errors in middle-ware."
+              },
+              err.response.data
+            );
+            done();
+          });
       });
     });
 
-    it('request /unexpetion ', (done) => {
+    it("request /unexpetion ", done => {
       const errorlog = console.error;
       U.logger.info = () => {};
       U.logger.error = () => {};
@@ -201,18 +209,21 @@ describe('integrate', () => {
         assert.equal(null, error);
         restify.createServer = createServer;
 
-        axios.get('http://127.0.0.1:8080/unexception').catch((err) => {
+        axios.get("http://127.0.0.1:8080/unexception").catch(err => {
           assert.equal(500, err.response.status);
-          assert.equal('Internal Server Error', err.response.statusText);
-          assert.deepEqual({
-            message: 'Ooh, there are some errors.',
-          }, err.response.data);
+          assert.equal("Internal Server Error", err.response.statusText);
+          assert.deepEqual(
+            {
+              message: "Ooh, there are some errors."
+            },
+            err.response.data
+          );
           _done();
         });
       });
     });
 
-    it('request /unexpetion server uncaughtException', (done) => {
+    it("request /unexpetion server uncaughtException", done => {
       const errorlog = console.error;
       U.logger.info = () => {};
       U.logger.error = () => {};
@@ -234,39 +245,39 @@ describe('integrate', () => {
           finished: false,
           send: (statusCode, txt) => {
             assert.equal(500, statusCode);
-            assert.equal('Internal error', txt);
+            assert.equal("Internal error", txt);
             _done();
-          },
+          }
         };
         const router = {};
-        const err = new Error('There are some errors');
+        const err = new Error("There are some errors");
 
         restify.createServer = createServer;
         assert.equal(null, error);
         restify.createServer = createServer;
-        server.emit('uncaughtException', req, res, router, err);
+        server.emit("uncaughtException", req, res, router, err);
       });
     });
 
-    it('request /unexpetion server uncaughtException', (done) => {
+    it("request /unexpetion server uncaughtException", done => {
       const listen = rest.start(`${__dirname}/app`, (error, server) => {
         assert.equal(null, error);
         assert.ok(server);
         const req = {};
         const res = { finished: true };
-        const router = { name: 'This is router' };
-        const err = new Error('There are some errors');
+        const router = { name: "This is router" };
+        const err = new Error("There are some errors");
 
         restify.createServer = createServer;
         assert.equal(null, error);
         restify.createServer = createServer;
-        server.emit('uncaughtException', req, res, router, err);
+        server.emit("uncaughtException", req, res, router, err);
       });
       const errorlog = console.error;
       U.logger.info = () => {};
       U.logger.error = (route, error) => {
-        assert.deepEqual({ name: 'This is router' }, route);
-        assert.deepEqual(new Error('There are some errors'), error);
+        assert.deepEqual({ name: "This is router" }, route);
+        assert.deepEqual(new Error("There are some errors"), error);
 
         U.logger.info = log;
         U.logger.error = errorLog;
@@ -277,22 +288,22 @@ describe('integrate', () => {
       console.error = () => {};
     });
 
-    it('listen there are some error', (done) => {
-      restify.createServer = (option) => {
-        assert.equal('open-rest', option.name);
-        assert.equal('1.0.0', option.version);
+    it("listen there are some error", done => {
+      restify.createServer = option => {
+        assert.equal("open-rest", option.name);
+        assert.equal("1.0.0", option.version);
 
         const server = createServer.call(restify, option);
 
         server.listen = (port, ip, callback) => {
-          callback(new Error('There is an error when listen'));
+          callback(new Error("There is an error when listen"));
         };
         return server;
       };
       rest.start(`${__dirname}/app`, (error, server) => {
         assert.ok(server);
         assert.ok(error);
-        assert.deepEqual(new Error('There is an error when listen'), error);
+        assert.deepEqual(new Error("There is an error when listen"), error);
         restify.createServer = createServer;
         done();
       });

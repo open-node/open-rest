@@ -1,9 +1,9 @@
-const rest = require('../');
-const assert = require('assert');
+const rest = require("../");
+const assert = require("assert");
 
-describe('plugin', () => {
-  describe('regist and active', () => {
-    it('normal', (done) => {
+describe("plugin", () => {
+  describe("regist and active", () => {
+    it("normal", done => {
       let count = 2;
 
       const plugin1 = (openRest, path) => {
@@ -20,13 +20,14 @@ describe('plugin', () => {
         count -= 1;
       };
 
-      rest.plugin(plugin1, plugin2).start(`${__dirname}/app`, (error, server) => {
-        assert.equal(null, error);
-        assert.ok(server);
-        assert.equal(0, count);
-        done();
-      });
+      rest
+        .plugin(plugin1, plugin2)
+        .start(`${__dirname}/app`, (error, server) => {
+          assert.equal(null, error);
+          assert.ok(server);
+          assert.equal(0, count);
+          done();
+        });
     });
   });
 });
-

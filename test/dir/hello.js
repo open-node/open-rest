@@ -1,1 +1,1 @@
-module.exports = 'This is a module, name is hello';
+module.exports = "This is a module, name is hello";
